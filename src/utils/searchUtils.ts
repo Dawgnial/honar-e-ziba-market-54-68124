@@ -11,18 +11,17 @@ export const normalizeText = (text: string): string => {
     .trim();
 };
 
-// EXTREMELY STRICT search algorithm - Only exact substring matches
+// Search algorithm - ONLY searches in product titles/names
 export const calculateRelevanceScore = (product: Product, query: string): number => {
   const normalizedQuery = normalizeText(query.trim());
   const normalizedTitle = normalizeText(product.title);
-  const normalizedDesc = normalizeText(product.description || '');
   
   // Must be at least 2 characters
   if (normalizedQuery.length < 2) {
     return 0;
   }
   
-  // ONLY exact substring matches - no word splitting
+  // ONLY search in product title - NEVER in description or other fields
   
   // Exact title match (highest priority)
   if (normalizedTitle === normalizedQuery) {
@@ -39,26 +38,12 @@ export const calculateRelevanceScore = (product: Product, query: string): number
     return 400;
   }
   
-  // Exact description match
-  if (normalizedDesc === normalizedQuery) {
-    return 300;
-  }
-  
-  // Description starts with query
-  if (normalizedDesc.startsWith(normalizedQuery)) {
-    return 200;
-  }
-  
-  // Description contains complete query as substring
-  if (normalizedDesc.includes(normalizedQuery)) {
-    return 100;
-  }
-  
-  // NO OTHER MATCHING - reject everything else
+  // NO MATCH - reject everything else
+  // Descriptions and other fields are NOT searched
   return 0;
 };
 
-// EXTREMELY STRICT search function
+// Search function - ONLY searches in product titles/names
 export const searchProducts = (
   products: Product[],
   query: string,
@@ -69,13 +54,13 @@ export const searchProducts = (
     categoryGetter?: (categoryId: string) => string;
   } = {}
 ): Product[] => {
-  const { limit = 10, minScore = 100, includeCategories = false, categoryGetter } = options;
+  const { limit = 10, minScore = 100 } = options;
   
   if (!query.trim() || query.length < 2) {
     return [];
   }
   
-  // Calculate relevance scores for all products
+  // Calculate relevance scores for all products (title only)
   let scoredProducts = products
     .map(product => ({
       product,
@@ -83,16 +68,14 @@ export const searchProducts = (
     }))
     .filter(item => item.score >= minScore);
   
-  // NO category matching to avoid confusion
-  // Categories will only be matched if explicitly requested and with exact matches
-  
+  // Sort by relevance and return top results
   return scoredProducts
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map(item => item.product);
 };
 
-// EXTREMELY STRICT filtering function
+// Filtering function - ONLY searches in product titles/names
 export const filterProductsBySearch = (products: Product[], searchQuery: string): Product[] => {
   if (!searchQuery.trim()) {
     return products;
@@ -107,11 +90,9 @@ export const filterProductsBySearch = (products: Product[], searchQuery: string)
   
   return products.filter(product => {
     const normalizedTitle = normalizeText(product.title);
-    const normalizedDesc = normalizeText(product.description || '');
     
-    // ONLY exact substring matches - NO word-by-word matching at all
-    return normalizedTitle.includes(normalizedQuery) || 
-           normalizedDesc.includes(normalizedQuery);
+    // ONLY search in product title - NEVER in description or other fields
+    return normalizedTitle.includes(normalizedQuery);
   });
 };
 
@@ -125,6 +106,7 @@ export interface SearchResult {
   description?: string;
 }
 
+// Create search results - only from product titles
 export const createSearchResults = (
   products: Product[],
   query: string,
@@ -132,9 +114,7 @@ export const createSearchResults = (
   limit: number = 8
 ): SearchResult[] => {
   const searchedProducts = searchProducts(products, query, {
-    limit,
-    includeCategories: false, // Disable category matching completely
-    categoryGetter
+    limit
   });
   
   return searchedProducts.map(product => ({
