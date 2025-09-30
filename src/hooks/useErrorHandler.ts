@@ -13,7 +13,7 @@ export const useErrorHandler = () => {
     options: ErrorHandlerOptions = {}
   ) => {
     const {
-      showToast = false, // Changed default to false to hide error messages from users
+      showToast = true,
       customMessage,
       logToConsole = true
     } = options;
@@ -22,33 +22,30 @@ export const useErrorHandler = () => {
       console.error('Error occurred:', error);
     }
 
-    // Only show toast messages if explicitly requested (mainly for critical auth errors)
-    if (showToast && (error?.code?.startsWith('auth/') || options.customMessage)) {
+    if (showToast) {
       let message = customMessage;
       
       if (!message) {
         if (error?.message) {
           message = error.message;
+          
+          // Handle specific Supabase auth error messages
+          if (message.includes('Invalid login credentials')) {
+            message = 'شماره همراه یا رمز عبور اشتباه است';
+          } else if (message.includes('User already registered')) {
+            message = 'این شماره همراه قبلاً ثبت شده است';
+          } else if (message.includes('Password should be at least')) {
+            message = 'رمز عبور باید حداقل ۶ کاراکتر باشد';
+          } else if (message.includes('Email not confirmed')) {
+            message = 'لطفاً ایمیل خود را تأیید کنید';
+          } else if (message.includes('Too many requests')) {
+            message = 'تعداد تلاش‌های زیادی انجام شده. لطفاً بعداً تلاش کنید';
+          }
         } else if (typeof error === 'string') {
           message = error;
         } else {
           message = 'خطای غیرمنتظره‌ای رخ داده است';
         }
-      }
-
-      // Handle specific auth error types only
-      if (error?.code === 'auth/user-not-found') {
-        message = 'کاربری با این ایمیل یافت نشد';
-      } else if (error?.code === 'auth/wrong-password') {
-        message = 'رمز عبور اشتباه است';
-      } else if (error?.code === 'auth/email-already-in-use') {
-        message = 'این ایمیل قبلاً ثبت شده است';
-      } else if (error?.code === 'auth/weak-password') {
-        message = 'رمز عبور خیلی ضعیف است';
-      } else if (error?.code === 'auth/invalid-email') {
-        message = 'فرمت ایمیل صحیح نیست';
-      } else if (error?.code === 'auth/too-many-requests') {
-        message = 'تعداد تلاش‌های زیادی انجام شده. لطفاً بعداً تلاش کنید';
       }
 
       toast.error(message);

@@ -145,7 +145,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     } catch (error: any) {
       console.error('Sign up error:', error);
-      toast.error(error.message || 'خطا در ثبت نام');
+      // Let the error handler in Auth.tsx handle the toast
       throw error;
     } finally {
       setLoading(false);
@@ -176,7 +176,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       toast.success(`خوش آمدید ${profile?.name || phone}`);
     } catch (error: any) {
       console.error('Sign in error:', error);
-      toast.error(error.message || 'خطا در ورود');
+      // Let the error handler in Auth.tsx handle the toast
       throw error;
     } finally {
       setLoading(false);

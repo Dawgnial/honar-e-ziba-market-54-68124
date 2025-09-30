@@ -53,7 +53,6 @@ const Auth = () => {
     setIsLoading(true);
     try {
       await signIn(data.phone, data.password);
-      handleSuccess('با موفقیت وارد شدید');
       navigate('/');
     } catch (error: any) {
       handleError(error);
@@ -70,7 +69,8 @@ const Auth = () => {
         phone: data.phone,
       });
       
-      // Don't navigate immediately, wait for confirmation
+      // Navigate to home after successful registration
+      navigate('/');
     } catch (error: any) {
       handleError(error);
     } finally {
