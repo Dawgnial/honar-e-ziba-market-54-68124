@@ -180,9 +180,6 @@ const Cart = () => {
                             />
                             <div>
                               <p className="font-medium">{item.title}</p>
-                              <p className="text-sm text-muted-foreground line-clamp-1">
-                                {item.description}
-                              </p>
                               {item.selectedAttributes && item.selectedAttributes.length > 0 && (
                                 <div className="mt-1 text-xs text-muted-foreground">
                                   {item.selectedAttributes.map((attr, index) => (
@@ -270,7 +267,7 @@ const Cart = () => {
                         alt={item.title} 
                         className="w-20 h-20 object-cover rounded-md border shadow-sm"
                       />
-                      <div className="flex-1">
+                       <div className="flex-1">
                         <div className="flex justify-between">
                           <h3 className="font-medium">{item.title}</h3>
                           <Button 
@@ -283,9 +280,6 @@ const Cart = () => {
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
-                        <p className="text-sm text-muted-foreground line-clamp-1 mb-2">
-                          {item.description}
-                        </p>
                         {item.selectedAttributes && item.selectedAttributes.length > 0 && (
                           <div className="mb-2 text-xs text-muted-foreground">
                             {item.selectedAttributes.map((attr, index) => (

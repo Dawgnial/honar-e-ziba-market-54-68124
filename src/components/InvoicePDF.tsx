@@ -60,8 +60,8 @@ export const generateInvoicePDF = async (invoiceData: InvoiceData): Promise<stri
           </thead>
           <tbody>
             ${invoiceData.items.map((item, index) => {
-              const attributeModifiers = item.selectedAttributes?.reduce((sum, attr) => sum + attr.price_modifier, 0) || 0;
-              const finalPrice = item.price + attributeModifiers;
+              // item.price already contains the sum of price modifiers from custom attributes
+              const finalPrice = item.price;
               const discountedPrice = item.discount_percentage ? 
                 finalPrice * (1 - item.discount_percentage / 100) : 
                 finalPrice;
@@ -76,7 +76,6 @@ export const generateInvoicePDF = async (invoiceData: InvoiceData): Promise<stri
                         ${item.selectedAttributes.map(attr => 
                           `<span style="display: inline-block; background: #dbeafe; color: #1e40af; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-left: 4px; margin-bottom: 4px;">
                             ${attr.attribute_display_name}: ${attr.display_value}
-                            ${attr.price_modifier > 0 ? ` (+${toFarsiNumber(attr.price_modifier.toLocaleString())} تومان)` : ''}
                           </span>`
                         ).join('')}
                       </div>` : ''
@@ -131,14 +130,18 @@ export const generateInvoicePDF = async (invoiceData: InvoiceData): Promise<stri
   document.body.appendChild(invoiceDiv);
 
   try {
-    // Convert to canvas
+    // Get the actual height of the content
+    const contentHeight = invoiceDiv.scrollHeight;
+    
+    // Convert to canvas with dynamic height
     const canvas = await html2canvas(invoiceDiv, {
       scale: 2,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
       width: 210 * 3.78, // A4 width in pixels (210mm)
-      height: Math.max(297 * 3.78, invoiceDiv.scrollHeight + 100) // A4 height in pixels (297mm)
+      height: contentHeight + 200, // Add extra padding for all content
+      windowHeight: contentHeight + 200
     });
 
     // Create PDF with A4 format
@@ -148,18 +151,41 @@ export const generateInvoicePDF = async (invoiceData: InvoiceData): Promise<stri
       format: 'a4'
     });
 
-    // Add canvas to PDF with proper A4 scaling
+    // Calculate dimensions
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    const pageHeight = pdf.internal.pageSize.getHeight();
     
+    // Add images across multiple pages if needed
+    let heightLeft = pdfHeight;
+    let position = 0;
+    
+    // Add first page
     pdf.addImage(
       canvas.toDataURL('image/jpeg', 0.95),
       'JPEG',
       0,
-      0,
+      position,
       pdfWidth,
       pdfHeight
     );
+    
+    heightLeft -= pageHeight;
+    
+    // Add additional pages if content exceeds one page
+    while (heightLeft > 0) {
+      position = heightLeft - pdfHeight;
+      pdf.addPage();
+      pdf.addImage(
+        canvas.toDataURL('image/jpeg', 0.95),
+        'JPEG',
+        0,
+        position,
+        pdfWidth,
+        pdfHeight
+      );
+      heightLeft -= pageHeight;
+    }
 
     // Generate filename with timestamp
     const filename = `invoice-${invoiceData.invoiceNumber}-${Date.now()}.pdf`;
