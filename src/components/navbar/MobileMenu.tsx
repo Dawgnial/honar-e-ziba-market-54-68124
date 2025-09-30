@@ -151,17 +151,6 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </button>
 
               <Link
-                to="/about"
-                className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
-                onClick={onClose}
-              >
-                <div className="w-12 h-12 bg-teal-500/10 rounded-xl flex items-center justify-center group-hover:bg-teal-500/20 transition-colors">
-                  <Info className="h-6 w-6 text-teal-500" />
-                </div>
-                <span className="font-medium text-lg">درباره ما</span>
-              </Link>
-              
-              <Link
                 to="/contact"
                 className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
                 onClick={onClose}
@@ -170,6 +159,17 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                   <Phone className="h-6 w-6 text-pink-500" />
                 </div>
                 <span className="font-medium text-lg">تماس با ما</span>
+              </Link>
+
+              <Link
+                to="/about"
+                className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
+                onClick={onClose}
+              >
+                <div className="w-12 h-12 bg-teal-500/10 rounded-xl flex items-center justify-center group-hover:bg-teal-500/20 transition-colors">
+                  <Info className="h-6 w-6 text-teal-500" />
+                </div>
+                <span className="font-medium text-lg">درباره ما</span>
               </Link>
             </div>
             

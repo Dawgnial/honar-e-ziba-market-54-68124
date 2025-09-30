@@ -74,6 +74,14 @@ const Navbar = () => {
       }
     },
     { 
+      name: "تماس با ما", 
+      href: "/contact", 
+      onClick: (e: React.MouseEvent) => {
+        e.preventDefault();
+        navigate("/contact");
+      }
+    },
+    { 
       name: "درباره ما", 
       href: "/about", 
       onClick: (e: React.MouseEvent) => {
@@ -81,14 +89,6 @@ const Navbar = () => {
         navigate("/about");
       },
       highlighted: true
-    },
-    { 
-      name: "تماس با ما", 
-      href: "/contact", 
-      onClick: (e: React.MouseEvent) => {
-        e.preventDefault();
-        navigate("/contact");
-      }
     }
   ];
 

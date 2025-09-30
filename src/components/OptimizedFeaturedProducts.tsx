@@ -140,6 +140,7 @@ const OptimizedFeaturedProducts = memo(() => {
               <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent rounded-full"></div>
             </h2>
           </div>
+          <p className="text-muted-foreground mt-4">گزیده‌ای از بهترین‌ها برای شما</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

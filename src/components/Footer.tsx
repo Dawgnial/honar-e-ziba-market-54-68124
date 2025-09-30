@@ -106,10 +106,10 @@ const Footer = () => {
                 </button>
               </li>
               <li>
-                <Link to="/about" className="text-white/80 hover:text-white transition-colors font-estedad">درباره ما</Link>
+                <Link to="/contact" className="text-white/80 hover:text-white transition-colors font-vazir">تماس با ما</Link>
               </li>
               <li>
-                <Link to="/contact" className="text-white/80 hover:text-white transition-colors font-vazir">تماس با ما</Link>
+                <Link to="/about" className="text-white/80 hover:text-white transition-colors font-estedad">درباره ما</Link>
               </li>
             </ul>
           </div>
