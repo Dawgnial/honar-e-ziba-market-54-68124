@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +23,7 @@ import { ProductVariant } from "../hooks/useProductVariants";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -240,7 +241,7 @@ const formatPrice = (price: number): string => {
             <AlertCircle className="mx-auto h-16 w-16 text-red-500 mb-4" />
             <h2 className="text-2xl font-bold text-gray-900 mb-4">خطا در بارگذاری محصول</h2>
             <p className="text-gray-600 mb-6">{error}</p>
-            <Button onClick={() => window.location.href = '/products'} variant="outline">
+            <Button onClick={() => navigate('/products')} variant="outline">
               بازگشت به محصولات
             </Button>
           </div>

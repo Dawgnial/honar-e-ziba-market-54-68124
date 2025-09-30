@@ -1,6 +1,6 @@
 
 import { useState, useMemo, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import ModernProductCard from "../components/ModernProductCard";
 import ModernProductFilters, { FilterState } from "../components/ModernProductFilters";
@@ -28,6 +28,7 @@ const Products = () => {
   const { addToCart } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const location = useLocation();
+  const navigate = useNavigate();
   const { toast } = useToast();
   
   const [filters, setFilters] = useState<FilterState>({
@@ -265,9 +266,9 @@ const Products = () => {
                     'تلاش مجدد'
                   )}
                 </Button>
-                <Button variant="outline" onClick={() => window.location.href = '/'}>
-                  بازگشت به خانه
-                </Button>
+            <Button variant="outline" onClick={() => navigate('/')}>
+              بازگشت به خانه
+            </Button>
               </div>
             </CardContent>
           </Card>

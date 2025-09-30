@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -275,7 +275,7 @@ const Auth = () => {
           
           <div className="text-center mt-6">
             <p className="text-sm text-muted-foreground">
-              ورود شما به معنای پذیرش <a href="/terms" className="text-persian-blue hover:underline">قوانین و مقررات</a> ایرولیا شاپ است.
+              ورود شما به معنای پذیرش <Link to="/terms" className="text-persian-blue hover:underline">قوانین و مقررات</Link> ایرولیا شاپ است.
             </p>
           </div>
         </div>

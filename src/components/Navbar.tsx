@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Heart, ShoppingCart, User, Menu, X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,7 @@ const Navbar = () => {
   const { items } = useCart();
   const { favorites } = useFavorites();
   const location = useLocation();
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -23,7 +24,11 @@ const Navbar = () => {
 
   const scrollToSection = (sectionId: string) => {
     if (location.pathname !== "/") {
-      window.location.href = `/#${sectionId}`;
+      navigate(`/#${sectionId}`);
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        element?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
       return;
     }
     
@@ -42,15 +47,26 @@ const Navbar = () => {
     }, 100);
   };
 
+  const scrollToContact = () => {
+    if (location.pathname !== "/about") {
+      navigate("/about#contact");
+      setTimeout(() => {
+        const contactSection = document.getElementById("contact");
+        contactSection?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } else {
+      const contactSection = document.getElementById("contact");
+      contactSection?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const navItems = [
     { 
       name: "صفحه اصلی", 
       href: "/", 
       onClick: (e: React.MouseEvent) => {
         e.preventDefault();
-        if (location.pathname !== "/") {
-          window.location.href = "/";
-        }
+        navigate("/");
       }
     },
     { 
@@ -58,9 +74,7 @@ const Navbar = () => {
       href: "/products", 
       onClick: (e: React.MouseEvent) => {
         e.preventDefault();
-        if (location.pathname !== "/products") {
-          window.location.href = "/products";
-        }
+        navigate("/products");
       }
     },
     { 
@@ -84,11 +98,7 @@ const Navbar = () => {
       href: "/about#contact", 
       onClick: (e: React.MouseEvent) => {
         e.preventDefault();
-        if (location.pathname !== "/about") {
-          window.location.href = "/about#contact";
-        } else {
-          scrollToSection("contact");
-        }
+        scrollToContact();
       }
     }
   ];

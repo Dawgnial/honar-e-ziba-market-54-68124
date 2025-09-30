@@ -1,6 +1,6 @@
 
 import { ReactNode } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useSupabaseAuth } from '../hooks/useSupabaseAuth';
 
 interface ProtectedRouteProps {
@@ -11,6 +11,7 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ children, adminOnly = false }: ProtectedRouteProps) => {
   const { user, loading, isAdmin } = useSupabaseAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -41,7 +42,7 @@ const ProtectedRoute = ({ children, adminOnly = false }: ProtectedRouteProps) =>
             شما دسترسی ادمین ندارید.
           </p>
           <button 
-            onClick={() => window.location.href = '/'}
+            onClick={() => navigate('/')}
             className="bg-persian-blue text-white px-6 py-2 rounded-lg hover:bg-persian-blue/90 transition-colors"
           >
             بازگشت به صفحه اصلی

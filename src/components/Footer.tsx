@@ -2,15 +2,20 @@
 import { Instagram, Mail, Phone, MapPin, Send, MessageCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 
 const Footer = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const scrollToSection = (sectionId: string) => {
     if (location.pathname !== "/") {
-      window.location.href = `/#${sectionId}`;
+      navigate(`/#${sectionId}`);
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        element?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
       return;
     }
     
@@ -31,7 +36,11 @@ const Footer = () => {
 
   const scrollToContact = () => {
     if (location.pathname !== "/about") {
-      window.location.href = "/about#contact";
+      navigate("/about#contact");
+      setTimeout(() => {
+        const contactSection = document.getElementById("contact");
+        contactSection?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
       return;
     }
     

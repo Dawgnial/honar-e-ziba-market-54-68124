@@ -1,6 +1,6 @@
 
 import { X, Home, Package, Info, Phone, Heart, ShoppingCart, User, Sun, Moon, Settings } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useCart } from "../../context/CartContext";
 import { useFavorites } from "../../context/FavoritesContext";
@@ -30,6 +30,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const { user, isAdmin } = useSupabaseAuth();
   const { theme, setTheme } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -40,7 +41,11 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const scrollToSection = (sectionId: string) => {
     onClose();
     if (location.pathname !== "/") {
-      window.location.href = `/#${sectionId}`;
+      navigate(`/#${sectionId}`);
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        element?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
       return;
     }
     
@@ -59,12 +64,17 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     }, 100);
   };
 
-  const handleContactClick = () => {
+  const scrollToContact = () => {
     onClose();
     if (location.pathname !== "/about") {
-      window.location.href = "/about#contact";
+      navigate("/about#contact");
+      setTimeout(() => {
+        const contactSection = document.getElementById("contact");
+        contactSection?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
     } else {
-      scrollToSection("contact");
+      const contactSection = document.getElementById("contact");
+      contactSection?.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -175,7 +185,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </Link>
               
               <button
-                onClick={handleContactClick}
+                onClick={scrollToContact}
                 className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group text-right"
               >
                 <div className="w-12 h-12 bg-pink-500/10 rounded-xl flex items-center justify-center group-hover:bg-pink-500/20 transition-colors">
