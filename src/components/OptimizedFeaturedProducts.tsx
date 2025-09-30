@@ -1,5 +1,6 @@
 import React, { memo, useCallback } from "react";
 import { useFeaturedProducts } from "@/hooks/useOptimizedProducts";
+import { useCategories } from "@/hooks/useCategories";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,6 +12,7 @@ import OptimizedProductCard from "./OptimizedProductCard";
 
 const OptimizedFeaturedProducts = memo(() => {
   const { data: featuredProducts = [], isLoading, error } = useFeaturedProducts();
+  const { categories } = useCategories();
   const { addToCart } = useCart();
   const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
   const navigate = useNavigate();
@@ -125,6 +127,7 @@ const OptimizedFeaturedProducts = memo(() => {
               <OptimizedProductCard
                 key={product.id}
                 product={product}
+                categories={categories}
                 onAddToCart={() => handleAddToCart(product)}
                 onFavoriteToggle={() => handleFavoriteToggle(product.id)}
                 isFavorite={isFavorite}

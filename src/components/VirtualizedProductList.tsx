@@ -1,5 +1,6 @@
 import React, { memo, useMemo, useCallback, useState } from "react";
 import { useOptimizedProducts } from "@/hooks/useOptimizedProducts";
+import { useCategories } from "@/hooks/useCategories";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
 import OptimizedProductCard from "./OptimizedProductCard";
@@ -28,6 +29,7 @@ const VirtualizedProductList = memo(({
     isFetching 
   } = useOptimizedProducts(currentPage, itemsPerPage);
 
+  const { categories } = useCategories();
   const { addToCart } = useCart();
   const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
 
@@ -139,6 +141,7 @@ const VirtualizedProductList = memo(({
               <OptimizedProductCard
                 key={product.id}
                 product={product}
+                categories={categories}
                 onAddToCart={() => handleAddToCart(product)}
                 onFavoriteToggle={() => handleFavoriteToggle(product.id)}
                 isFavorite={isFavorite}

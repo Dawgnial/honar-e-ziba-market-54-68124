@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, memo } from "react";
 import { useProducts } from "../hooks/useProducts";
+import { useCategories } from "../hooks/useCategories";
 import { useCart } from "../context/CartContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { ShoppingCart, Heart, Star } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { toFarsiNumber, formatPriceToFarsi } from "../utils/numberUtils";
-import { getCategoryName } from "../utils/categoryUtils";
+import { useCategoryName } from "../utils/categoryUtils";
 import { useFavorites } from "../context/FavoritesContext";
 import { toast } from "sonner";
 import LazyImage from "./LazyImage";
@@ -16,6 +17,7 @@ import { useProductComments } from "../hooks/useProductComments";
 
 const FeaturedProducts = memo(() => {
   const { products, loading } = useProducts();
+  const { categories } = useCategories();
   const { addToCart } = useCart();
   const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
   const navigate = useNavigate();
@@ -119,6 +121,7 @@ const FeaturedProducts = memo(() => {
           {featuredProducts.map((product) => {
             const isAvailable = product.availability_status === 'available';
             const isFavorite = favorites.some(fav => fav.id === product.id);
+            const categoryName = useCategoryName(categories, product.category_id);
             
             return (
               <div key={product.id} className="group h-full">
@@ -149,6 +152,13 @@ const FeaturedProducts = memo(() => {
                       </Button>
                     </div>
 
+                    {/* Category Badge */}
+                    <div className="absolute top-3 left-3">
+                      <Badge variant="secondary" className="bg-white/90 text-gray-700 text-xs font-medium">
+                        {categoryName}
+                      </Badge>
+                    </div>
+
                     {/* Stock Status */}
                     {!isAvailable && (
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
@@ -160,7 +170,7 @@ const FeaturedProducts = memo(() => {
 
                     {/* Discount Badge */}
                     {product.discount_percentage > 0 && (
-                      <div className="absolute top-3 left-3">
+                      <div className="absolute bottom-3 left-3">
                         <Badge className="bg-red-500 text-white">
                           {toFarsiNumber(product.discount_percentage)}% تخفیف
                         </Badge>

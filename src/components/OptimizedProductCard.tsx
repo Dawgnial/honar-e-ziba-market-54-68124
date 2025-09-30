@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Heart, Eye, Star } from "lucide-react";
 import { formatPriceToFarsi, toFarsiNumber } from "../utils/numberUtils";
-import { getCategoryName } from "../utils/categoryUtils";
+import { useCategoryName } from "../utils/categoryUtils";
 import LazyImage from "./LazyImage";
 import { Product } from "@/types";
 
@@ -13,6 +13,7 @@ const ProductQuickView = lazy(() => import("./ProductQuickView"));
 
 interface OptimizedProductCardProps {
   product: Product;
+  categories: any[];
   onAddToCart: () => void;
   onFavoriteToggle?: () => void;
   isFavorite?: boolean;
@@ -20,12 +21,14 @@ interface OptimizedProductCardProps {
 }
 
 const OptimizedProductCard = memo(({ 
-  product, 
+  product,
+  categories,
   onAddToCart, 
   onFavoriteToggle,
   isFavorite = false,
   showRating = false
 }: OptimizedProductCardProps) => {
+  const categoryName = useCategoryName(categories, product.category_id);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   const handleFavoriteToggle = useCallback((e: React.MouseEvent) => {
@@ -111,7 +114,7 @@ const OptimizedProductCard = memo(({
         {/* Category Badge */}
         <div className="absolute top-3 left-3">
           <Badge variant="secondary" className="bg-white/90 text-gray-700 text-xs font-medium">
-            {getCategoryName(product.category_id)}
+            {categoryName}
           </Badge>
         </div>
 
