@@ -86,8 +86,18 @@ const OptimizedFeaturedProducts = memo(() => {
 
   if (featuredProducts.length === 0) {
     return (
-      <section className="py-16 bg-background">
-        <div className="container-custom">
+      <section className="py-16 relative overflow-hidden">
+        {/* Background with pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-primary/10"></div>
+        <div 
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234CAF50' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundSize: '60px 60px'
+          }}
+        ></div>
+        
+        <div className="container-custom relative z-10">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">
               محصولات ویژه
@@ -111,12 +121,25 @@ const OptimizedFeaturedProducts = memo(() => {
   }
 
   return (
-    <section className="py-16 bg-background">
-      <div className="container-custom">
+    <section className="py-16 relative overflow-hidden">
+      {/* Background with pattern */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-primary/10"></div>
+      <div 
+        className="absolute inset-0 opacity-30"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234CAF50' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundSize: '60px 60px'
+        }}
+      ></div>
+      
+      <div className="container-custom relative z-10">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-foreground mb-2">
-            محصولات ویژه
-          </h2>
+          <div className="inline-block">
+            <h2 className="text-3xl font-bold text-foreground mb-2 relative">
+              محصولات ویژه
+              <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent rounded-full"></div>
+            </h2>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -139,7 +162,7 @@ const OptimizedFeaturedProducts = memo(() => {
 
         <div className="text-center mt-12">
           <Button 
-            className="bg-primary hover:bg-primary/90 px-8 py-3"
+            className="bg-primary hover:bg-primary/90 px-8 py-3 shadow-lg hover:shadow-xl transition-shadow"
             onClick={navigateToProducts}
           >
             <ShoppingCart className="ml-2" size={20} />
