@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronDown, ChevronUp, Package } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import OptimizedImage from "./OptimizedImage";
 
 const CategoryGrid = memo(() => {
   const { categories, loading } = useCategories();
@@ -59,22 +60,25 @@ const CategoryGrid = memo(() => {
               className="group cursor-pointer hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg overflow-hidden rounded-2xl shadow-lg"
               onClick={() => handleCategoryClick(category.id)}
             >
-              <div className="relative aspect-[4/3] bg-gradient-to-br from-persian-blue/20 to-green-light/30 dark:from-gray-700/50 dark:to-gray-600/50 overflow-hidden">
-                {category.image_url ? (
-                  <img 
-                    src={category.image_url} 
-                    alt={category.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="w-24 h-24 rounded-full bg-white/30 dark:bg-gray-600/30 flex items-center justify-center backdrop-blur-sm">
-                      <Package className="w-12 h-12 text-persian-blue dark:text-white" />
+              <div className="relative overflow-hidden rounded-t-2xl" style={{ paddingBottom: '75%' }}>
+                <div className="absolute inset-0 bg-gradient-to-br from-persian-blue/20 to-green-light/30 dark:from-gray-700/50 dark:to-gray-600/50">
+                  {category.image_url ? (
+                    <OptimizedImage
+                      src={category.image_url}
+                      alt={category.title}
+                      priority={false}
+                      aspectRatio="4/3"
+                      className="group-hover:scale-105 transition-transform duration-700 ease-out"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="w-24 h-24 rounded-full bg-white/30 dark:bg-gray-600/30 flex items-center justify-center backdrop-blur-sm">
+                        <Package className="w-12 h-12 text-persian-blue dark:text-white" />
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                   <h3 className="text-2xl lg:text-3xl font-bold text-white mb-3 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">

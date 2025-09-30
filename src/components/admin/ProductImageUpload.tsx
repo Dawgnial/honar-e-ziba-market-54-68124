@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Upload, X, Image as ImageIcon, CheckCircle, Plus, Link2, Camera } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { optimizeProductImage, formatFileSize } from "@/utils/imageOptimization";
 
 interface ProductImageUploadProps {
   currentImages?: string[];
@@ -31,57 +32,6 @@ const ProductImageUpload = ({ currentImages = [], onImagesChange }: ProductImage
       onImagesChange(images);
     }
   }, [images]); // حذف onImagesChange از dependencies برای جلوگیری از حلقه
-
-  const resizeImage = (file: File, maxWidth: number = 1200, maxHeight: number = 1200, quality: number = 0.85): Promise<Blob> => {
-    return new Promise((resolve) => {
-      // Always compress for better storage efficiency
-      const targetSize = 1 * 1024 * 1024; // 1MB target
-      let adjustedQuality = file.size > 5 * 1024 * 1024 ? 0.75 : quality;
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d')!;
-      const img = new Image();
-      
-      img.onload = () => {
-        const { width, height } = img;
-        
-        let newWidth = width;
-        let newHeight = height;
-        
-        // Smart resizing for better space efficiency
-        if (width > maxWidth || height > maxHeight) {
-          const ratio = Math.min(maxWidth / width, maxHeight / height);
-          newWidth = Math.floor(width * ratio);
-          newHeight = Math.floor(height * ratio);
-        } else if (width > 800 || height > 800) {
-          // Even smaller images get optimized for space
-          const ratio = Math.min(800 / width, 800 / height);
-          newWidth = Math.floor(width * ratio);
-          newHeight = Math.floor(height * ratio);
-        }
-        
-        canvas.width = newWidth;
-        canvas.height = newHeight;
-        
-        // استفاده از کیفیت بالاتر برای رندرینگ
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(img, 0, 0, newWidth, newHeight);
-        
-        // Try WebP first for best compression, fallback to JPEG
-        canvas.toBlob((blob) => {
-          if (blob) {
-            resolve(blob);
-          } else {
-            // Fallback to JPEG with optimized quality
-            canvas.toBlob(resolve, 'image/jpeg', adjustedQuality);
-          }
-        }, 'image/webp', adjustedQuality);
-      };
-      
-      img.src = URL.createObjectURL(file);
-    });
-  };
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
@@ -112,12 +62,17 @@ const ProductImageUpload = ({ currentImages = [], onImagesChange }: ProductImage
 
         setUploadProgress(((i + 0.2) / acceptedFiles.length) * 100);
         
-        const compressedBlob = await resizeImage(file);
+        // Optimize image to WebP format with compression
+        const originalSize = file.size;
+        const compressedBlob = await optimizeProductImage(file);
+        const compressedSize = compressedBlob.size;
+        
+        console.log(`Image optimized: ${formatFileSize(originalSize)} → ${formatFileSize(compressedSize)} (${Math.round((1 - compressedSize/originalSize) * 100)}% smaller)`);
         
         setUploadProgress(((i + 0.4) / acceptedFiles.length) * 100);
         
-        const fileExt = file.name.split('.').pop() || 'jpg';
-        const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+        // Use .webp extension for WebP images
+        const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.webp`;
         const filePath = `product-images/${fileName}`;
 
         setUploadProgress(((i + 0.6) / acceptedFiles.length) * 100);
@@ -125,8 +80,9 @@ const ProductImageUpload = ({ currentImages = [], onImagesChange }: ProductImage
         const { error: uploadError } = await supabase.storage
           .from('category-images')
           .upload(filePath, compressedBlob, {
-            cacheControl: '3600',
-            upsert: false
+            cacheControl: '31536000', // 1 year cache for images
+            upsert: false,
+            contentType: 'image/webp'
           });
 
         if (uploadError) {
@@ -296,11 +252,11 @@ const ProductImageUpload = ({ currentImages = [], onImagesChange }: ProductImage
                     <div className="flex flex-wrap justify-center gap-2 text-sm text-gray-500">
                       <span className="bg-gray-100 px-3 py-1 rounded-full">JPG</span>
                       <span className="bg-gray-100 px-3 py-1 rounded-full">PNG</span>
-                      <span className="bg-gray-100 px-3 py-1 rounded-full">WebP</span>
+                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">→ WebP</span>
                       <span className="bg-gray-100 px-3 py-1 rounded-full">حداکثر 10MB</span>
                     </div>
                     <div className="text-xs text-blue-600 bg-blue-50 p-3 rounded-lg">
-                      💡 تصویر اول به عنوان تصویر اصلی محصول استفاده می‌شود
+                      💡 تصاویر به صورت خودکار به فرمت WebP تبدیل و فشرده می‌شوند
                     </div>
                   </div>
                 )}

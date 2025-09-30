@@ -225,6 +225,40 @@
     @apply container mx-auto px-4 sm:px-6 lg:px-8;
   }
 
+  /* Perfect Image Fitting - Prevents distortion and empty spaces */
+  .image-container-square {
+    @apply relative w-full overflow-hidden bg-gray-100 dark:bg-gray-800;
+    aspect-ratio: 1 / 1;
+  }
+
+  .image-container-square img,
+  .aspect-square img {
+    @apply w-full h-full object-cover object-center;
+  }
+
+  /* Ensure all product and category images fit perfectly */
+  [class*="aspect-square"] {
+    position: relative;
+    overflow: hidden;
+  }
+
+  [class*="aspect-square"] img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* Product card image consistency */
+  .product-image-container {
+    @apply relative w-full overflow-hidden bg-gray-100 dark:bg-gray-800;
+    aspect-ratio: 1 / 1;
+  }
+
+  .product-image-container img {
+    @apply w-full h-full object-cover object-center;
+  }
+
   .text-shadow-sm {
     text-shadow: 1px 1px 2px rgba(50, 142, 110, 0.3);
   }

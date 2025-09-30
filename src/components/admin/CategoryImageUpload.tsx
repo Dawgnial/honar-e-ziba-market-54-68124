@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Upload, X, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { optimizeCategoryImage, formatFileSize } from "@/utils/imageOptimization";
 
 interface CategoryImageUploadProps {
   currentImageUrl?: string | null;
@@ -18,58 +19,6 @@ const CategoryImageUpload = ({ currentImageUrl, onImageChange }: CategoryImageUp
   const [uploading, setUploading] = useState(false);
   const [manualUrl, setManualUrl] = useState(currentImageUrl || "");
   const [uploadProgress, setUploadProgress] = useState(0);
-
-  const resizeImage = (file: File, maxWidth: number = 800, maxHeight: number = 800, quality: number = 0.85): Promise<Blob> => {
-    return new Promise((resolve) => {
-      // Always compress for better storage efficiency
-      const targetSize = 500 * 1024; // 500KB target for categories
-      let adjustedQuality = file.size > 3 * 1024 * 1024 ? 0.75 : quality;
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d')!;
-      const img = new Image();
-      
-      img.onload = () => {
-        const { width, height } = img;
-        
-        // Calculate new dimensions
-        let newWidth = width;
-        let newHeight = height;
-        
-        // Smart resizing for categories (smaller size for better storage)
-        if (width > maxWidth || height > maxHeight) {
-          const ratio = Math.min(maxWidth / width, maxHeight / height);
-          newWidth = Math.floor(width * ratio);
-          newHeight = Math.floor(height * ratio);
-        } else if (width > 600 || height > 600) {
-          // Categories don't need huge images
-          const ratio = Math.min(600 / width, 600 / height);
-          newWidth = Math.floor(width * ratio);
-          newHeight = Math.floor(height * ratio);
-        }
-        
-        canvas.width = newWidth;
-        canvas.height = newHeight;
-        
-        // استفاده از کیفیت بالاتر برای رندرینگ
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(img, 0, 0, newWidth, newHeight);
-        
-        // Try WebP first for best compression, fallback to JPEG
-        canvas.toBlob((blob) => {
-          if (blob) {
-            resolve(blob);
-          } else {
-            // Fallback to JPEG with optimized quality
-            canvas.toBlob(resolve, 'image/jpeg', adjustedQuality);
-          }
-        }, 'image/webp', adjustedQuality);
-      };
-      
-      img.src = URL.createObjectURL(file);
-    });
-  };
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -94,13 +43,17 @@ const CategoryImageUpload = ({ currentImageUrl, onImageChange }: CategoryImageUp
       // Show progress
       setUploadProgress(20);
       
-      // Compress image for faster upload
-      const compressedBlob = await resizeImage(file);
+      // Optimize image to WebP format with compression
+      const originalSize = file.size;
+      const compressedBlob = await optimizeCategoryImage(file);
+      const compressedSize = compressedBlob.size;
+      
+      console.log(`Category image optimized: ${formatFileSize(originalSize)} → ${formatFileSize(compressedSize)} (${Math.round((1 - compressedSize/originalSize) * 100)}% smaller)`);
       
       setUploadProgress(40);
       
-      const fileExt = file.name.split('.').pop() || 'jpg';
-      const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+      // Use .webp extension for WebP images
+      const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.webp`;
       const filePath = `category-images/${fileName}`;
 
       setUploadProgress(60);
@@ -109,8 +62,9 @@ const CategoryImageUpload = ({ currentImageUrl, onImageChange }: CategoryImageUp
       const { error: uploadError } = await supabase.storage
         .from('category-images')
         .upload(filePath, compressedBlob, {
-          cacheControl: '3600',
-          upsert: false
+          cacheControl: '31536000', // 1 year cache for images
+          upsert: false,
+          contentType: 'image/webp'
         });
 
       if (uploadError) throw uploadError;
@@ -228,10 +182,10 @@ const CategoryImageUpload = ({ currentImageUrl, onImageChange }: CategoryImageUp
                     تصویر را بکشید و اینجا رها کنید یا کلیک کنید
                   </p>
                   <p className="text-sm text-gray-400">
-                    فرمت‌های مجاز: JPG, PNG, GIF, WebP (حداکثر 10MB)
+                    فرمت‌های مجاز: JPG, PNG, GIF → تبدیل به WebP
                   </p>
-                  <p className="text-xs text-green-600">
-                    تصاویر بزرگ به صورت خودکار فشرده می‌شوند
+                  <p className="text-xs text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                    ✓ فشرده‌سازی و بهینه‌سازی خودکار (حداکثر 10MB)
                   </p>
                 </div>
               )}

@@ -8,7 +8,7 @@ import { ShoppingCart, Heart, Star, StarHalf } from "lucide-react";
 import { Product } from "@/types";
 import { formatPriceToFarsi, toFarsiNumber } from "../utils/numberUtils";
 import { useCategoryName } from "../utils/categoryUtils";
-import LazyImage from "./LazyImage";
+import OptimizedImage from "./OptimizedImage";
 import { useProductComments } from "../hooks/useProductComments";
 
 interface ModernProductCardProps {
@@ -21,7 +21,6 @@ interface ModernProductCardProps {
 
 const ModernProductCard = ({ product, categories, onAddToCart, onToggleFavorite, isFavorite }: ModernProductCardProps) => {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
   const { getAverageRating, comments } = useProductComments(product.id);
 
   // Check if product is available based on manual availability status only
@@ -67,17 +66,20 @@ const ModernProductCard = ({ product, categories, onAddToCart, onToggleFavorite,
 
   return (
     <div className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 flex flex-col h-full">
-      {/* Image Container */}
-      <div className="relative aspect-square overflow-hidden flex-shrink-0">
-        <Link to={`/product/${product.id}`}>
-          <LazyImage
-            src={product.imageUrl}
-            alt={product.title}
-            className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
-            placeholderSrc="/placeholder.svg"
-            onLoad={() => setImageLoaded(true)}
-          />
-        </Link>
+      {/* Image Container - Fixed aspect ratio to prevent layout shifts */}
+      <div className="relative w-full flex-shrink-0" style={{ paddingBottom: '100%' }}>
+        <div className="absolute inset-0">
+          <Link to={`/product/${product.id}`}>
+            <OptimizedImage
+              src={product.imageUrl}
+              alt={product.title}
+              className="group-hover:scale-110"
+              priority={false}
+              aspectRatio="square"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          </Link>
+        </div>
 
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">

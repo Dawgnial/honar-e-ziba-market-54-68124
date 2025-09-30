@@ -8,6 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import OptimizedImage from "./OptimizedImage";
 
 interface ProductImageGalleryProps {
   images: string[];
@@ -61,18 +62,19 @@ const ProductImageGallery = ({ images, productTitle }: ProductImageGalleryProps)
 
   return (
     <div className="space-y-4">
-      {/* Main Image */}
-      <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 group">
-        <img
+      {/* Main Image - Priority loading for first product image */}
+      <div className="relative group">
+        <OptimizedImage
           src={images[currentImageIndex]}
           alt={`${productTitle} - تصویر ${currentImageIndex + 1}`}
-          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer"
+          priority={currentImageIndex === 0}
+          aspectRatio="square"
+          className="hover:scale-105 transition-transform duration-300 cursor-pointer"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+        />
+        <div 
+          className="absolute inset-0 cursor-pointer"
           onClick={() => setIsViewerOpen(true)}
-          loading="lazy"
-          style={{
-            imageRendering: 'auto',
-            objectFit: 'cover'
-          }}
         />
         
         {/* View Button Overlay */}
@@ -126,16 +128,15 @@ const ProductImageGallery = ({ images, productTitle }: ProductImageGalleryProps)
               }`}
               onClick={() => setCurrentImageIndex(index)}
             >
-               <img
-                 src={image}
-                 alt={`${productTitle} - بندانگشتی ${index + 1}`}
-                 className="w-full h-full object-cover"
-                 loading="lazy"
-                 style={{
-                   imageRendering: 'auto',
-                   objectFit: 'cover'
-                 }}
-               />
+              <div className="w-full h-full">
+                <OptimizedImage
+                  src={image}
+                  alt={`${productTitle} - بندانگشتی ${index + 1}`}
+                  priority={false}
+                  aspectRatio="square"
+                  sizes="64px"
+                />
+              </div>
             </Card>
           ))}
         </div>
