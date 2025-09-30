@@ -1,0 +1,490 @@
+@import '@fontsource/vazirmatn/400.css';
+@import '@fontsource/vazirmatn/500.css';
+@import '@fontsource/vazirmatn/700.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 130 37% 94%;
+    --foreground: 160 40% 20%;
+
+    --card: 0 0% 98%;
+    --card-foreground: 160 40% 20%;
+
+    --popover: 0 0% 98%;
+    --popover-foreground: 160 40% 20%;
+
+    --primary: 160 47% 38%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 101 35% 55%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 80 57% 84%;
+    --muted-foreground: 0 0% 66%;
+
+    --accent: 101 35% 55%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 160 20% 85%;
+    --input: 160 20% 85%;
+    --ring: 160 47% 38%;
+
+    /* Persian colors - restored to green theme */
+    --persian-blue: 160 47% 38%; /* Changed to green to match primary */
+    --persian-gold: 45 93% 47%;
+    --persian-turquoise: 186 100% 42%;
+    --terracotta: 0 84% 60%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar variables */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 160 40% 20%;
+    --sidebar-primary: 160 47% 38%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 160 20% 85%;
+    --sidebar-accent-foreground: 160 40% 20%;
+    --sidebar-border: 160 20% 85%;
+    --sidebar-ring: 160 47% 38%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 160 47% 38%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 160 47% 38%;
+
+    /* Dark mode sidebar variables */
+    --sidebar-background: 222.2 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 160 47% 38%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 160 47% 38%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    /* جلوگیری از حاشیه اضافی */
+    box-sizing: border-box;
+  }
+  
+  #root {
+    width: 100%;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 16px;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* تنظیمات responsive برای فونت‌ها */
+  @media (max-width: 640px) {
+    html {
+      font-size: 18px; /* اندازه بزرگتر در موبایل */
+    }
+    
+    /* Touch targets حداقل 44px */
+    button, 
+    a, 
+    input[type="button"], 
+    input[type="submit"], 
+    [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* بهبود فاصله‌ها در موبایل */
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+
+  body {
+    @apply bg-background text-foreground font-vazir;
+    direction: rtl;
+    /* Improve mobile text rendering */
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* جلوگیری از حاشیه اضافی در موبایل */
+    width: 100%;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-vazir font-bold;
+  }
+  
+  /* بهبود کیفیت متن */
+  h1, h2, h3, h4, h5, h6, p, span, a, button, input {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* اسکرول‌بار سفارشی */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  @media (min-width: 768px) {
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full hover:bg-muted-foreground/30 transition-colors duration-200;
+  }
+  
+  ::selection {
+    @apply bg-primary/20 text-primary;
+  }
+
+  /* Improve mobile touch targets */
+  button, 
+  [role="button"], 
+  input[type="submit"], 
+  input[type="button"] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Performance optimizations for animations */
+  .hover-scale,
+  .hover-glow, 
+  .hover-lift {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md transition-all font-estedad;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary hover:bg-secondary/90 text-secondary-foreground px-4 py-2 rounded-md transition-all font-estedad;
+  }
+
+  .container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .text-shadow-sm {
+    text-shadow: 1px 1px 2px rgba(50, 142, 110, 0.3);
+  }
+  
+  .text-shadow-md {
+    text-shadow: 2px 2px 4px rgba(50, 142, 110, 0.4);
+  }
+  
+  .heading-decorated {
+    @apply font-vazir relative inline-block;
+    &::after {
+      content: '';
+      @apply absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-1 bg-primary rounded-full;
+    }
+  }
+
+  /* میکرواینترکشن‌ها - optimized */
+  .hover-scale {
+    @apply transition-transform duration-200 ease-out;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hover-scale:hover {
+      @apply scale-105;
+    }
+  }
+
+  .hover-glow {
+    @apply transition-shadow duration-200 ease-out;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hover-glow:hover {
+      @apply shadow-lg shadow-primary/20;
+    }
+  }
+
+  .hover-lift {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hover-lift:hover {
+      @apply -translate-y-1 shadow-lg;
+    }
+  }
+  
+  /* جلوه‌های بصری پیشرفته */
+  .glass-effect {
+    @apply bg-background/70 backdrop-blur-md border border-border;
+  }
+  
+  .frost-effect {
+    @apply backdrop-blur-lg bg-background/80 border border-border;
+  }
+  
+  .shadow-glow {
+    box-shadow: 0 0 15px hsl(var(--primary) / 0.3);
+  }
+  
+  /* دکمه‌های زیبا */
+  .fancy-button {
+    @apply relative overflow-hidden bg-primary text-primary-foreground rounded-lg px-6 py-3 font-medium transition-all duration-200 active:scale-95 font-estedad;
+    
+    &::before {
+      content: '';
+      @apply absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 transition-opacity duration-200;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .fancy-button:hover {
+      @apply shadow-lg shadow-primary/30;
+    }
+    
+    .fancy-button:hover::before {
+      @apply opacity-100;
+    }
+  }
+  
+  /* کارت‌های زیبا */
+  .fancy-card {
+    @apply bg-card text-card-foreground rounded-xl shadow-lg border border-border overflow-hidden transition-all duration-200;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .fancy-card:hover {
+      @apply shadow-xl border-primary/20;
+    }
+  }
+  
+  /* عناوین زیبا */
+  .fancy-title {
+    @apply relative inline-block font-vazir font-bold;
+    &::after {
+      content: '';
+      @apply absolute -bottom-2 left-1/4 right-1/4 h-1 bg-primary/40 rounded-full;
+    }
+  }
+
+  /* Mobile-specific improvements */
+  @media (max-width: 768px) {
+    .container-custom {
+      @apply px-3;
+    }
+    
+    .text-base {
+      font-size: 0.9rem;
+    }
+    
+    .text-lg {
+      font-size: 1rem;
+    }
+  }
+
+  /* Performance optimized loading */
+  .loading-container {
+    @apply fixed inset-0 flex items-center justify-center bg-background/90 backdrop-blur-sm z-50;
+    will-change: opacity;
+  }
+
+  .loading-spinner {
+    @apply w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin;
+    will-change: transform;
+  }
+}
+
+/* Mobile menu animations - optimized */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+  will-change: transform, opacity;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .hover-scale:hover,
+  .hover-lift:hover {
+    transform: none !important;
+  }
+}
+
+/* Dialog positioning fix */
+[data-radix-dialog-content] {
+  position: fixed !important;
+  top: 1rem !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 9999 !important;
+  max-height: 92vh !important;
+  max-width: 95vw !important;
+}
+
+[data-radix-dialog-overlay] {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9998 !important;
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Force sticky navbar */
+nav.sticky {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+}
+
+/* RTL placeholder text for search */
+input[dir="rtl"]::placeholder {
+  text-align: right !important;
+  direction: rtl !important;
+}
+
+/* Comprehensive overflow fix */
+html, body, #root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Prevent container overflow */
+.container, 
+[class*="container"],
+.container-custom {
+  max-width: 100%;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Fix search input RTL */
+.search-input-rtl {
+  text-align: right !important;
+  direction: rtl !important;
+}
+
+.search-input-rtl::placeholder {
+  text-align: right !important;
+  direction: rtl !important;
+}
+
+/* Ensure dialog is always visible at top */
+.dialog-content-custom {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 95vw;
+  max-width: 1200px;
+  height: 92vh;
+  max-height: 92vh;
+  overflow: hidden;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 768px) {
+  .dialog-content-custom {
+    width: 98vw;
+    height: 95vh;
+    max-height: 95vh;
+    top: 0.5rem;
+  }
+  
+  [data-radix-dialog-content] {
+    top: 0.5rem !important;
+    max-height: 95vh !important;
+  }
+}
+
+/* Sheet overlay z-index fix for navbar overlap */
+[data-radix-dialog-overlay] {
+  z-index: 10000 !important;
+}
+
+[data-radix-sheet-overlay] {
+  z-index: 10000 !important;
+}
+
+[data-radix-sheet-content] {
+  z-index: 10001 !important;
+}

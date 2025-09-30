@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Specific rules for search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+# Block admin and sensitive paths
+Disallow: /admin*
+Disallow: /api*
+Disallow: /checkout/payment
+
+# Allow important paths
+Allow: /products
+Allow: /about
+Allow: /faq
+
+# Sitemap location
+Sitemap: https://iroliashop.lovable.app/sitemap.xml
