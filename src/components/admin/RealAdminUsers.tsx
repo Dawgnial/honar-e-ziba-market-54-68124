@@ -46,7 +46,6 @@ const RealAdminUsers = () => {
       setUsers(data || []);
     } catch (error) {
       console.error('Error fetching users:', error);
-      toast.error('خطا در دریافت کاربران');
     } finally {
       setLoading(false);
     }

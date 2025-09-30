@@ -54,7 +54,6 @@ const RealAdminOrders = () => {
       setOrders(data || []);
     } catch (error) {
       console.error('Error fetching orders:', error);
-      toast.error('خطا در دریافت سفارشات');
     } finally {
       setLoading(false);
     }

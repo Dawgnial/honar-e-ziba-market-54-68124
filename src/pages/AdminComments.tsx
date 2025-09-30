@@ -45,7 +45,6 @@ export default function AdminComments() {
       setComments(data || []);
     } catch (error: any) {
       console.error('Error fetching comments:', error);
-      toast.error('خطا در دریافت نظرات');
     } finally {
       setLoading(false);
     }

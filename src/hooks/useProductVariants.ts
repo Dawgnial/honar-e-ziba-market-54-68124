@@ -53,7 +53,6 @@ export const useProductVariants = () => {
       setAttributes(data || []);
     } catch (error: any) {
       console.error('Error fetching attributes:', error);
-      toast.error('خطا در دریافت ویژگی‌ها');
     }
   };
 
@@ -68,7 +67,6 @@ export const useProductVariants = () => {
       setAttributeValues(data || []);
     } catch (error: any) {
       console.error('Error fetching attribute values:', error);
-      toast.error('خطا در دریافت مقادیر ویژگی‌ها');
     }
   };
 
@@ -115,7 +113,6 @@ export const useProductVariants = () => {
       setVariants(transformedVariants);
     } catch (error: any) {
       console.error('Error fetching product variants:', error);
-      toast.error('خطا در دریافت ویژگی‌های محصول');
     } finally {
       setLoading(false);
     }

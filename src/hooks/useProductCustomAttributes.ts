@@ -46,7 +46,6 @@ export const useProductCustomAttributes = () => {
       setAttributes(transformedData);
     } catch (error: any) {
       console.error('Error fetching product custom attributes:', error);
-      toast.error('خطا در دریافت ویژگی‌های محصول');
     } finally {
       setLoading(false);
     }

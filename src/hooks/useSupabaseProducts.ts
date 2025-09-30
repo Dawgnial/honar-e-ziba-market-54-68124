@@ -39,7 +39,6 @@ export const useSupabaseProducts = () => {
     } catch (error: any) {
       console.error('Error fetching products:', error);
       setError(error.message || 'خطا در دریافت محصولات');
-      toast.error('خطا در دریافت محصولات');
     } finally {
       setLoading(false);
     }
@@ -59,7 +58,6 @@ export const useSupabaseProducts = () => {
       return data || [];
     } catch (error: any) {
       console.error('Error fetching featured products:', error);
-      toast.error('خطا در دریافت محصولات ویژه');
       return [];
     }
   };
@@ -84,7 +82,6 @@ export const useSupabaseProducts = () => {
         return data;
       } catch (error: any) {
         console.error('Error fetching product:', error);
-        toast.error('خطا در دریافت محصول');
         throw error;
       }
     },

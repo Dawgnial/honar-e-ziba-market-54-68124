@@ -36,7 +36,6 @@ export const useOrderHistory = () => {
       setOrders(data || []);
     } catch (error) {
       console.error('Error fetching order history:', error);
-      toast.error('خطا در دریافت تاریخچه سفارشات');
     } finally {
       setLoading(false);
     }

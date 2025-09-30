@@ -35,7 +35,6 @@ export const useSupabaseCategories = () => {
     } catch (error: any) {
       console.error('Error fetching categories:', error);
       setError(error.message || 'خطا در دریافت دسته‌بندی‌ها');
-      toast.error('خطا در دریافت دسته‌بندی‌ها');
     } finally {
       setLoading(false);
     }

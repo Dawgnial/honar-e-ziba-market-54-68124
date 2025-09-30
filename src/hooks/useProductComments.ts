@@ -34,7 +34,6 @@ export const useProductComments = (productId: string) => {
       setComments((data || []) as ProductComment[]);
     } catch (error: any) {
       console.error('Error fetching comments:', error);
-      toast.error('خطا در دریافت نظرات');
     } finally {
       setLoading(false);
     }

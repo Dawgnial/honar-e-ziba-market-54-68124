@@ -44,7 +44,6 @@ export const useSupabaseAdminProducts = () => {
     } catch (error: any) {
       console.error('Error fetching admin products:', error);
       setError(error.message || 'خطا در دریافت محصولات');
-      toast.error('خطا در دریافت محصولات');
     } finally {
       setLoading(false);
     }
