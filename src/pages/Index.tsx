@@ -7,7 +7,7 @@ import CategoryGrid from "../components/CategoryGrid";
 import OptimizedFeaturedProducts from "../components/OptimizedFeaturedProducts";
 
 import BrowsingHistory from "../components/BrowsingHistory";
-import TrainingCourse from "../components/TrainingCourse";
+
 import FrequentlyAskedQuestions from "../components/FrequentlyAskedQuestions";
 
 import Footer from "../components/Footer";
@@ -54,11 +54,6 @@ const Index = () => {
             <ErrorBoundary>
               <BrowsingHistory />
             </ErrorBoundary>
-            <div id="training">
-              <ErrorBoundary>
-                <TrainingCourse />
-              </ErrorBoundary>
-            </div>
             <div id="faq">
               <ErrorBoundary>
                 <FrequentlyAskedQuestions />

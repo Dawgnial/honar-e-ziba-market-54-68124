@@ -34,30 +34,6 @@ const Footer = () => {
     }, 100);
   };
 
-  const scrollToContact = () => {
-    if (location.pathname !== "/about") {
-      navigate("/about#contact");
-      setTimeout(() => {
-        const contactSection = document.getElementById("contact");
-        contactSection?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-      return;
-    }
-    
-    setTimeout(() => {
-      const contactElement = document.getElementById('contact');
-      if (contactElement) {
-        const navbarHeight = document.querySelector('nav')?.offsetHeight || 0;
-        const elementPosition = contactElement.getBoundingClientRect().top + window.scrollY;
-        const offsetPosition = elementPosition - navbarHeight - 80;
-        
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth'
-        });
-      }
-    }, 100);
-  };
 
   return (
     <footer className="bg-persian-blue dark:bg-gray-900 text-white">
@@ -123,14 +99,6 @@ const Footer = () => {
               </li>
               <li>
                 <button 
-                  onClick={() => scrollToSection("training")}
-                  className="text-white/80 hover:text-white transition-colors font-estedad text-right"
-                >
-                  دوره آموزشی
-                </button>
-              </li>
-              <li>
-                <button 
                   onClick={() => scrollToSection("faq")}
                   className="text-white/80 hover:text-white transition-colors font-vazir text-right"
                 >
@@ -141,12 +109,7 @@ const Footer = () => {
                 <Link to="/about" className="text-white/80 hover:text-white transition-colors font-estedad">درباره ما</Link>
               </li>
               <li>
-                <button 
-                  onClick={scrollToContact}
-                  className="text-white/80 hover:text-white transition-colors font-vazir text-right"
-                >
-                  تماس با ما
-                </button>
+                <Link to="/contact" className="text-white/80 hover:text-white transition-colors font-vazir">تماس با ما</Link>
               </li>
             </ul>
           </div>

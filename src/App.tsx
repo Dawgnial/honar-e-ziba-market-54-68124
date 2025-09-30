@@ -8,12 +8,13 @@ import { HelmetProvider } from 'react-helmet-async';
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AboutUs from "./pages/AboutUs";
+import ContactUs from "./pages/ContactUs";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Auth from "./pages/Auth";
 import Favorites from "./pages/Favorites";
-import Courses from "./pages/Courses";
+
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Admin from "./pages/Admin";
@@ -60,7 +61,7 @@ const App = () => {
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/favorites" element={<Favorites />} />
-                    <Route path="/courses" element={<Courses />} />
+                    <Route path="/contact" element={<ContactUs />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/faq" element={<FAQ />} />

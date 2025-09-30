@@ -64,19 +64,6 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     }, 100);
   };
 
-  const scrollToContact = () => {
-    onClose();
-    if (location.pathname !== "/about") {
-      navigate("/about#contact");
-      setTimeout(() => {
-        const contactSection = document.getElementById("contact");
-        contactSection?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    } else {
-      const contactSection = document.getElementById("contact");
-      contactSection?.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -163,16 +150,6 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 <span className="font-medium text-lg">دسته‌بندی‌ها</span>
               </button>
 
-              <button
-                onClick={() => scrollToSection("training")}
-                className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group text-right"
-              >
-                <div className="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center group-hover:bg-orange-500/20 transition-colors">
-                  <Info className="h-6 w-6 text-orange-500" />
-                </div>
-                <span className="font-medium text-lg">دوره آموزشی</span>
-              </button>
-              
               <Link
                 to="/about"
                 className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
@@ -184,15 +161,16 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 <span className="font-medium text-lg">درباره ما</span>
               </Link>
               
-              <button
-                onClick={scrollToContact}
-                className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group text-right"
+              <Link
+                to="/contact"
+                className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
+                onClick={onClose}
               >
                 <div className="w-12 h-12 bg-pink-500/10 rounded-xl flex items-center justify-center group-hover:bg-pink-500/20 transition-colors">
                   <Phone className="h-6 w-6 text-pink-500" />
                 </div>
                 <span className="font-medium text-lg">تماس با ما</span>
-              </button>
+              </Link>
             </div>
             
             {/* Divider */}

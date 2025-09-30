@@ -47,18 +47,6 @@ const Navbar = () => {
     }, 100);
   };
 
-  const scrollToContact = () => {
-    if (location.pathname !== "/about") {
-      navigate("/about#contact");
-      setTimeout(() => {
-        const contactSection = document.getElementById("contact");
-        contactSection?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    } else {
-      const contactSection = document.getElementById("contact");
-      contactSection?.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   const navItems = [
     { 
@@ -86,19 +74,20 @@ const Navbar = () => {
       }
     },
     { 
-      name: "دوره آموزشی", 
-      href: "/#training", 
+      name: "درباره ما", 
+      href: "/about", 
       onClick: (e: React.MouseEvent) => {
         e.preventDefault();
-        scrollToSection("training");
-      }
+        navigate("/about");
+      },
+      highlighted: true
     },
     { 
       name: "تماس با ما", 
-      href: "/about#contact", 
+      href: "/contact", 
       onClick: (e: React.MouseEvent) => {
         e.preventDefault();
-        scrollToContact();
+        navigate("/contact");
       }
     }
   ];
@@ -136,7 +125,11 @@ const Navbar = () => {
                 <button
                   key={item.name}
                   onClick={item.onClick}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-green-primary hover:bg-white dark:hover:bg-gray-700 rounded-full transition-all duration-200 whitespace-nowrap"
+                  className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 whitespace-nowrap ${
+                    item.highlighted 
+                      ? 'bg-green-primary text-white hover:bg-green-secondary' 
+                      : 'text-gray-700 dark:text-gray-300 hover:text-green-primary hover:bg-white dark:hover:bg-gray-700'
+                  }`}
                 >
                   {item.name}
                 </button>
