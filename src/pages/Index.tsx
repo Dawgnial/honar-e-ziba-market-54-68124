@@ -34,13 +34,15 @@ const Index = () => {
       />
       <OrganizationStructuredData />
       <WebSiteStructuredData />
-      <div className="min-h-screen bg-background dark:bg-background transition-colors duration-300 font-estedad w-full overflow-x-hidden pt-14 sm:pt-16 lg:pt-20">
+      <div className="min-h-screen bg-background dark:bg-background transition-colors duration-300 font-estedad w-full overflow-x-hidden">
         <Navbar />
         {loading ? (
           <LoadingScreen />
         ) : (
           <ErrorBoundary>
-            <Hero />
+            <div className="pt-14 sm:pt-16 lg:pt-20">
+              <Hero />
+            </div>
             <div id="categories">
               <ErrorBoundary>
                 <CategoryGrid />

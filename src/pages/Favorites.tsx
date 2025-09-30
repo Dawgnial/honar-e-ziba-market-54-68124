@@ -25,7 +25,7 @@ const Favorites = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <main className="container-custom py-12 pt-14 sm:pt-16 lg:pt-20">
+      <main className="container-custom py-12 pt-[calc(3.5rem+3rem)] sm:pt-[calc(4rem+3rem)] lg:pt-[calc(5rem+3rem)]">
         <div className="mb-8 text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-persian-blue mb-4">علاقه‌مندی‌های من</h1>
           <p className="text-lg text-gray-700 max-w-3xl mx-auto">

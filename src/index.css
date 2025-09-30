@@ -424,6 +424,23 @@ html, body, #root {
   padding: 0;
 }
 
+/* Global padding for fixed navbar - ensures no overlap */
+main:not([class*="pt-"]) {
+  padding-top: 3.5rem; /* 56px - mobile navbar height */
+}
+
+@media (min-width: 640px) {
+  main:not([class*="pt-"]) {
+    padding-top: 4rem; /* 64px - tablet navbar height */
+  }
+}
+
+@media (min-width: 1024px) {
+  main:not([class*="pt-"]) {
+    padding-top: 5rem; /* 80px - desktop navbar height */
+  }
+}
+
 /* Prevent container overflow */
 .container, 
 [class*="container"],

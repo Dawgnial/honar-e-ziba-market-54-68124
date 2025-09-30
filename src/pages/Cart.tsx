@@ -124,7 +124,7 @@ const Cart = () => {
   const total = subtotal;
   
   return (
-    <div className="container-custom py-8 min-h-[70vh]">
+    <div className="container-custom py-8 pt-[calc(3.5rem+2rem)] sm:pt-[calc(4rem+2rem)] lg:pt-[calc(5rem+2rem)] min-h-[70vh]">
       <div className="flex items-center gap-2 mb-6">
         <Button 
           asChild 

@@ -90,7 +90,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative py-6 md:py-8 lg:py-12 overflow-hidden h-screen flex items-center w-full">
+    <section className="relative py-6 md:py-8 lg:py-12 overflow-hidden min-h-[calc(100vh-3.5rem)] sm:min-h-[calc(100vh-4rem)] lg:min-h-[calc(100vh-5rem)] flex items-center w-full">
       {/* Background slideshow */}
       <div className="absolute inset-0 z-0">
         {backgroundImages.map((image, index) => (
