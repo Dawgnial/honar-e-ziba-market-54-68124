@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useSupabaseCategories } from "../../hooks/useSupabaseCategories";
 import { useToast } from "@/hooks/use-toast";
 import CategoryImageUpload from "./CategoryImageUpload";
@@ -18,60 +23,33 @@ interface CategoryFormProps {
   triggerElement?: HTMLElement | null;
 }
 
-const CategoryForm = ({ category, onSuccess, onCancel, isOpen = true, triggerElement }: CategoryFormProps) => {
+const CategoryForm = ({ category, onSuccess, onCancel, isOpen = false }: CategoryFormProps) => {
   const { toast } = useToast();
   const { createCategory, updateCategory } = useSupabaseCategories();
   const { bulkUpdatePrices } = useSupabaseProducts();
   const [loading, setLoading] = useState(false);
-  const [position, setPosition] = useState({ top: 0, left: 0 });
   const [formData, setFormData] = useState({
-    title: category?.title || "",
-    imageUrl: category?.image_url || null,
+    title: "",
+    imageUrl: null as string | null,
   });
   const [priceIncrease, setPriceIncrease] = useState("");
   const [isUpdatingPrices, setIsUpdatingPrices] = useState(false);
 
-  React.useEffect(() => {
-    if (isOpen && triggerElement) {
-      const rect = triggerElement.getBoundingClientRect();
-      const scrollY = window.scrollY;
-      const scrollX = window.scrollX;
-      
-      const popoverHeight = 500; // تخمین ارتفاع پنجره
-      const popoverWidth = 600; // تخمین عرض پنجره
-      const viewportHeight = window.innerHeight;
-      const viewportWidth = window.innerWidth;
-      
-      // محاسبه موقعیت عمودی
-      let top = rect.bottom + scrollY + 30; // فاصله 30 پیکسل از دکمه
-      
-      // بررسی فضای کافی در پایین
-      if (rect.bottom + popoverHeight + 50 > viewportHeight) {
-        // اگر فضای کافی نیست، پنجره را بالای دکمه قرار می‌دهیم
-        top = rect.top + scrollY - popoverHeight - 30;
-        
-        // اطمینان از اینکه خیلی بالا نرود
-        if (top < scrollY + 20) {
-          top = scrollY + 20;
-        }
-      }
-      
-      // محاسبه موقعیت افقی
-      let left = rect.left + scrollX;
-      
-      // بررسی فضای کافی در راست
-      if (rect.left + popoverWidth > viewportWidth) {
-        left = viewportWidth - popoverWidth - 20 + scrollX;
-      }
-      
-      // اطمینان از اینکه از سمت چپ خارج نشود
-      if (left < scrollX + 20) {
-        left = scrollX + 20;
-      }
-      
-      setPosition({ top, left });
+  // Reset form when dialog opens/closes or category changes
+  useEffect(() => {
+    if (isOpen && category) {
+      setFormData({
+        title: category.title || "",
+        imageUrl: category.image_url || null,
+      });
+    } else if (isOpen && !category) {
+      setFormData({
+        title: "",
+        imageUrl: null,
+      });
     }
-  }, [isOpen, triggerElement]);
+    setPriceIncrease("");
+  }, [isOpen, category]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -146,48 +124,21 @@ const CategoryForm = ({ category, onSuccess, onCancel, isOpen = true, triggerEle
     }
   };
 
-  const handleClickOutside = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onCancel();
-    }
-  };
-
-  if (!isOpen) return null;
-
   return (
-    <>
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/50 z-40"
-        onClick={handleClickOutside}
-      />
-      
-      {/* Popover */}
-      <div
-        className="fixed z-50 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-0 max-w-2xl w-[90vw] max-h-[80vh] overflow-hidden"
-        style={{
-          top: `${position.top}px`,
-          left: `${position.left}px`,
-        }}
-      >
+    <Dialog open={isOpen} onOpenChange={onCancel}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden p-0">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white rounded-t-2xl relative">
-          <button
-            onClick={onCancel}
-            className="absolute top-4 right-4 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
-          >
-            <X className="h-4 w-4" />
-          </button>
-          <h2 className="text-2xl font-bold text-center flex items-center justify-center gap-3">
+        <DialogHeader className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white rounded-t-2xl">
+          <DialogTitle className="text-2xl font-bold text-center flex items-center justify-center gap-3 text-white">
             <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
               {category ? <Edit className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
             </div>
             {category ? "ویرایش دسته‌بندی" : "افزودن دسته‌بندی جدید"}
-          </h2>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
         
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 max-h-[calc(80vh-120px)]">
+        <div className="overflow-y-auto p-6 max-h-[calc(90vh-120px)]">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="title">عنوان دسته‌بندی</Label>
@@ -197,6 +148,8 @@ const CategoryForm = ({ category, onSuccess, onCancel, isOpen = true, triggerEle
                 onChange={(e) => handleChange("title", e.target.value)}
                 required
                 placeholder="عنوان دسته‌بندی را وارد کنید"
+                className="text-right"
+                dir="rtl"
               />
             </div>
 
@@ -222,7 +175,8 @@ const CategoryForm = ({ category, onSuccess, onCancel, isOpen = true, triggerEle
                     onChange={(e) => setPriceIncrease(e.target.value)}
                     placeholder="مقدار افزایش قیمت (تومان)"
                     min="0"
-                    className="bg-white dark:bg-gray-800"
+                    className="bg-white dark:bg-gray-800 text-right"
+                    dir="rtl"
                   />
                   <Button
                     type="button"
@@ -253,17 +207,17 @@ const CategoryForm = ({ category, onSuccess, onCancel, isOpen = true, triggerEle
             )}
 
             <div className="flex gap-2 pt-4">
-              <Button type="submit" disabled={loading} className="bg-persian-blue hover:bg-persian-blue/90">
+              <Button type="submit" disabled={loading} className="bg-persian-blue hover:bg-persian-blue/90 flex-1">
                 {loading ? "در حال انجام..." : (category ? "به‌روزرسانی" : "افزودن")}
               </Button>
-              <Button type="button" variant="outline" onClick={onCancel}>
+              <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
                 انصراف
               </Button>
             </div>
           </form>
         </div>
-      </div>
-    </>
+      </DialogContent>
+    </Dialog>
   );
 };
 

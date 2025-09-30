@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Edit, Trash2, Image, Package, Search } from "lucide-react";
@@ -33,10 +33,8 @@ const AdminCategories = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
-  const [triggerElement, setTriggerElement] = useState<HTMLElement | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const addButtonRef = useRef<HTMLButtonElement>(null);
 
   const ITEMS_PER_PAGE = 20;
   
@@ -70,22 +68,19 @@ const AdminCategories = () => {
     return String(num).replace(/\d/g, (digit) => farsiDigits[parseInt(digit)]);
   };
 
-  const handleEdit = (category: any, event: React.MouseEvent) => {
+  const handleEdit = (category: any) => {
     setEditingCategory(category);
-    setTriggerElement(event.currentTarget as HTMLElement);
     setIsFormOpen(true);
   };
 
-  const handleAdd = (event: React.MouseEvent) => {
+  const handleAdd = () => {
     setEditingCategory(null);
-    setTriggerElement(event.currentTarget as HTMLElement);
     setIsFormOpen(true);
   };
 
   const handleFormClose = () => {
     setIsFormOpen(false);
     setEditingCategory(null);
-    setTriggerElement(null);
     refetch();
   };
 
@@ -126,7 +121,6 @@ const AdminCategories = () => {
           </div>
         </div>
         <Button 
-          ref={addButtonRef}
           onClick={handleAdd} 
           className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
         >
@@ -210,7 +204,7 @@ const AdminCategories = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={(e) => handleEdit(category, e)}
+                            onClick={() => handleEdit(category)}
                             className="hover:bg-blue-50 hover:text-blue-600"
                           >
                             <Edit className="h-4 w-4" />
@@ -268,13 +262,12 @@ const AdminCategories = () => {
         </CardContent>
       </Card>
 
-      {/* Category Form Popover */}
+      {/* Category Form Dialog */}
       <CategoryForm
         category={editingCategory}
         onSuccess={handleFormClose}
         onCancel={handleFormClose}
         isOpen={isFormOpen}
-        triggerElement={triggerElement}
       />
     </div>
   );
