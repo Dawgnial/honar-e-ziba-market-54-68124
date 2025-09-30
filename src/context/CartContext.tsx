@@ -153,9 +153,8 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   // Get cart total
   const getCartTotal = () => {
     return cart.reduce((total, item) => {
-      // Calculate price including attribute modifiers
-      const attributeModifiers = item.selectedAttributes?.reduce((sum, attr) => sum + attr.price_modifier, 0) || 0;
-      const itemPrice = item.price + attributeModifiers;
+      // Use the price from the item (which is already calculated correctly in ProductDetail)
+      const itemPrice = item.price;
       
       const discountedPrice = item.discount_percentage 
         ? itemPrice * (1 - item.discount_percentage / 100)

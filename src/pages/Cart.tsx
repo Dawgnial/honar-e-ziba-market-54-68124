@@ -184,11 +184,11 @@ const Cart = () => {
                                 {item.description}
                               </p>
                               {item.selectedAttributes && item.selectedAttributes.length > 0 && (
-                                <div className="mt-1">
+                                <div className="mt-1 text-xs text-muted-foreground">
                                   {item.selectedAttributes.map((attr, index) => (
-                                    <span key={index} className="inline-block text-xs bg-primary/10 text-primary px-2 py-1 rounded mr-1 mb-1">
+                                    <span key={index} className="inline-block mr-1">
                                       {attr.attribute_display_name}: {attr.display_value}
-                                      {attr.price_modifier > 0 && ` (+${toFarsiNumber(attr.price_modifier.toLocaleString())} تومان)`}
+                                      {index < item.selectedAttributes.length - 1 && ', '}
                                     </span>
                                   ))}
                                 </div>
@@ -198,8 +198,8 @@ const Cart = () => {
                         </TableCell>
                         <TableCell className="text-center">
                           {(() => {
-                            const attributeModifiers = item.selectedAttributes?.reduce((sum, attr) => sum + attr.price_modifier, 0) || 0;
-                            const finalPrice = item.price + attributeModifiers;
+                            // Price is already correctly calculated in ProductDetail
+                            const finalPrice = item.price;
                             const discountedPrice = item.discount_percentage 
                               ? finalPrice * (1 - item.discount_percentage / 100)
                               : finalPrice;
@@ -235,8 +235,8 @@ const Cart = () => {
                         </TableCell>
                         <TableCell className="text-center font-medium">
                           {(() => {
-                            const attributeModifiers = item.selectedAttributes?.reduce((sum, attr) => sum + attr.price_modifier, 0) || 0;
-                            const finalPrice = item.price + attributeModifiers;
+                            // Price is already correctly calculated in ProductDetail
+                            const finalPrice = item.price;
                             const discountedPrice = item.discount_percentage 
                               ? finalPrice * (1 - item.discount_percentage / 100)
                               : finalPrice;
@@ -287,11 +287,11 @@ const Cart = () => {
                           {item.description}
                         </p>
                         {item.selectedAttributes && item.selectedAttributes.length > 0 && (
-                          <div className="mb-2">
+                          <div className="mb-2 text-xs text-muted-foreground">
                             {item.selectedAttributes.map((attr, index) => (
-                              <span key={index} className="inline-block text-xs bg-primary/10 text-primary px-2 py-1 rounded mr-1 mb-1">
+                              <span key={index} className="inline-block mr-1">
                                 {attr.attribute_display_name}: {attr.display_value}
-                                {attr.price_modifier > 0 && ` (+${toFarsiNumber(attr.price_modifier.toLocaleString())} تومان)`}
+                                {index < item.selectedAttributes.length - 1 && ', '}
                               </span>
                             ))}
                           </div>
@@ -301,8 +301,8 @@ const Cart = () => {
                             <span className="text-muted-foreground">قیمت: </span>
                             <span>
                               {(() => {
-                                const attributeModifiers = item.selectedAttributes?.reduce((sum, attr) => sum + attr.price_modifier, 0) || 0;
-                                const finalPrice = item.price + attributeModifiers;
+                                // Price is already correctly calculated in ProductDetail
+                                const finalPrice = item.price;
                                 const discountedPrice = item.discount_percentage 
                                   ? finalPrice * (1 - item.discount_percentage / 100)
                                   : finalPrice;
@@ -341,8 +341,8 @@ const Cart = () => {
                         <span className="text-muted-foreground text-sm">جمع: </span>
                         <span>
                           {(() => {
-                            const attributeModifiers = item.selectedAttributes?.reduce((sum, attr) => sum + attr.price_modifier, 0) || 0;
-                            const finalPrice = item.price + attributeModifiers;
+                            // Price is already correctly calculated in ProductDetail
+                            const finalPrice = item.price;
                             const discountedPrice = item.discount_percentage 
                               ? finalPrice * (1 - item.discount_percentage / 100)
                               : finalPrice;

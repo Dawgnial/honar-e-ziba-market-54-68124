@@ -38,9 +38,10 @@ export const useProductCustomAttributes = () => {
 
       if (error) throw error;
       
+      // Transform data and sort options by price (lowest to highest)
       const transformedData = data?.map(attr => ({
         ...attr,
-        options: attr.product_custom_attribute_options || []
+        options: (attr.product_custom_attribute_options || []).sort((a, b) => a.price_modifier - b.price_modifier)
       })) || [];
       
       setAttributes(transformedData);

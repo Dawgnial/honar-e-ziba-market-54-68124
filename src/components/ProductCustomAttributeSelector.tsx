@@ -37,10 +37,33 @@ const ProductCustomAttributeSelector = ({
     }
   }, [productId]);
 
+  // Auto-select first (cheapest) option for each attribute when attributes are loaded
+  useEffect(() => {
+    if (attributes.length > 0) {
+      const initialSelections: Record<string, SelectedOption> = {};
+      
+      attributes.forEach(attribute => {
+        if (attribute.options && attribute.options.length > 0) {
+          // Options are already sorted by price (lowest first)
+          const firstOption = attribute.options[0];
+          initialSelections[attribute.id] = {
+            attributeId: attribute.id,
+            attributeName: attribute.name,
+            optionId: firstOption.id,
+            optionValue: firstOption.display_value,
+            priceModifier: firstOption.price_modifier
+          };
+        }
+      });
+      
+      setSelectedOptions(initialSelections);
+    }
+  }, [attributes]);
+
   useEffect(() => {
     const optionsArray = Object.values(selectedOptions);
     const totalPrice = optionsArray.reduce((sum, option) => sum + option.priceModifier, 0);
-    // Send the total price of selected options, not as modifier to base price
+    // Send the total price as the product price, not as modifier
     onAttributeSelect(optionsArray, totalPrice);
   }, [selectedOptions, onAttributeSelect]);
 
@@ -49,14 +72,14 @@ const ProductCustomAttributeSelector = ({
     if (!option) return;
 
     setSelectedOptions(prev => {
-      // If the same option is clicked again, deselect it
+      // Toggle: If clicking same option, deselect it
       if (prev[attribute.id]?.optionId === optionId) {
         const newState = { ...prev };
         delete newState[attribute.id];
         return newState;
       }
 
-      // Otherwise, select the new option
+      // Select the new option
       return {
         ...prev,
         [attribute.id]: {
@@ -112,18 +135,16 @@ const ProductCustomAttributeSelector = ({
                       variant={isSelected ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleOptionSelect(attribute, option.id)}
-                      className={`flex flex-col h-auto py-2 px-3 ${
+                      className={`flex flex-col h-auto py-2 px-3 transition-all ${
                         isSelected 
-                          ? 'bg-persian-blue hover:bg-persian-blue/90' 
-                          : ''
+                          ? 'bg-persian-blue hover:bg-persian-blue/90 text-white ring-2 ring-persian-blue ring-offset-2' 
+                          : 'hover:border-persian-blue'
                       }`}
                     >
                       <span>{option.display_value}</span>
-                       {option.price_modifier !== 0 && (
-                        <span className="text-xs text-green-600">
-                          {formatPrice(option.price_modifier)}
-                        </span>
-                      )}
+                      <span className={`text-xs font-semibold ${isSelected ? 'text-white' : 'text-green-600'}`}>
+                        {formatPrice(option.price_modifier)}
+                      </span>
                     </Button>
                   );
                 })}
@@ -136,22 +157,13 @@ const ProductCustomAttributeSelector = ({
           <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
             <div className="space-y-2">
               <div className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                انتخاب‌های شما:
+                ویژگی‌های انتخاب شده:
               </div>
               {Object.values(selectedOptions).map((option, index) => (
                 <div key={index} className="flex justify-between items-center text-sm">
-                  <span>{option.attributeName}: {option.optionValue}</span>
-                  <span className="text-green-600">
-                    {formatPrice(option.priceModifier)}
-                  </span>
+                  <span className="text-gray-700 dark:text-gray-300">{option.attributeName}: <strong>{option.optionValue}</strong></span>
                 </div>
               ))}
-              <div className="border-t pt-2 flex justify-between items-center font-semibold">
-                <span>قیمت نهایی:</span>
-                <span className="text-green-primary">
-                  {formatPrice(Object.values(selectedOptions).reduce((sum, opt) => sum + opt.priceModifier, 0))}
-                </span>
-              </div>
             </div>
           </div>
         )}

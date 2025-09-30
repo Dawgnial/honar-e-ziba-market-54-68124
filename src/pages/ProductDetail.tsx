@@ -115,14 +115,28 @@ const ProductDetail = () => {
 
   const handleVariantSelect = (variant: ProductVariant | null, price: number) => {
     setSelectedVariant(variant);
-    setCurrentPrice(price + customPriceModifier);
+    
+    // If custom options are selected, keep their price
+    // Otherwise use variant price
+    if (selectedCustomOptions.length > 0) {
+      setCurrentPrice(customPriceModifier);
+    } else {
+      setCurrentPrice(price);
+    }
   };
 
-  const handleCustomAttributeSelect = (options: SelectedOption[], totalPriceModifier: number) => {
+  const handleCustomAttributeSelect = (options: SelectedOption[], totalPrice: number) => {
     setSelectedCustomOptions(options);
-    setCustomPriceModifier(totalPriceModifier);
-    const basePrice = selectedVariant ? selectedVariant.price : (product?.price || 0);
-    setCurrentPrice(basePrice + totalPriceModifier);
+    setCustomPriceModifier(totalPrice);
+    
+    // If custom options are selected, use their total price
+    // Otherwise use variant price or base product price
+    if (options.length > 0) {
+      setCurrentPrice(totalPrice);
+    } else {
+      const basePrice = selectedVariant ? selectedVariant.price : (product?.price || 0);
+      setCurrentPrice(basePrice);
+    }
   };
 
   const handleAddToFavorites = () => {
