@@ -434,7 +434,7 @@ const formatPrice = (price: number): string => {
                   size="sm"
                   className="flex items-center gap-2 hover:bg-pink-50 hover:border-pink-500 hover:text-pink-600 transition-colors"
                   onClick={() => {
-                    window.open('https://irolia.shop', '_blank');
+                    window.open('https://www.instagram.com/irolia.shop', '_blank');
                   }}
                 >
                   <Instagram size={16} />

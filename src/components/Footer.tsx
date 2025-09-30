@@ -82,7 +82,7 @@ const Footer = () => {
                   <Send size={20} />
                 </a>
                 <a 
-                  href="https://irolia.shop" 
+                  href="https://www.instagram.com/irolia.shop" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-white hover:text-yellow-400 transition-colors"
