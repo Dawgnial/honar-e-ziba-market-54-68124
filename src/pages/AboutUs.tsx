@@ -21,7 +21,8 @@ const AboutUs = () => {
     "مهرا ملد",
     "اشکان پارت",
     "اسپیرال مولد",
-    "جاودان قالب"
+    "جاودان قالب",
+    "نیچر ملد"
   ];
 
   return (
@@ -118,7 +119,7 @@ const AboutUs = () => {
                       همکاران ما
                     </h2>
                     <p className="text-foreground/80 mb-6 text-right leading-relaxed font-vazir text-lg">
-                      همچنین ایرولیاشاپ در طی این سال‌ها افتخار همکاری با مجموعه‌ها و هنرمندان بزرگی همچون:
+                      همچنین ایرولیاشاپ در طی این سال‌ها افتخار همکاری با مجموعه‌ها و هنرمندان بزرگی همچون را داشته است:
                     </p>
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-right">
                       {partners.map((partner, index) => (
