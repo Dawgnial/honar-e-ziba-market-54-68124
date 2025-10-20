@@ -36,7 +36,7 @@ const AboutUs = () => {
       <div className="min-h-screen bg-background">
         <Navbar />
         
-        <main className="pt-20 pb-16">
+        <main className="pt-24 sm:pt-28 lg:pt-32 pb-16">
           <div className="container mx-auto px-4 max-w-7xl">
             <div 
               className={`transition-all duration-1000 ${

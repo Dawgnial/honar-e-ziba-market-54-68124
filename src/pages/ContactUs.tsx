@@ -17,7 +17,7 @@ const ContactUs = () => {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <Navbar />
         
-        <main className="pt-20 pb-16">
+        <main className="pt-24 sm:pt-28 lg:pt-32 pb-16">
           <div className="container mx-auto px-4 max-w-6xl">
             {/* Header */}
             <div className="text-center mb-12 animate-fade-in">
