@@ -33,7 +33,7 @@ const AboutUs = () => {
         url="https://iroliashop.com/about"
       />
       
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-background">
         <Navbar />
         
         <main className="pt-20 pb-16">
@@ -85,18 +85,18 @@ const AboutUs = () => {
                 <div className="lg:col-span-8 space-y-8">
                   {/* Header */}
                   <div className="text-right animate-fade-in" style={{ animationDelay: '0.1s' }}>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-vazir">
+                    <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 font-vazir">
                       ایرولیاشاپ
                     </h1>
-                    <p className="text-xl md:text-2xl text-green-primary font-semibold font-vazir">
+                    <p className="text-xl md:text-2xl text-primary font-semibold font-vazir">
                       اولین و بزرگ‌ترین فروشگاه تخصصی سفال و سرامیک در مشهد
                     </p>
                   </div>
 
                   {/* Main Content */}
-                  <div className="space-y-6 text-right text-gray-700 leading-loose font-vazir text-lg animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                  <div className="space-y-6 text-right text-foreground/80 leading-loose font-vazir text-lg animate-fade-in" style={{ animationDelay: '0.2s' }}>
                     <p>
-                      فروشگاه ایرولیاشاپ در سال <strong className="text-gray-900">۱۳۹۰</strong> به همت آقای گلستانی و خانم ایروانی بنیان‌گذاری شد و از همان آغاز، رسالت خود را در فراهم‌آوردن محیطی تخصصی، کامل و الهام‌بخش برای جامعه هنری کشور تعریف کرد.
+                      فروشگاه ایرولیاشاپ در سال <strong className="text-foreground">۱۳۹۰</strong> به همت آقای گلستانی و خانم ایروانی بنیان‌گذاری شد و از همان آغاز، رسالت خود را در فراهم‌آوردن محیطی تخصصی، کامل و الهام‌بخش برای جامعه هنری کشور تعریف کرد.
                     </p>
                     
                     <p>
@@ -104,7 +104,7 @@ const AboutUs = () => {
                     </p>
                     
                     <p>
-                      ایرولیاشاپ تنها یک فروشگاه نیست؛ بلکه <strong className="text-green-primary">پلی‌ست میان هنر دست و ابزار حرفه‌ای</strong>. از گل سفال و سرامیک، رنگ‌ها و لعاب‌های متنوع، تا چرخ‌های سفال‌گری، ابزارهای شکل‌دهی، قالب‌ها و کوره‌های برقی — هر آنچه برای خلق آثار هنری نیاز دارید، با دقتی وسواس‌گونه انتخاب کرده‌ایم تا تجربه‌ای لذت‌بخش، مطمئن و حرفه‌ای برای شما رقم بخورد.
+                      ایرولیاشاپ تنها یک فروشگاه نیست؛ بلکه <strong className="text-primary">پلی‌ست میان هنر دست و ابزار حرفه‌ای</strong>. از گل سفال و سرامیک، رنگ‌ها و لعاب‌های متنوع، تا چرخ‌های سفال‌گری، ابزارهای شکل‌دهی، قالب‌ها و کوره‌های برقی — هر آنچه برای خلق آثار هنری نیاز دارید، با دقتی وسواس‌گونه انتخاب کرده‌ایم تا تجربه‌ای لذت‌بخش، مطمئن و حرفه‌ای برای شما رقم بخورد.
                     </p>
                     
                     <p>
@@ -113,21 +113,21 @@ const AboutUs = () => {
                   </div>
 
                   {/* Partners Section */}
-                  <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 shadow-lg animate-fade-in" style={{ animationDelay: '0.3s' }}>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 text-right font-vazir">
+                  <div className="bg-muted/50 rounded-2xl p-8 shadow-lg animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 text-right font-vazir">
                       همکاران ما
                     </h2>
-                    <p className="text-gray-700 mb-6 text-right leading-relaxed font-vazir text-lg">
+                    <p className="text-foreground/80 mb-6 text-right leading-relaxed font-vazir text-lg">
                       همچنین ایرولیاشاپ در طی این سال‌ها افتخار همکاری با مجموعه‌ها و هنرمندان بزرگی همچون:
                     </p>
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-right">
                       {partners.map((partner, index) => (
                         <li 
                           key={index}
-                          className="flex items-center gap-3 text-gray-800 font-semibold text-lg font-vazir animate-fade-in"
+                          className="flex items-center gap-3 text-foreground font-semibold text-lg font-vazir animate-fade-in"
                           style={{ animationDelay: `${0.4 + index * 0.05}s` }}
                         >
-                          <span className="w-2 h-2 bg-green-primary rounded-full flex-shrink-0"></span>
+                          <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></span>
                           {partner}
                         </li>
                       ))}
@@ -135,11 +135,11 @@ const AboutUs = () => {
                   </div>
 
                   {/* Closing Message */}
-                  <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-8 shadow-xl text-white animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                    <p className="text-lg md:text-xl leading-relaxed text-right font-vazir mb-4">
-                      ایرولیاشاپ، بیش از یک فروشگاه؛ <strong className="text-green-300">خانه‌ای برای خلاقیت و آفرینش</strong> است. افتخار ما اعتماد و همراهی ارزشمند هنرمندانی‌ست که مسیر هنر خود را با ما هموار ساخته‌اند.
+                  <div className="bg-primary/10 border border-primary/20 rounded-2xl p-8 shadow-xl animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                    <p className="text-lg md:text-xl leading-relaxed text-right font-vazir mb-4 text-foreground">
+                      ایرولیاشاپ، بیش از یک فروشگاه؛ <strong className="text-primary">خانه‌ای برای خلاقیت و آفرینش</strong> است. افتخار ما اعتماد و همراهی ارزشمند هنرمندانی‌ست که مسیر هنر خود را با ما هموار ساخته‌اند.
                     </p>
-                    <p className="text-xl md:text-2xl font-bold text-green-300 text-right font-vazir">
+                    <p className="text-xl md:text-2xl font-bold text-primary text-right font-vazir">
                       با تمام احترام و افتخار، در ایرولیاشاپ منتظر حضور گرم شما هستیم.
                     </p>
                   </div>
