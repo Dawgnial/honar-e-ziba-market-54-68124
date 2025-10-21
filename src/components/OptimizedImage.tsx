@@ -123,10 +123,12 @@ const OptimizedImage = ({
   }[aspectRatio];
 
   return (
-    <div className={cn('relative overflow-hidden bg-muted/30', aspectRatioClass)}>
-      {/* Placeholder/Skeleton while loading */}
+    <div className={cn('relative overflow-hidden bg-muted', aspectRatioClass)}>
+      {/* Placeholder/Skeleton while loading - more visible */}
       {isLoading && (
-        <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-muted/40 via-muted/60 to-muted/40" />
+        <div className="absolute inset-0 bg-gradient-to-br from-muted via-muted/80 to-muted animate-pulse">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-muted-foreground/5 to-transparent animate-shimmer" />
+        </div>
       )}
       
       {/* Actual Image */}
@@ -138,7 +140,7 @@ const OptimizedImage = ({
         alt={alt}
         className={cn(
           'w-full h-full object-cover object-center',
-          isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-150',
+          isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-500 ease-in-out',
           hasError && 'opacity-50',
           className
         )}
