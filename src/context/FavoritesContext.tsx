@@ -47,7 +47,7 @@ export const FavoritesProvider = ({ children }: FavoritesProviderProps) => {
       try {
         setFavorites(JSON.parse(savedFavorites));
       } catch (error) {
-        console.error("Failed to parse favorites from localStorage", error);
+        // SECURITY: Don't log favorites parsing errors
         localStorage.removeItem("favorites");
       }
     }

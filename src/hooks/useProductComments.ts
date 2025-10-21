@@ -33,7 +33,7 @@ export const useProductComments = (productId: string) => {
       if (error) throw error;
       setComments((data || []) as ProductComment[]);
     } catch (error: any) {
-      console.error('Error fetching comments:', error);
+      // Silently handle error - don't expose schema details
     } finally {
       setLoading(false);
     }
@@ -64,17 +64,14 @@ export const useProductComments = (productId: string) => {
         .select()
         .single();
 
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
-      }
+      if (error) throw error;
       
       toast.success('نظر شما با موفقیت ثبت شد و پس از تأیید نمایش داده خواهد شد');
       // refresh comments لیست
       await fetchComments();
       return data as ProductComment;
     } catch (error: any) {
-      console.error('Error adding comment:', error);
+      // SECURITY: Don't log detailed errors
       
       // نمایش پیام خطای مناسب‌تر
       if (error.message?.includes('violates row-level security')) {

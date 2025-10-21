@@ -60,7 +60,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       try {
         setCart(JSON.parse(savedCart));
       } catch (error) {
-        console.error("Failed to parse cart from localStorage", error);
+        // SECURITY: Don't log cart parsing errors
         localStorage.removeItem("cart");
       }
     }

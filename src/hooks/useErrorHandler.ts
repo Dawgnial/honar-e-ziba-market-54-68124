@@ -18,7 +18,8 @@ export const useErrorHandler = () => {
       logToConsole = true
     } = options;
 
-    if (logToConsole) {
+    // SECURITY: Only log in development mode, never in production
+    if (logToConsole && import.meta.env.DEV) {
       console.error('Error occurred:', error);
     }
 

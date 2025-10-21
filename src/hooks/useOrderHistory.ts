@@ -35,7 +35,7 @@ export const useOrderHistory = () => {
       if (error) throw error;
       setOrders(data || []);
     } catch (error) {
-      console.error('Error fetching order history:', error);
+      // Silently handle error - don't expose order details
     } finally {
       setLoading(false);
     }
@@ -68,7 +68,7 @@ export const useOrderHistory = () => {
       // Refresh the history
       await fetchOrderHistory();
     } catch (error) {
-      console.error('Error adding to history:', error);
+      // SECURITY: Don't log order details
       throw error;
     }
   };

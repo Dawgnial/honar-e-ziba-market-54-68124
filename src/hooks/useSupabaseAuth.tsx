@@ -30,20 +30,32 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Load user profile when user changes
   const loadUserProfile = async (userId: string) => {
     try {
-      const { data: profile, error } = await supabase
+      // Load profile data
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
 
-      if (error) {
-        console.error('Error loading profile:', error);
+      if (profileError) {
         setUserProfile(null);
-      } else {
-        setUserProfile(profile);
+        return;
       }
+
+      // Load user role from user_roles table
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      setUserProfile({
+        ...profile,
+        role: roleData?.role || 'user'
+      });
     } catch (error) {
-      console.error('Error in loadUserProfile:', error);
       setUserProfile(null);
     }
   };
@@ -54,10 +66,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Get initial session
     const getInitialSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error('Error getting session:', error);
-        }
+        const { data: { session } } = await supabase.auth.getSession();
         
         if (mounted) {
           setSession(session);
@@ -75,7 +84,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setLoading(false);
         }
       } catch (error) {
-        console.error('Error in getInitialSession:', error);
         if (mounted) {
           setLoading(false);
         }
@@ -119,9 +127,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // Use phone as email with a dummy domain for Supabase auth
       const dummyEmail = `${phone}@iroliashop.local`;
       
-      // Check if this is the admin phone number
-      const isAdminPhone = phone === '09157109838';
-      
+      // SECURITY: Never pass role from client - server determines role via admin_config
       const { data, error } = await supabase.auth.signUp({
         email: dummyEmail,
         password,
@@ -130,21 +136,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           data: {
             name: userData.name,
             phone: userData.phone || phone,
-            role: isAdminPhone ? 'admin' : 'user',
+            // Role is determined server-side by handle_new_user trigger
           }
         }
       });
 
       if (error) throw error;
 
-      // If this is admin phone, show special message
-      if (isAdminPhone) {
-        toast.success(`خوش آمدید ادمین ${userData.name}`);
-      } else {
-        toast.success(`خوش آمدید ${userData.name}`);
-      }
+      toast.success(`خوش آمدید ${userData.name}`);
     } catch (error: any) {
-      console.error('Sign up error:', error);
       // Let the error handler in Auth.tsx handle the toast
       throw error;
     } finally {
@@ -175,7 +175,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       toast.success(`خوش آمدید ${profile?.name || phone}`);
     } catch (error: any) {
-      console.error('Sign in error:', error);
       // Let the error handler in Auth.tsx handle the toast
       throw error;
     } finally {
@@ -189,7 +188,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (error) throw error;
       toast.success('با موفقیت خارج شدید');
     } catch (error: any) {
-      console.error('Sign out error:', error);
       toast.error('خطا در خروج');
     }
   };
