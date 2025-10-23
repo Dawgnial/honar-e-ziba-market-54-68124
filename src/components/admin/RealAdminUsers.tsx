@@ -37,36 +37,84 @@ const RealAdminUsers = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // Fetch profiles
+      const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setUsers(data || []);
-    } catch (error) {
-      console.error('Error fetching users:', error);
+      if (profilesError) throw profilesError;
+
+      // Fetch roles from user_roles for each user
+      const usersWithRoles = await Promise.all(
+        (profilesData || []).map(async (profile) => {
+          const { data: roleData } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', profile.id)
+            .single();
+          
+          return { 
+            ...profile, 
+            role: roleData?.role || 'user' 
+          };
+        })
+      );
+
+      setUsers(usersWithRoles);
+    } catch (error: any) {
+      toast.error('خطا در بارگذاری کاربران');
     } finally {
       setLoading(false);
     }
   };
 
-  const updateUserRole = async (userId: string, newRole: string) => {
+  const updateUserRole = async (userId: string, newRole: 'admin' | 'moderator' | 'user') => {
     try {
+      // Get current role for audit log
+      const { data: currentRoleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
+
+      const oldRole = currentRoleData?.role;
+
+      // Delete existing role
+      await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', userId);
+
+      // Insert new role
       const { error } = await supabase
-        .from('profiles')
-        .update({ role: newRole })
-        .eq('id', userId);
+        .from('user_roles')
+        .insert({ 
+          user_id: userId, 
+          role: newRole,
+          created_by: (await supabase.auth.getUser()).data.user?.id
+        });
 
       if (error) throw error;
+
+      // Log to audit trail
+      await supabase
+        .from('role_change_audit')
+        .insert({
+          changed_by: (await supabase.auth.getUser()).data.user?.id,
+          target_user: userId,
+          old_role: oldRole,
+          new_role: newRole
+        });
       
+      // Update local state
       setUsers(prev => prev.map(user => 
         user.id === userId ? { ...user, role: newRole } : user
       ));
       
       toast.success('نقش کاربر با موفقیت به‌روزرسانی شد');
-    } catch (error) {
-      console.error('Error updating user role:', error);
+    } catch (error: any) {
       toast.error('خطا در به‌روزرسانی نقش کاربر');
     }
   };
@@ -86,8 +134,7 @@ const RealAdminUsers = () => {
       ));
       
       toast.success(`کاربر با موفقیت ${newStatus ? 'فعال' : 'غیرفعال'} شد`);
-    } catch (error) {
-      console.error('Error updating user status:', error);
+    } catch (error: any) {
       toast.error('خطا در به‌روزرسانی وضعیت کاربر');
     }
   };
@@ -293,7 +340,7 @@ const RealAdminUsers = () => {
                       <div className="flex items-center gap-2">
                         <Select
                           value={user.role}
-                          onValueChange={(value) => updateUserRole(user.id, value)}
+                          onValueChange={(value) => updateUserRole(user.id, value as 'admin' | 'moderator' | 'user')}
                         >
                           <SelectTrigger className="w-28">
                             <SelectValue />

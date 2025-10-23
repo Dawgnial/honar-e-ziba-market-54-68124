@@ -534,7 +534,6 @@ export type Database = {
           last_login: string | null
           name: string
           phone: string | null
-          role: string
           status: string
           updated_at: string
         }
@@ -546,7 +545,6 @@ export type Database = {
           last_login?: string | null
           name: string
           phone?: string | null
-          role?: string
           status?: string
           updated_at?: string
         }
@@ -558,9 +556,35 @@ export type Database = {
           last_login?: string | null
           name?: string
           phone?: string | null
-          role?: string
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      role_change_audit: {
+        Row: {
+          changed_by: string
+          created_at: string
+          id: string
+          new_role: Database["public"]["Enums"]["app_role"]
+          old_role: Database["public"]["Enums"]["app_role"] | null
+          target_user: string
+        }
+        Insert: {
+          changed_by: string
+          created_at?: string
+          id?: string
+          new_role: Database["public"]["Enums"]["app_role"]
+          old_role?: Database["public"]["Enums"]["app_role"] | null
+          target_user: string
+        }
+        Update: {
+          changed_by?: string
+          created_at?: string
+          id?: string
+          new_role?: Database["public"]["Enums"]["app_role"]
+          old_role?: Database["public"]["Enums"]["app_role"] | null
+          target_user?: string
         }
         Relationships: []
       }
@@ -593,10 +617,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_user_role: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      get_user_role: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -604,10 +625,7 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_admin_phone: {
-        Args: { phone_number: string }
-        Returns: boolean
-      }
+      is_admin_phone: { Args: { phone_number: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

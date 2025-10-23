@@ -23,18 +23,20 @@ interface CheckoutFormProps {
 }
 
 const formSchema = z.object({
-  fullName: z.string().min(3, {
-    message: "نام و نام خانوادگی باید حداقل ۳ حرف باشد.",
-  }),
-  phone: z.string().min(10, {
-    message: "شماره تماس باید حداقل ۱۰ رقم باشد.",
-  }),
-  address: z.string().min(10, {
-    message: "آدرس باید حداقل ۱۰ کاراکتر باشد.",
-  }),
-  postalCode: z.string().min(10, {
-    message: "کد پستی باید ۱۰ رقم باشد.",
-  }),
+  fullName: z.string()
+    .min(3, { message: "نام و نام خانوادگی باید حداقل ۳ حرف باشد." })
+    .max(100, { message: "نام و نام خانوادگی نمی‌تواند بیش از ۱۰۰ حرف باشد." })
+    .trim(),
+  phone: z.string()
+    .regex(/^09\d{9}$/, { message: "شماره تلفن نامعتبر است. فرمت صحیح: 09123456789" })
+    .length(11, { message: "شماره تلفن باید 11 رقم باشد." }),
+  address: z.string()
+    .min(10, { message: "آدرس باید حداقل ۱۰ کاراکتر باشد." })
+    .max(500, { message: "آدرس نمی‌تواند بیش از ۵۰۰ کاراکتر باشد." })
+    .trim(),
+  postalCode: z.string()
+    .regex(/^\d{10}$/, { message: "کد پستی باید دقیقاً ۱۰ رقم باشد." })
+    .length(10, { message: "کد پستی باید ۱۰ رقم باشد." }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -68,7 +70,6 @@ export function CheckoutForm({ cartItems, cartTotal, onComplete }: CheckoutFormP
       onComplete();
       
     } catch (error) {
-      console.error("Order creation error:", error);
       toast({
         title: "خطا در ثبت سفارش",
         description: "لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید.",
