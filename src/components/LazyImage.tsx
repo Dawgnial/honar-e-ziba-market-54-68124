@@ -18,8 +18,7 @@ const LazyImage = ({
   onLoad,
   onError 
 }: LazyImageProps) => {
-  const [imageSrc, setImageSrc] = useState<string>(placeholderSrc);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
@@ -31,29 +30,28 @@ const LazyImage = ({
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // Start loading the actual image
-            const imageLoader = new Image();
+            const currentImg = entry.target as HTMLImageElement;
             
-            imageLoader.onload = () => {
-              setImageSrc(src);
-              setIsLoading(false);
+            const handleLoad = () => {
+              setIsLoaded(true);
               onLoad?.();
             };
             
-            imageLoader.onerror = () => {
+            const handleError = () => {
               setHasError(true);
-              setIsLoading(false);
               onError?.();
             };
             
-            imageLoader.src = src;
-            observer.unobserve(img);
+            currentImg.addEventListener('load', handleLoad, { once: true });
+            currentImg.addEventListener('error', handleError, { once: true });
+            
+            observer.unobserve(currentImg);
           }
         });
       },
       {
         rootMargin: '50px', // Start loading 50px before the image comes into view
-        threshold: 0.1,
+        threshold: 0.01,
       }
     );
 
@@ -65,24 +63,24 @@ const LazyImage = ({
   }, [src, onLoad, onError]);
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden aspect-square bg-muted/30">
+      {/* Subtle loading background - stays behind image */}
+      <div className="absolute inset-0 bg-gradient-to-br from-muted/20 via-muted/10 to-muted/20" />
+      
+      {/* Actual Image - always present, fades in when loaded */}
       <img
         ref={imgRef}
-        src={imageSrc}
+        src={src}
         alt={alt}
         className={cn(
-          'transition-all duration-300',
-          isLoading && 'blur-sm scale-105',
+          'relative w-full h-full object-cover object-center transition-opacity duration-700 ease-out',
+          isLoaded ? 'opacity-100' : 'opacity-0',
           hasError && 'opacity-50',
           className
         )}
         loading="lazy"
+        decoding="async"
       />
-      
-      {/* Loading overlay */}
-      {isLoading && (
-        <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
-      )}
       
       {/* Error state */}
       {hasError && (

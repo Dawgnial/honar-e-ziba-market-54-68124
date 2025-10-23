@@ -30,8 +30,7 @@ const OptimizedImage = ({
   onError,
   aspectRatio = 'square'
 }: OptimizedImageProps) => {
-  const [imageSrc, setImageSrc] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
@@ -57,19 +56,17 @@ const OptimizedImage = ({
     const img = imgRef.current;
     if (!img) return;
 
-    // For priority images, load immediately
+    // For priority images, preload immediately
     if (priority) {
       const imageLoader = new Image();
       
       imageLoader.onload = () => {
-        setImageSrc(src);
-        setIsLoading(false);
+        setIsLoaded(true);
         onLoad?.();
       };
       
       imageLoader.onerror = () => {
         setHasError(true);
-        setIsLoading(false);
         onError?.();
       };
       
@@ -82,22 +79,24 @@ const OptimizedImage = ({
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const imageLoader = new Image();
+            // Let the browser's native lazy loading handle it
+            // Just track when it loads
+            const currentImg = entry.target as HTMLImageElement;
             
-            imageLoader.onload = () => {
-              setImageSrc(src);
-              setIsLoading(false);
+            const handleLoad = () => {
+              setIsLoaded(true);
               onLoad?.();
             };
             
-            imageLoader.onerror = () => {
+            const handleError = () => {
               setHasError(true);
-              setIsLoading(false);
               onError?.();
             };
             
-            imageLoader.src = src;
-            observer.unobserve(img);
+            currentImg.addEventListener('load', handleLoad, { once: true });
+            currentImg.addEventListener('error', handleError, { once: true });
+            
+            observer.unobserve(currentImg);
           }
         });
       },
@@ -123,24 +122,20 @@ const OptimizedImage = ({
   }[aspectRatio];
 
   return (
-    <div className={cn('relative overflow-hidden bg-muted', aspectRatioClass)}>
-      {/* Placeholder/Skeleton while loading - more visible */}
-      {isLoading && (
-        <div className="absolute inset-0 bg-gradient-to-br from-muted via-muted/80 to-muted animate-pulse">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-muted-foreground/5 to-transparent animate-shimmer" />
-        </div>
-      )}
+    <div className={cn('relative overflow-hidden bg-muted/30', aspectRatioClass)}>
+      {/* Subtle loading background - stays behind image */}
+      <div className="absolute inset-0 bg-gradient-to-br from-muted/20 via-muted/10 to-muted/20" />
       
-      {/* Actual Image */}
+      {/* Actual Image - always present, fades in when loaded */}
       <img
         ref={imgRef}
-        src={imageSrc || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"%3E%3C/svg%3E'}
-        srcSet={imageSrc ? generateSrcSet(src) : undefined}
+        src={src}
+        srcSet={generateSrcSet(src)}
         sizes={sizes}
         alt={alt}
         className={cn(
-          'w-full h-full object-cover object-center',
-          isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-500 ease-in-out',
+          'relative w-full h-full object-cover object-center transition-opacity duration-700 ease-out',
+          isLoaded ? 'opacity-100' : 'opacity-0',
           hasError && 'opacity-50',
           className
         )}
