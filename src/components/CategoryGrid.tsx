@@ -68,7 +68,7 @@ const CategoryGrid = memo(() => {
                       alt={category.title}
                       priority={false}
                       aspectRatio="4/3"
-                      className="group-hover:scale-105 transition-transform duration-700 ease-out"
+                      className="group-hover:scale-105 transition-transform duration-500 ease-out"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   ) : (

@@ -68,7 +68,7 @@ const OptimizedProductCard = memo(({
             src={product.imageUrl}
             alt={product.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            placeholderSrc="/placeholder.svg"
+            priority={false}
           />
         </Link>
         

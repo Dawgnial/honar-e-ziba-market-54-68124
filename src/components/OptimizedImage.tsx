@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface OptimizedImageProps {
@@ -14,11 +14,10 @@ interface OptimizedImageProps {
 
 /**
  * Optimized Image Component with:
- * - WebP/AVIF format support with fallbacks
- * - Responsive srcset for different screen sizes
- * - Lazy loading for non-priority images
+ * - Fast loading with native browser lazy loading
+ * - Priority loading for above-the-fold images
  * - Proper aspect ratio containers to prevent layout shifts
- * - object-fit: cover for perfect image fitting
+ * - Minimal transitions for instant display
  */
 const OptimizedImage = ({ 
   src, 
@@ -32,86 +31,16 @@ const OptimizedImage = ({
 }: OptimizedImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const imgRef = useRef<HTMLImageElement>(null);
 
-  // Generate responsive image URLs
-  const generateResponsiveSrc = (baseUrl: string, width: number) => {
-    // Check if URL is from Supabase Storage
-    if (baseUrl.includes('supabase')) {
-      // Supabase supports query params for transformation
-      return `${baseUrl}?width=${width}&quality=85&format=webp`;
-    }
-    return baseUrl;
+  const handleLoad = () => {
+    setIsLoaded(true);
+    onLoad?.();
   };
 
-  // Generate srcset for responsive images
-  const generateSrcSet = (baseUrl: string) => {
-    const widths = [320, 640, 768, 1024, 1280, 1920];
-    return widths
-      .map(w => `${generateResponsiveSrc(baseUrl, w)} ${w}w`)
-      .join(', ');
+  const handleError = () => {
+    setHasError(true);
+    onError?.();
   };
-
-  useEffect(() => {
-    const img = imgRef.current;
-    if (!img) return;
-
-    // For priority images, preload immediately
-    if (priority) {
-      const imageLoader = new Image();
-      
-      imageLoader.onload = () => {
-        setIsLoaded(true);
-        onLoad?.();
-      };
-      
-      imageLoader.onerror = () => {
-        setHasError(true);
-        onError?.();
-      };
-      
-      imageLoader.src = src;
-      return;
-    }
-
-    // For non-priority images, use Intersection Observer for lazy loading
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // Let the browser's native lazy loading handle it
-            // Just track when it loads
-            const currentImg = entry.target as HTMLImageElement;
-            
-            const handleLoad = () => {
-              setIsLoaded(true);
-              onLoad?.();
-            };
-            
-            const handleError = () => {
-              setHasError(true);
-              onError?.();
-            };
-            
-            currentImg.addEventListener('load', handleLoad, { once: true });
-            currentImg.addEventListener('error', handleError, { once: true });
-            
-            observer.unobserve(currentImg);
-          }
-        });
-      },
-      {
-        rootMargin: '100px', // Start loading 100px before viewport
-        threshold: 0.01,
-      }
-    );
-
-    observer.observe(img);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [src, priority, onLoad, onError]);
 
   // Aspect ratio classes
   const aspectRatioClass = {
@@ -123,25 +52,26 @@ const OptimizedImage = ({
 
   return (
     <div className={cn('relative overflow-hidden bg-muted/30', aspectRatioClass)}>
-      {/* Subtle loading background - stays behind image */}
-      <div className="absolute inset-0 bg-gradient-to-br from-muted/20 via-muted/10 to-muted/20" />
+      {/* Subtle loading background - only show while loading */}
+      {!isLoaded && !hasError && (
+        <div className="absolute inset-0 bg-gradient-to-br from-muted/20 via-muted/10 to-muted/20 animate-pulse" />
+      )}
       
-      {/* Actual Image - always present, fades in when loaded */}
+      {/* Actual Image - fast display with minimal transition */}
       <img
-        ref={imgRef}
         src={src}
-        srcSet={generateSrcSet(src)}
         sizes={sizes}
         alt={alt}
+        onLoad={handleLoad}
+        onError={handleError}
         className={cn(
-          'relative w-full h-full object-cover object-center transition-opacity duration-700 ease-out',
+          'relative w-full h-full object-cover object-center transition-opacity duration-150',
           isLoaded ? 'opacity-100' : 'opacity-0',
           hasError && 'opacity-50',
           className
         )}
         loading={priority ? 'eager' : 'lazy'}
         fetchPriority={priority ? 'high' : 'auto'}
-        decoding="async"
       />
       
       {/* Error state */}

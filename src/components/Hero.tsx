@@ -91,6 +91,9 @@ const Hero = () => {
 
   return (
     <section className="relative py-10 md:py-12 lg:py-16 overflow-hidden min-h-[calc(100vh-3.5rem)] sm:min-h-[calc(100vh-4rem)] lg:min-h-[calc(100vh-5rem)] flex items-center w-full">
+      {/* Preload first hero image */}
+      <link rel="preload" as="image" href={backgroundImages[0]} fetchPriority="high" />
+      
       {/* Background slideshow */}
       <div className="absolute inset-0 z-0">
         {backgroundImages.map((image, index) => (
@@ -105,7 +108,7 @@ const Hero = () => {
               alt={`اسلاید ${index + 1}`}
               className="w-full h-full object-cover"
               loading={index === 0 ? "eager" : "lazy"}
-              decoding="async"
+              fetchPriority={index === 0 ? "high" : "auto"}
             />
           </div>
         ))}
@@ -175,10 +178,11 @@ const Hero = () => {
                       className="flex items-center p-2 hover:bg-muted rounded-md cursor-pointer transition-colors"
                       onClick={() => handleResultClick(result)}
                     >
-                      <img 
+                     <img 
                         src={result.imageUrl} 
                         alt={result.title} 
-                        className="w-12 h-12 object-cover rounded-md mr-0 ml-3" 
+                        className="w-12 h-12 object-cover rounded-md mr-0 ml-3"
+                        loading="lazy"
                       />
                       <div>
                         <h4 className="text-sm font-medium">{result.title}</h4>

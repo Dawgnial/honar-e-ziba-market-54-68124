@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface LazyImageProps {
   src: string;
   alt: string;
   className?: string;
-  placeholderSrc?: string;
+  priority?: boolean;
   onLoad?: () => void;
   onError?: () => void;
 }
@@ -13,73 +13,45 @@ interface LazyImageProps {
 const LazyImage = ({ 
   src, 
   alt, 
-  className, 
-  placeholderSrc = '/placeholder.svg',
+  className,
+  priority = false,
   onLoad,
   onError 
 }: LazyImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const imgRef = useRef<HTMLImageElement>(null);
 
-  useEffect(() => {
-    const img = imgRef.current;
-    if (!img) return;
+  const handleLoad = () => {
+    setIsLoaded(true);
+    onLoad?.();
+  };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const currentImg = entry.target as HTMLImageElement;
-            
-            const handleLoad = () => {
-              setIsLoaded(true);
-              onLoad?.();
-            };
-            
-            const handleError = () => {
-              setHasError(true);
-              onError?.();
-            };
-            
-            currentImg.addEventListener('load', handleLoad, { once: true });
-            currentImg.addEventListener('error', handleError, { once: true });
-            
-            observer.unobserve(currentImg);
-          }
-        });
-      },
-      {
-        rootMargin: '50px', // Start loading 50px before the image comes into view
-        threshold: 0.01,
-      }
-    );
-
-    observer.observe(img);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [src, onLoad, onError]);
+  const handleError = () => {
+    setHasError(true);
+    onError?.();
+  };
 
   return (
     <div className="relative overflow-hidden aspect-square bg-muted/30">
       {/* Subtle loading background - stays behind image */}
-      <div className="absolute inset-0 bg-gradient-to-br from-muted/20 via-muted/10 to-muted/20" />
+      {!isLoaded && !hasError && (
+        <div className="absolute inset-0 bg-gradient-to-br from-muted/20 via-muted/10 to-muted/20 animate-pulse" />
+      )}
       
-      {/* Actual Image - always present, fades in when loaded */}
+      {/* Actual Image - fast fade in on load */}
       <img
-        ref={imgRef}
         src={src}
         alt={alt}
+        onLoad={handleLoad}
+        onError={handleError}
         className={cn(
-          'relative w-full h-full object-cover object-center transition-opacity duration-700 ease-out',
+          'relative w-full h-full object-cover object-center transition-opacity duration-150',
           isLoaded ? 'opacity-100' : 'opacity-0',
           hasError && 'opacity-50',
           className
         )}
-        loading="lazy"
-        decoding="async"
+        loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={priority ? 'high' : 'auto'}
       />
       
       {/* Error state */}
