@@ -43,7 +43,7 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <h3 className="text-xl font-bold mb-4 font-vazir">درباره ایرولیا شاپ</h3>
             <p className="text-white/80 mb-4 font-estedad leading-relaxed">
-              ایرولیا شاپ همراه مطمئن هنرمندان حوزه سرامیک و سفال! ما با ارائه بهترین ابزار، مواد اولیه و آموزش‌های کاربردی، شما را در مسیر خلق آثار هنری منحصر به‌فرد همراهی می‌کنیم.
+              ایرولیا شاپ، همراه مطمئن هنرمندان سرامیک و سفال در مسیر خلق آثار ماندگار.
             </p>
             <div>
               <h4 className="text-lg font-semibold mb-3 font-estedad">شبکه‌های اجتماعی</h4>

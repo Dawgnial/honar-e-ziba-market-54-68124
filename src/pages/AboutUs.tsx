@@ -118,10 +118,10 @@ const AboutUs = () => {
                     <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 text-right font-vazir">
                       همکاران ما
                     </h2>
-                    <p className="text-foreground/80 mb-6 text-right leading-relaxed font-vazir text-lg">
-                      همچنین ایرولیاشاپ در طی این سال‌ها افتخار همکاری با مجموعه‌ها و هنرمندان بزرگی همچون را داشته است:
+                    <p className="text-foreground/80 mb-4 text-right leading-relaxed font-vazir text-lg">
+                      همچنین ایرولیاشاپ در طی این سال‌ها افتخار همکاری با مجموعه‌ها و هنرمندان بزرگی همچون:
                     </p>
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-right">
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-right mb-4">
                       {partners.map((partner, index) => (
                         <li 
                           key={index}
@@ -133,6 +133,9 @@ const AboutUs = () => {
                         </li>
                       ))}
                     </ul>
+                    <p className="text-foreground/80 text-right leading-relaxed font-vazir text-lg">
+                      را داشته است.
+                    </p>
                   </div>
 
                   {/* Closing Message */}

@@ -8,7 +8,7 @@ const Privacy = () => {
     <div className="min-h-screen bg-background dark:bg-background transition-colors duration-300">
       <Navbar />
       
-      <main className="container-custom py-12 pt-14 sm:pt-16 lg:pt-20">
+      <main className="container-custom py-12 pt-24 sm:pt-28 lg:pt-32">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-foreground mb-4 font-vazir">

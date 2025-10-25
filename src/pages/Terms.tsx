@@ -8,14 +8,15 @@ const Terms = () => {
     <div className="min-h-screen bg-background dark:bg-background transition-colors duration-300">
       <Navbar />
       
-      <main className="container-custom py-12 pt-14 sm:pt-16 lg:pt-20">
+      <main className="container-custom py-12 pt-24 sm:pt-28 lg:pt-32">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-foreground mb-4 font-vazir">
-              شرایط و قوانین ایرولیا شاپ
+              شرایط و قوانین استفاده از ایرولیا شاپ
             </h1>
             <p className="text-lg text-muted-foreground font-vazir">
-              لطفاً پیش از استفاده از خدمات و ثبت سفارش، موارد زیر را با دقت مطالعه فرمایید
+              به وب‌سایت ایرولیا شاپ خوش آمدید.
+استفاده از این وب‌سایت به معنی پذیرش کامل شرایط و قوانین زیر است. لطفاً قبل از ثبت درخواست یا دریافت فاکتور، این موارد را مطالعه کنید.
             </p>
           </div>
 
@@ -23,53 +24,84 @@ const Terms = () => {
             <div className="prose prose-lg max-w-none dark:prose-invert">
               <section className="mb-8">
                 <h2 className="text-2xl font-bold text-foreground mb-4 font-vazir">
-                  ۱. ثبت سفارش
+                  ۱. معرفی و نحوه‌ی خدمات
                 </h2>
+                <p className="text-foreground leading-relaxed font-vazir mb-3">
+                  ایرولیا شاپ یک پلتفرم اطلاع‌رسانی و معرفی محصولات است.
+                </p>
+                <p className="text-foreground leading-relaxed font-vazir mb-3">
+                  در حال حاضر خرید و پرداخت آنلاین از طریق سایت انجام نمی‌شود.
+                </p>
                 <p className="text-foreground leading-relaxed font-vazir">
-                  پس از ثبت سفارش، تایید آن از طریق پیامک یا ایمیل به اطلاع مشتری خواهد رسید. ارسال کالا طبق زمان‌بندی مشخص‌شده در صفحه محصول انجام می‌گیرد.
+                  پس از انتخاب محصولات و ثبت درخواست، فاکتور به‌صورت فایل PDF صادر و برای شما ارسال می‌شود (مثلاً از طریق تلگرام یا واتساپ). مراحل بعدی خرید، هماهنگی و پرداخت، مستقیماً با پشتیبانی انجام می‌شود.
                 </p>
               </section>
 
               <section className="mb-8">
                 <h2 className="text-2xl font-bold text-foreground mb-4 font-vazir">
-                  ۲. قیمت و پرداخت
+                  ۲. دقت اطلاعات و فاکتور
                 </h2>
+                <p className="text-foreground leading-relaxed font-vazir mb-3">
+                  لطفاً در هنگام ثبت درخواست یا ارسال اطلاعات تماس، دقت لازم را داشته باشید.
+                </p>
+                <p className="text-foreground leading-relaxed font-vazir mb-3">
+                  فاکتور صادرشده صرفاً جهت اعلام قیمت و موجودی است و به‌منزله‌ی پرداخت یا سفارش قطعی نیست.
+                </p>
                 <p className="text-foreground leading-relaxed font-vazir">
-                  قیمت‌ها به‌صورت روزانه به‌روزرسانی می‌شوند و شامل مالیات بر ارزش افزوده هستند. پرداخت از طریق درگاه‌های بانکی امن و معتبر صورت می‌گیرد.
+                  قیمت و موجودی محصولات ممکن است بدون اطلاع قبلی تغییر کند. اعتبار هر فاکتور تا زمانی است که توسط تیم فروش تأیید شود.
                 </p>
               </section>
 
               <section className="mb-8">
                 <h2 className="text-2xl font-bold text-foreground mb-4 font-vazir">
-                  ۳. ارسال و تحویل
+                  ۳. ارتباط با پشتیبانی
                 </h2>
+                <p className="text-foreground leading-relaxed font-vazir mb-3">
+                  تمام هماهنگی‌ها، پاسخ به سوالات، و پیگیری سفارش‌ها از طریق تلگرام پشتیبانی رسمی ایرولیا شاپ انجام می‌شود.
+                </p>
                 <p className="text-foreground leading-relaxed font-vazir">
-                  ارسال سفارش‌ها از طریق پست یا تیپاکس صورت می‌گیرد. هزینه ارسال بر اساس وزن و مقصد محاسبه می‌شود. مسئولیت تا زمان تحویل به مشتری بر عهده فروشگاه است.
+                  تیم ما در ساعات کاری پاسخ‌گوی سوالات و درخواست‌های شماست.
                 </p>
               </section>
 
               <section className="mb-8">
                 <h2 className="text-2xl font-bold text-foreground mb-4 font-vazir">
-                  ۴. لغو و مرجوعی
+                  ۴. حقوق مالکیت و استفاده از محتوا
                 </h2>
+                <p className="text-foreground leading-relaxed font-vazir mb-3">
+                  تمام تصاویر، توضیحات و اطلاعات درج‌شده در سایت متعلق به ایرولیا شاپ است.
+                </p>
                 <p className="text-foreground leading-relaxed font-vazir">
-                  امکان لغو سفارش تا پیش از ارسال وجود دارد. کالاهای باز نشده و بدون آسیب، تا ۷ روز قابل بازگشت هستند (مطابق شرایط مرجوعی).
+                  هرگونه کپی‌برداری یا استفاده‌ی تجاری بدون اجازه‌ی کتبی مجاز نیست.
                 </p>
               </section>
 
               <section className="mb-8">
                 <h2 className="text-2xl font-bold text-foreground mb-4 font-vazir">
-                  ۵. حقوق مالکیت معنوی
+                  ۵. حریم خصوصی
+                </h2>
+                <p className="text-foreground leading-relaxed font-vazir mb-3">
+                  اطلاعاتی که کاربران هنگام درخواست فاکتور یا ارتباط با پشتیبانی ارسال می‌کنند (مانند نام، شماره تماس یا آدرس ایمیل) صرفاً برای برقراری ارتباط و صدور فاکتور استفاده می‌شود و نزد ایرولیا شاپ محفوظ است.
+                </p>
+                <p className="text-foreground leading-relaxed font-vazir">
+                  ما متعهد به حفظ امنیت و محرمانگی این اطلاعات هستیم.
+                </p>
+              </section>
+
+              <section className="mb-8">
+                <h2 className="text-2xl font-bold text-foreground mb-4 font-vazir">
+                  ۶. تغییرات در شرایط
                 </h2>
                 <p className="text-foreground leading-relaxed font-vazir">
-                  تمامی محتوا، تصاویر و طراحی سایت متعلق به ایرولیا شاپ بوده و هرگونه استفاده غیرمجاز پیگرد قانونی دارد.
+                  ایرولیا شاپ ممکن است هر زمان این قوانین را به‌روزرسانی کند. نسخه‌ی جدید همیشه در همین صفحه منتشر خواهد شد و استفاده‌ی ادامه‌دار از سایت به معنی پذیرش شرایط جدید است.
                 </p>
               </section>
             </div>
 
             <div className="bg-primary/5 dark:bg-primary/10 rounded-lg p-6 border-r-4 border-primary">
               <p className="text-sm text-muted-foreground font-vazir leading-relaxed">
-                با استفاده از خدمات ایرولیا شاپ، شما پذیرش این شرایط و قوانین را تایید می‌کنید. در صورت عدم موافقت با هر یک از موارد فوق، لطفاً از استفاده از خدمات ما خودداری نمایید.
+                ایرولیا شاپ با هدف سهولت در مشاهده، استعلام و سفارش محصولات طراحی شده است.
+استفاده از سایت به منزله‌ی آگاهی و پذیرش کامل شرایط بالا است.
               </p>
             </div>
           </div>
