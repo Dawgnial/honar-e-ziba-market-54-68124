@@ -3,7 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import ModernProductCard from "../components/ModernProductCard";
-import ModernProductFilters, { FilterState } from "../components/ModernProductFilters";
+import NewProductFilters, { FilterState } from "../components/NewProductFilters";
 import { useProducts } from "../hooks/useProducts";
 import { useCategories } from "../hooks/useCategories";
 import { useCart } from "../context/CartContext";
@@ -37,6 +37,7 @@ const Products = () => {
     categories: [],
     featuredOnly: false,
     availableOnly: false,
+    unavailableOnly: false,
     sortBy: 'newest'
   });
   
@@ -105,6 +106,11 @@ const Products = () => {
     // Available only filter
     if (filters.availableOnly) {
       filtered = filtered.filter(product => product.availability_status === 'available');
+    }
+
+    // Unavailable only filter
+    if (filters.unavailableOnly) {
+      filtered = filtered.filter(product => product.availability_status !== 'available');
     }
 
     return filtered;
@@ -307,7 +313,7 @@ const Products = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Filters Sidebar */}
           <div className="lg:col-span-1">
-            <ModernProductFilters
+            <NewProductFilters
               products={products}
               categories={categories}
               filters={filters}
@@ -439,6 +445,7 @@ const Products = () => {
                         categories: [],
                         featuredOnly: false,
                         availableOnly: false,
+                        unavailableOnly: false,
                         sortBy: 'newest'
                       })}
                     >
