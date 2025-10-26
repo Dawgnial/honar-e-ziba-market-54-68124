@@ -237,7 +237,7 @@ const NewProductFilters = ({
       </div>
 
       {/* Accordion Filters */}
-      <Accordion type="multiple" defaultValue={["categories", "availability", "price"]} className="space-y-1">
+      <Accordion type="single" collapsible className="space-y-1">
         {/* دسته‌بندی ها */}
         <AccordionItem value="categories" className="border rounded-lg px-4">
           <AccordionTrigger className="py-3 hover:no-underline">
@@ -251,7 +251,7 @@ const NewProductFilters = ({
             </div>
           </AccordionTrigger>
           <AccordionContent className="pb-4 pt-2">
-            <div className="space-y-3" onClick={(e) => e.stopPropagation()}>
+            <div className="space-y-3">
               {categories.map((category) => (
                 <div key={category.id} className="flex items-center space-x-2 space-x-reverse group">
                   <Checkbox
@@ -285,7 +285,7 @@ const NewProductFilters = ({
             </div>
           </AccordionTrigger>
           <AccordionContent className="pb-4 pt-2">
-            <div className="space-y-3" onClick={(e) => e.stopPropagation()}>
+            <div className="space-y-3">
               <div className="flex items-center space-x-2 space-x-reverse group">
                 <Checkbox
                   id="available-only"
@@ -346,7 +346,7 @@ const NewProductFilters = ({
             </div>
           </AccordionTrigger>
           <AccordionContent className="pb-4 pt-2">
-            <div className="space-y-4 px-1" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+            <div className="space-y-4 px-1">
               <RangeSlider
                 value={localPriceRange}
                 onValueChange={handlePriceRangeChange}
