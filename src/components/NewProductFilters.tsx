@@ -251,7 +251,7 @@ const NewProductFilters = ({
             </div>
           </AccordionTrigger>
           <AccordionContent className="pb-4 pt-2">
-            <div className="space-y-3">
+            <div className="space-y-3" onClick={(e) => e.stopPropagation()}>
               {categories.map((category) => (
                 <div key={category.id} className="flex items-center space-x-2 space-x-reverse group">
                   <Checkbox
@@ -285,7 +285,7 @@ const NewProductFilters = ({
             </div>
           </AccordionTrigger>
           <AccordionContent className="pb-4 pt-2">
-            <div className="space-y-3">
+            <div className="space-y-3" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center space-x-2 space-x-reverse group">
                 <Checkbox
                   id="available-only"
@@ -346,7 +346,7 @@ const NewProductFilters = ({
             </div>
           </AccordionTrigger>
           <AccordionContent className="pb-4 pt-2">
-            <div className="space-y-4 px-1">
+            <div className="space-y-4 px-1" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
               <RangeSlider
                 value={localPriceRange}
                 onValueChange={handlePriceRangeChange}
