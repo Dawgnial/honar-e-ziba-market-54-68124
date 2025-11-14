@@ -123,7 +123,7 @@ const ProductQuickView = ({
               {/* Description */}
               <div>
                 <h3 className="font-semibold mb-2 text-base">توضیحات محصول</h3>
-                <p className="text-stone text-sm leading-relaxed text-justify line-clamp-3">
+                <p className="text-stone text-sm leading-relaxed text-justify line-clamp-3 whitespace-pre-wrap">
                   {product.description}
                 </p>
               </div>
