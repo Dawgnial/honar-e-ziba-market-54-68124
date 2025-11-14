@@ -39,7 +39,8 @@ const AdminCategories = () => {
   const ITEMS_PER_PAGE = 20;
   
   // Filter categories based on search term with Persian text normalization
-  const normalizeText = (text: string): string => {
+  const normalizeText = (text: string | null | undefined): string => {
+    if (!text) return '';
     return text
       .toLowerCase()
       .replace(/ی/g, 'ي')
@@ -52,10 +53,15 @@ const AdminCategories = () => {
   const filteredCategories = categories.filter(category => {
     if (!searchTerm.trim()) return true;
     
-    const normalizedSearchTerm = normalizeText(searchTerm);
-    const normalizedTitle = normalizeText(category.title);
-    
-    return normalizedTitle.includes(normalizedSearchTerm);
+    try {
+      const normalizedSearchTerm = normalizeText(searchTerm);
+      const normalizedTitle = normalizeText(category.title);
+      
+      return normalizedTitle.includes(normalizedSearchTerm);
+    } catch (error) {
+      console.error('Error filtering category:', error);
+      return false;
+    }
   });
   
   const totalPages = Math.ceil(filteredCategories.length / ITEMS_PER_PAGE);
