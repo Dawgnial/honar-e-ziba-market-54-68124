@@ -323,7 +323,7 @@ const formatPrice = (price: number): string => {
 
             <div>
               <h3 className="font-semibold mb-2">توضیحات محصول</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
                 {product.description}
               </p>
             </div>

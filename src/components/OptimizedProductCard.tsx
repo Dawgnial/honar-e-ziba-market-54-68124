@@ -145,7 +145,7 @@ const OptimizedProductCard = memo(({
           </h3>
         </Link>
         
-        <p className="text-muted-foreground text-sm mb-3 line-clamp-2 flex-1">
+        <p className="text-muted-foreground text-sm mb-3 line-clamp-2 flex-1 whitespace-pre-wrap">
           {product.description}
         </p>
 

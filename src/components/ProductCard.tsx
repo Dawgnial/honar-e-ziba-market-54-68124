@@ -108,7 +108,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
           </h3>
         </Link>
         
-        <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+        <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2 whitespace-pre-wrap">
           {product.description}
         </p>
 
