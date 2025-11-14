@@ -39,7 +39,8 @@ const AdminProducts = () => {
   const ITEMS_PER_PAGE = 20;
   
   // Filter products based on search term with Persian text normalization
-  const normalizeText = (text: string): string => {
+  const normalizeText = (text: string | null | undefined): string => {
+    if (!text) return '';
     return text
       .toLowerCase()
       .replace(/ی/g, 'ي')
@@ -52,14 +53,19 @@ const AdminProducts = () => {
   const filteredProducts = products.filter(product => {
     if (!searchTerm.trim()) return true;
     
-    const normalizedSearchTerm = normalizeText(searchTerm);
-    const normalizedTitle = normalizeText(product.title);
-    const normalizedCategory = normalizeText(getCategoryName(product.category_id));
-    const normalizedDescription = normalizeText(product.description || '');
-    
-    return normalizedTitle.includes(normalizedSearchTerm) ||
-           normalizedCategory.includes(normalizedSearchTerm) ||
-           normalizedDescription.includes(normalizedSearchTerm);
+    try {
+      const normalizedSearchTerm = normalizeText(searchTerm);
+      const normalizedTitle = normalizeText(product.title);
+      const normalizedCategory = normalizeText(getCategoryName(product.category_id));
+      const normalizedDescription = normalizeText(product.description);
+      
+      return normalizedTitle.includes(normalizedSearchTerm) ||
+             normalizedCategory.includes(normalizedSearchTerm) ||
+             normalizedDescription.includes(normalizedSearchTerm);
+    } catch (error) {
+      console.error('Error filtering product:', error);
+      return false;
+    }
   });
   
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);

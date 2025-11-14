@@ -35,6 +35,25 @@ const CategoryForm = ({ category, onSuccess, onCancel, isOpen = false }: Categor
   const [priceIncrease, setPriceIncrease] = useState("");
   const [isUpdatingPrices, setIsUpdatingPrices] = useState(false);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      
+      return () => {
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isOpen]);
+
   // Reset form when dialog opens/closes or category changes
   useEffect(() => {
     if (isOpen && category) {

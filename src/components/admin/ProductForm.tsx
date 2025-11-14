@@ -35,6 +35,25 @@ const ProductForm = ({ product, onSuccess, onCancel, isOpen = true }: ProductFor
   const { createProduct, updateProduct } = useSupabaseAdminProducts();
   const [loading, setLoading] = useState(false);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      
+      return () => {
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isOpen]);
+
   // Helper function to parse image URLs properly
   const parseImageUrls = (product: any) => {
     if (!product) return [];
