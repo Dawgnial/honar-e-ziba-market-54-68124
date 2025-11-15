@@ -237,7 +237,7 @@ const NewProductFilters = ({
       </div>
 
       {/* Accordion Filters */}
-      <Accordion type="single" collapsible className="space-y-1">
+      <Accordion type="multiple" className="space-y-1">
         {/* دسته‌بندی ها */}
         <AccordionItem value="categories" className="border rounded-lg px-4">
           <AccordionTrigger className="py-3 hover:no-underline">
