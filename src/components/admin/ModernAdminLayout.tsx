@@ -24,6 +24,7 @@ import RealAdminUsers from "./RealAdminUsers";
 import AdminComments from "../../pages/AdminComments";
 import RealAdminReports from "./RealAdminReports";
 import RealAdminSettings from "./RealAdminSettings";
+import AdminSupport from "../../pages/AdminSupport";
 
 interface ModernAdminLayoutProps {
   children?: ReactNode;
@@ -181,6 +182,7 @@ const ModernAdminLayout = ({ children }: ModernAdminLayoutProps = {}) => {
               {activeTab === "categories" && <AdminCategories />}
               {activeTab === "orders" && <RealAdminOrders />}
               {activeTab === "users" && <RealAdminUsers />}
+              {activeTab === "support" && <AdminSupport />}
               {activeTab === "comments" && <AdminComments />}
               {activeTab === "reports" && <RealAdminReports />}
               {activeTab === "settings" && <RealAdminSettings />}

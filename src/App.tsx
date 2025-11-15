@@ -25,6 +25,7 @@ import AdminUsers from "./pages/AdminUsers";
 import AdminComments from "./pages/AdminComments";
 import AdminReports from "./pages/AdminReports";
 import AdminSettings from "./pages/AdminSettings";
+import AdminSupport from "./pages/AdminSupport";
 import FAQ from "./pages/FAQ";
 import Profile from "./pages/Profile";
 import OrderHistory from "./pages/OrderHistory";
@@ -36,6 +37,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ScrollToTopOnRouteChange from "./components/ScrollToTopOnRouteChange";
 import ScrollToTop from "./components/ScrollToTop";
+import SupportChatButton from "./components/SupportChatButton";
 
 const queryClient = new QueryClient();
 
@@ -146,9 +148,18 @@ const App = () => {
                         </ProtectedRoute>
                       } 
                     />
+                    <Route 
+                      path="/admin/support" 
+                      element={
+                        <ProtectedRoute adminOnly>
+                          <AdminSupport />
+                        </ProtectedRoute>
+                      } 
+                    />
                     
                     <Route path="*" element={<NotFound />} />
                   </Routes>
+                  <SupportChatButton />
                   <ScrollToTop />
                   </BrowserRouter>
                   </CartProvider>

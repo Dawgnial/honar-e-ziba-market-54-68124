@@ -77,6 +77,12 @@ const ModernAdminSidebar = ({ activeTab, onTabChange, collapsed, onToggleCollaps
       badge: null,
     },
     {
+      id: "support",
+      label: "پشتیبانی",
+      icon: MessageCircle,
+      badge: null,
+    },
+    {
       id: "comments",
       label: "مدیریت نظرات",
       icon: MessageCircle,
