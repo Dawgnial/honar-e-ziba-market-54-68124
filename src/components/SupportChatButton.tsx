@@ -16,7 +16,7 @@ const SupportChatButton = () => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed left-6 bottom-6 z-50"
+            className="fixed right-6 bottom-6 z-50"
           >
             <Button
               onClick={() => setIsOpen(true)}
@@ -36,7 +36,7 @@ const SupportChatButton = () => {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0, opacity: 0, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="fixed left-6 bottom-6 z-50"
+            className="fixed right-6 bottom-6 z-50"
           >
             <div className="bg-background border border-border rounded-lg shadow-2xl w-[380px] h-[600px] flex flex-col overflow-hidden">
               {/* Header */}
