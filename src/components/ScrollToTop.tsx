@@ -41,7 +41,7 @@ const ScrollToTop = () => {
       {/* Main scroll button */}
       <div
         className={cn(
-          "fixed bottom-6 right-6 z-50 transition-all duration-500 ease-out scroll-to-top-mobile",
+          "fixed bottom-6 left-6 z-50 transition-all duration-500 ease-out scroll-to-top-mobile",
           "transform",
           isVisible 
             ? "translate-y-0 opacity-100 scale-100" 
@@ -132,7 +132,7 @@ const ScrollToTop = () => {
           @media (max-width: 768px) {
             .scroll-to-top-mobile {
               bottom: 1.5rem !important;
-              right: 1rem !important;
+              left: 1rem !important;
             }
             
             .scroll-to-top-mobile svg {
