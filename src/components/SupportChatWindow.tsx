@@ -26,7 +26,7 @@ const SupportChatWindow = ({ onClose }: SupportChatWindowProps) => {
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { messages, loading, sendMessage } = useSupportChat(conversationId || undefined);
+  const { messages, loading, sendMessage, markAsRead } = useSupportChat(conversationId || undefined);
   
   const { isAnyoneTyping, typingUserNames, startTyping, stopTyping } = useTypingIndicator(
     conversationId || '',
@@ -63,7 +63,14 @@ const SupportChatWindow = ({ onClose }: SupportChatWindowProps) => {
   useEffect(() => {
     // Scroll to bottom when messages change
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    
+    // Mark admin messages as read when viewing
+    if (!showNameForm) {
+      messages
+        .filter(m => m.is_from_admin && !m.is_read)
+        .forEach(m => markAsRead(m.id));
+    }
+  }, [messages, showNameForm, markAsRead]);
 
   const handleStartChat = () => {
     if (!userName.trim()) return;
