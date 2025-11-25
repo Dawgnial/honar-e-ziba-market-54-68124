@@ -86,7 +86,10 @@ const ProductForm = ({ product, onSuccess, onCancel, isOpen = true }: ProductFor
     isFeatured: product?.is_featured || false,
     discountPercentage: product?.discount_percentage || 0,
     availabilityStatus: product?.availability_status || "available",
+    tags: product?.tags || [],
   });
+
+  const [tagInput, setTagInput] = useState("");
 
   useEffect(() => {
     if (product) {
@@ -100,6 +103,7 @@ const ProductForm = ({ product, onSuccess, onCancel, isOpen = true }: ProductFor
         isFeatured: product.is_featured || false,
         discountPercentage: product.discount_percentage || 0,
         availabilityStatus: product.availability_status || "available",
+        tags: product.tags || [],
       });
     }
   }, [product]);
@@ -121,6 +125,7 @@ const ProductForm = ({ product, onSuccess, onCancel, isOpen = true }: ProductFor
         isFeatured: formData.isFeatured,
         discountPercentage: Number(formData.discountPercentage),
         availabilityStatus: formData.availabilityStatus,
+        tags: formData.tags,
       };
 
       if (product) {
@@ -348,6 +353,84 @@ const ProductForm = ({ product, onSuccess, onCancel, isOpen = true }: ProductFor
                 </CardContent>
               </Card>
             )}
+
+            {/* Tags Section */}
+            <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-teal-50 dark:from-gray-800 dark:to-gray-900">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-xl text-gray-800 dark:text-white">
+                  <div className="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
+                    <Tag className="h-4 w-4 text-white" />
+                  </div>
+                  هشتگ‌های محصول
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <Label htmlFor="tags" className="text-base font-medium flex items-center gap-2">
+                    <Tag className="h-4 w-4" />
+                    افزودن هشتگ
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="tags"
+                      value={tagInput}
+                      onChange={(e) => setTagInput(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
+                            handleChange("tags", [...formData.tags, tagInput.trim()]);
+                            setTagInput("");
+                          }
+                        }
+                      }}
+                      placeholder="هشتگ را وارد کرده و Enter بزنید"
+                      className="h-12 text-base border-2 focus:border-teal-500 transition-colors"
+                    />
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
+                          handleChange("tags", [...formData.tags, tagInput.trim()]);
+                          setTagInput("");
+                        }
+                      }}
+                      className="h-12 px-6"
+                      variant="outline"
+                    >
+                      افزودن
+                    </Button>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    هشتگ‌ها به کاربران کمک می‌کنند محصولات مرتبط را بهتر پیدا کنند
+                  </p>
+                </div>
+                
+                {/* Display Tags */}
+                {formData.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 p-4 bg-white dark:bg-gray-800 rounded-lg border-2 border-teal-200 dark:border-gray-700">
+                    {formData.tags.map((tag, index) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="text-base py-2 px-4 flex items-center gap-2 bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-100"
+                      >
+                        #{tag}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleChange("tags", formData.tags.filter((_, i) => i !== index));
+                          }}
+                          className="hover:text-red-600 transition-colors"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Availability and Special Settings */}
             <Card className="border-0 shadow-lg bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-gray-800 dark:to-gray-900">

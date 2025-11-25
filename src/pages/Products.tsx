@@ -35,6 +35,7 @@ const Products = () => {
     searchQuery: '',
     priceRange: [0, 1000000],
     categories: [],
+    tags: [],
     featuredOnly: false,
     availableOnly: false,
     unavailableOnly: false,
@@ -57,19 +58,17 @@ const Products = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Handle category selection from navigation
+  // Handle category selection and search from navigation
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const categoryId = searchParams.get('category');
     const searchQuery = searchParams.get('search');
     
-    if (categoryId) {
-      setFilters(prev => ({ ...prev, categories: [categoryId] }));
-    }
-    
-    if (searchQuery) {
-      setFilters(prev => ({ ...prev, searchQuery }));
-    }
+    setFilters(prev => ({
+      ...prev,
+      categories: categoryId ? [categoryId] : [],
+      searchQuery: searchQuery || ''
+    }));
   }, [location.search]);
 
 
@@ -111,6 +110,13 @@ const Products = () => {
     // Unavailable only filter
     if (filters.unavailableOnly) {
       filtered = filtered.filter(product => product.availability_status !== 'available');
+    }
+
+    // Tags filter
+    if (filters.tags.length > 0) {
+      filtered = filtered.filter(product => 
+        product.tags && filters.tags.some(tag => product.tags.includes(tag))
+      );
     }
 
     return filtered;
@@ -443,6 +449,7 @@ const Products = () => {
                         searchQuery: '',
                         priceRange: [0, 1000000],
                         categories: [],
+                        tags: [],
                         featuredOnly: false,
                         availableOnly: false,
                         unavailableOnly: false,

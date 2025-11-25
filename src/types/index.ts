@@ -11,4 +11,5 @@ export interface Product {
   is_featured?: boolean;
   discount_percentage?: number;
   availability_status?: string;
+  tags?: string[];
 }

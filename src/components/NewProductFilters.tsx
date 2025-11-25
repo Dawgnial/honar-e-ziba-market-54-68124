@@ -17,6 +17,7 @@ export interface FilterState {
   searchQuery: string;
   priceRange: [number, number];
   categories: string[];
+  tags: string[];
   featuredOnly: boolean;
   availableOnly: boolean;
   unavailableOnly: boolean;
@@ -111,6 +112,7 @@ const NewProductFilters = ({
       searchQuery: '',
       priceRange: resetRange,
       categories: [],
+      tags: [],
       featuredOnly: false,
       availableOnly: false,
       unavailableOnly: false,
@@ -265,6 +267,45 @@ const NewProductFilters = ({
                     className="text-sm cursor-pointer flex-1 group-hover:text-primary transition-colors"
                   >
                     {category.title}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* فیلتر هشتگ‌ها */}
+        <AccordionItem value="tags" className="border rounded-lg px-4">
+          <AccordionTrigger className="py-3 hover:no-underline">
+            <div className="flex items-center justify-between w-full pr-2">
+              <span className="text-sm font-semibold">هشتگ‌ها</span>
+              {filters.tags.length > 0 && (
+                <Badge variant="secondary" className="h-5 px-2 text-xs mr-2">
+                  {filters.tags.length}
+                </Badge>
+              )}
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="pb-4 pt-2">
+            <div className="space-y-3">
+              {Array.from(new Set(products.flatMap(p => p.tags || []))).map((tag) => (
+                <div key={tag} className="flex items-center space-x-2 space-x-reverse group">
+                  <Checkbox
+                    id={`tag-${tag}`}
+                    checked={filters.tags.includes(tag)}
+                    onCheckedChange={(checked) => {
+                      const newTags = checked
+                        ? [...filters.tags, tag]
+                        : filters.tags.filter(t => t !== tag);
+                      updateFilters({ tags: newTags });
+                    }}
+                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <label
+                    htmlFor={`tag-${tag}`}
+                    className="text-sm cursor-pointer flex-1 group-hover:text-primary transition-colors"
+                  >
+                    #{tag}
                   </label>
                 </div>
               ))}

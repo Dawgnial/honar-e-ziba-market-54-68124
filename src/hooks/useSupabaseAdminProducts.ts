@@ -14,6 +14,7 @@ export interface AdminProduct {
   stock: number | null;
   discount_percentage: number | null;
   availability_status: string | null;
+  tags: string[] | null;
   created_at: string;
   updated_at: string;
 }

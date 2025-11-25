@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Edit, Trash2, Image, Package, Search } from "lucide-react";
+import { Plus, Edit, Trash2, Image, Package, Search, GripVertical } from "lucide-react";
 import { useSupabaseCategories } from "../hooks/useSupabaseCategories";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -27,14 +27,130 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { ProductPagination } from "../components/ProductPagination";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+interface SortableCategoryRowProps {
+  category: any;
+  onEdit: (category: any) => void;
+  onDelete: (categoryId: string) => void;
+  isDeleting: boolean;
+}
+
+const SortableCategoryRow = ({ category, onEdit, onDelete, isDeleting }: SortableCategoryRowProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <TableRow ref={setNodeRef} style={style} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+      <TableCell>
+        <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
+          <GripVertical className="h-5 w-5 text-gray-400" />
+        </div>
+      </TableCell>
+      <TableCell>
+        {category.image_url ? (
+          <img
+            src={category.image_url}
+            alt={category.title}
+            className="w-12 h-12 rounded object-cover"
+          />
+        ) : (
+          <div className="w-12 h-12 rounded bg-gray-200 flex items-center justify-center">
+            <Image className="h-6 w-6 text-gray-400" />
+          </div>
+        )}
+      </TableCell>
+      <TableCell className="font-medium">{category.title}</TableCell>
+      <TableCell>{new Date(category.created_at).toLocaleDateString('fa-IR')}</TableCell>
+      <TableCell>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onEdit(category)}
+            className="hover:bg-blue-50 hover:text-blue-600"
+          >
+            <Edit className="h-4 w-4" />
+          </Button>
+          
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                disabled={isDeleting}
+                className="hover:bg-red-50 hover:text-red-600"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>تأیید حذف</AlertDialogTitle>
+                <AlertDialogDescription>
+                  آیا از حذف دسته‌بندی "{category.title}" اطمینان دارید؟ این عمل قابل بازگشت نیست.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>انصراف</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => onDelete(category.id)}
+                  className="bg-red-600 hover:bg-red-700"
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? "در حال حذف..." : "حذف"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+};
 
 const AdminCategories = () => {
-  const { categories, loading, deleteCategory, refetch } = useSupabaseCategories();
+  const { categories, loading, deleteCategory, updateCategoryOrder, refetch } = useSupabaseCategories();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const ITEMS_PER_PAGE = 20;
   
@@ -102,6 +218,28 @@ const AdminCategories = () => {
     }
   };
 
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = currentCategories.findIndex((cat) => cat.id === active.id);
+      const newIndex = currentCategories.findIndex((cat) => cat.id === over.id);
+
+      const reorderedCategories = arrayMove(currentCategories, oldIndex, newIndex);
+
+      // Update display_order for all affected categories
+      try {
+        for (let i = 0; i < reorderedCategories.length; i++) {
+          const category = reorderedCategories[i];
+          const newOrder = startIndex + i;
+          await updateCategoryOrder(category.id, newOrder);
+        }
+      } catch (error) {
+        console.error('Error updating category order:', error);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -118,7 +256,7 @@ const AdminCategories = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">مدیریت دسته‌بندی‌ها</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">مدیریت و ویرایش دسته‌بندی‌های محصولات</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">مدیریت و ویرایش دسته‌بندی‌های محصولات - برای تغییر ترتیب، دسته‌بندی‌ها را بکشید</p>
           <div className="flex items-center gap-2 mt-2">
             <Badge variant="outline" className="flex items-center gap-1">
               <Package className="h-3 w-3" />
@@ -178,80 +316,39 @@ const AdminCategories = () => {
             )
           ) : (
             <>
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50 dark:bg-gray-800">
-                    <TableHead className="font-semibold">تصویر</TableHead>
-                    <TableHead className="font-semibold">نام دسته‌بندی</TableHead>
-                    <TableHead className="font-semibold">تاریخ ایجاد</TableHead>
-                    <TableHead className="font-semibold">عملیات</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {currentCategories.map((category) => (
-                    <TableRow key={category.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                      <TableCell>
-                        {category.image_url ? (
-                          <img
-                            src={category.image_url}
-                            alt={category.title}
-                            className="w-12 h-12 rounded object-cover"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded bg-gray-200 flex items-center justify-center">
-                            <Image className="h-6 w-6 text-gray-400" />
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell className="font-medium">{category.title}</TableCell>
-                      <TableCell>{new Date(category.created_at).toLocaleDateString('fa-IR')}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(category)}
-                            className="hover:bg-blue-50 hover:text-blue-600"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                disabled={isDeleting === category.id}
-                                className="hover:bg-red-50 hover:text-red-600"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>تأیید حذف</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  آیا از حذف دسته‌بندی "{category.title}" اطمینان دارید؟ این عمل قابل بازگشت نیست.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>انصراف</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDelete(category.id)}
-                                  className="bg-red-600 hover:bg-red-700"
-                                  disabled={isDeleting === category.id}
-                                >
-                                  {isDeleting === category.id ? "در حال حذف..." : "حذف"}
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </TableCell>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50 dark:bg-gray-800">
+                      <TableHead className="font-semibold w-16"></TableHead>
+                      <TableHead className="font-semibold">تصویر</TableHead>
+                      <TableHead className="font-semibold">نام دسته‌بندی</TableHead>
+                      <TableHead className="font-semibold">تاریخ ایجاد</TableHead>
+                      <TableHead className="font-semibold">عملیات</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    <SortableContext
+                      items={currentCategories.map(cat => cat.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {currentCategories.map((category) => (
+                        <SortableCategoryRow
+                          key={category.id}
+                          category={category}
+                          onEdit={handleEdit}
+                          onDelete={handleDelete}
+                          isDeleting={isDeleting === category.id}
+                        />
+                      ))}
+                    </SortableContext>
+                  </TableBody>
+                </Table>
+              </DndContext>
               
               {/* Pagination */}
               {totalPages > 1 && (
