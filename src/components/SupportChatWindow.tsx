@@ -4,9 +4,11 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { ScrollArea } from './ui/scroll-area';
+import { Badge } from './ui/badge';
 import { useSupportChat } from '@/hooks/useSupportChat';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { format } from 'date-fns';
 import { faIR } from 'date-fns/locale';
 
@@ -30,6 +32,13 @@ const SupportChatWindow = ({ onClose }: SupportChatWindowProps) => {
     conversationId || '',
     user?.id || 'anonymous',
     userName || 'کاربر'
+  );
+
+  const { isAdminOnline } = useOnlineStatus(
+    conversationId || '',
+    user?.id || 'anonymous',
+    userName || 'کاربر',
+    'user'
   );
 
   useEffect(() => {
@@ -144,6 +153,16 @@ const SupportChatWindow = ({ onClose }: SupportChatWindowProps) => {
 
   return (
     <>
+      {/* Admin Online Status */}
+      <div className="px-4 py-2 border-b border-border bg-muted/30">
+        <div className="flex items-center gap-2 text-sm">
+          <div className={`w-2 h-2 rounded-full ${isAdminOnline() ? 'bg-green-500' : 'bg-gray-400'}`} />
+          <span className="text-muted-foreground">
+            {isAdminOnline() ? 'پشتیبانی آنلاین است' : 'پشتیبانی آفلاین است'}
+          </span>
+        </div>
+      </div>
+
       {/* Messages Area */}
       <ScrollArea className="flex-1 p-4">
         {loading ? (
