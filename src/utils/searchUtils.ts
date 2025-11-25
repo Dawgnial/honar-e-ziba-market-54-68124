@@ -1,6 +1,6 @@
 import { Product } from '@/types';
 
-// Persian text normalization for better search
+// Persian text normalization for better search with fuzzy matching
 export const normalizeText = (text: string): string => {
   return text
     .toLowerCase()
@@ -8,10 +8,51 @@ export const normalizeText = (text: string): string => {
     .replace(/ک/g, 'ك')
     .replace(/ة/g, 'ه')
     .replace(/آ/g, 'ا')
+    .replace(/‌/g, ' ') // Replace zero-width non-joiner with space
     .trim();
 };
 
-// Search algorithm - ONLY searches in product titles/names
+// Calculate similarity between two strings (Levenshtein distance)
+const calculateSimilarity = (str1: string, str2: string): number => {
+  const longer = str1.length > str2.length ? str1 : str2;
+  const shorter = str1.length > str2.length ? str2 : str1;
+  
+  if (longer.length === 0) return 1.0;
+  
+  const editDistance = levenshteinDistance(longer, shorter);
+  return (longer.length - editDistance) / longer.length;
+};
+
+// Levenshtein distance algorithm
+const levenshteinDistance = (str1: string, str2: string): number => {
+  const matrix: number[][] = [];
+
+  for (let i = 0; i <= str2.length; i++) {
+    matrix[i] = [i];
+  }
+
+  for (let j = 0; j <= str1.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  for (let i = 1; i <= str2.length; i++) {
+    for (let j = 1; j <= str1.length; j++) {
+      if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+
+  return matrix[str2.length][str1.length];
+};
+
+// Enhanced search algorithm with fuzzy matching
 export const calculateRelevanceScore = (product: Product, query: string): number => {
   const normalizedQuery = normalizeText(query.trim());
   const normalizedTitle = normalizeText(product.title);
@@ -20,8 +61,6 @@ export const calculateRelevanceScore = (product: Product, query: string): number
   if (normalizedQuery.length < 2) {
     return 0;
   }
-  
-  // ONLY search in product title - NEVER in description or other fields
   
   // Exact title match (highest priority)
   if (normalizedTitle === normalizedQuery) {
@@ -38,8 +77,33 @@ export const calculateRelevanceScore = (product: Product, query: string): number
     return 400;
   }
   
-  // NO MATCH - reject everything else
-  // Descriptions and other fields are NOT searched
+  // Fuzzy matching - check similarity for typos
+  const words = normalizedTitle.split(' ');
+  const queryWords = normalizedQuery.split(' ');
+  
+  let maxSimilarity = 0;
+  
+  for (const word of words) {
+    for (const queryWord of queryWords) {
+      const similarity = calculateSimilarity(word, queryWord);
+      maxSimilarity = Math.max(maxSimilarity, similarity);
+    }
+  }
+  
+  // If similarity is above 70%, consider it a match
+  if (maxSimilarity >= 0.7) {
+    return Math.floor(maxSimilarity * 200);
+  }
+  
+  // Check if query words appear in any order
+  const allQueryWordsPresent = queryWords.every(qWord => 
+    words.some(word => word.includes(qWord) || qWord.includes(word))
+  );
+  
+  if (allQueryWordsPresent) {
+    return 100;
+  }
+  
   return 0;
 };
 

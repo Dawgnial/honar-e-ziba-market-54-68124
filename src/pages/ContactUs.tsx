@@ -14,35 +14,35 @@ const ContactUs = () => {
         url="https://iroliashop.com/contact"
       />
       
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
         <Navbar />
         
         <main className="pt-24 sm:pt-28 lg:pt-32 pb-16">
           <div className="container mx-auto px-4 max-w-6xl">
             {/* Header */}
             <div className="text-center mb-12 animate-fade-in">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-vazir">تماس با ما</h1>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto font-vazir">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 font-vazir">تماس با ما</h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-vazir">
                 برای دریافت مشاوره و سفارش محصولات، با ما در تماس باشید
               </p>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Contact Information Card */}
-              <Card className="bg-white shadow-xl border-0 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-                <CardHeader className="bg-gradient-to-r from-green-primary to-green-secondary text-white rounded-t-xl">
+              <Card className="shadow-xl border animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                <CardHeader className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-t-xl">
                   <CardTitle className="text-2xl text-center font-vazir">اطلاعات تماس</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6 p-8">
                   <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Mail className="h-7 w-7 text-blue-600" />
+                    <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Mail className="h-7 w-7 text-primary" />
                     </div>
                     <div className="text-right flex-1">
-                      <h4 className="font-semibold text-gray-900 mb-2 text-lg font-vazir">ایمیل</h4>
+                      <h4 className="font-semibold mb-2 text-lg font-vazir">ایمیل</h4>
                       <a 
                         href="mailto:iroliashop@gmail.com"
-                        className="text-gray-700 hover:text-blue-600 transition-colors font-estedad"
+                        className="text-muted-foreground hover:text-primary transition-colors font-estedad"
                         dir="ltr"
                       >
                         iroliashop@gmail.com
@@ -51,19 +51,19 @@ const ContactUs = () => {
                   </div>
                   
                   <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Phone className="h-7 w-7 text-green-600" />
+                    <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Phone className="h-7 w-7 text-primary" />
                     </div>
                     <div className="text-right flex-1">
-                      <h4 className="font-semibold text-gray-900 mb-2 text-lg font-vazir">شماره تماس</h4>
-                      <div className="space-y-2 text-gray-700 font-vazir">
+                      <h4 className="font-semibold mb-2 text-lg font-vazir">شماره تماس</h4>
+                      <div className="space-y-2 text-muted-foreground font-vazir">
                         <p dir="ltr">
-                          <a href="tel:+989155057813" className="hover:text-green-600 transition-colors">
+                          <a href="tel:+989155057813" className="hover:text-primary transition-colors">
                             ۰۹۱۵۵۰۵۷۸۱۳
                           </a>
                         </p>
                         <p dir="ltr">
-                          <a href="tel:+989153131652" className="hover:text-green-600 transition-colors">
+                          <a href="tel:+989153131652" className="hover:text-primary transition-colors">
                             ۰۹۱۵۳۱۳۱۶۵۲
                           </a>
                         </p>
@@ -72,12 +72,12 @@ const ContactUs = () => {
                   </div>
                   
                   <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Clock className="h-7 w-7 text-amber-600" />
+                    <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Clock className="h-7 w-7 text-primary" />
                     </div>
                     <div className="text-right flex-1">
-                      <h4 className="font-semibold text-gray-900 mb-2 text-lg font-vazir">ساعت کاری فروشگاه</h4>
-                      <div className="space-y-1 text-gray-700 font-vazir">
+                      <h4 className="font-semibold mb-2 text-lg font-vazir">ساعت کاری فروشگاه</h4>
+                      <div className="space-y-1 text-muted-foreground font-vazir">
                         <p>همه‌روزه از ساعت ۹ صبح تا ۱ ظهر</p>
                         <p>و ۴:۳۰ عصر تا ۷:۳۰ شب</p>
                         <p className="text-sm text-amber-600 italic mt-2">
@@ -88,24 +88,34 @@ const ContactUs = () => {
                   </div>
                   
                   <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <MapPin className="h-7 w-7 text-red-600" />
+                    <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <MapPin className="h-7 w-7 text-primary" />
                     </div>
                     <div className="text-right flex-1">
-                      <h4 className="font-semibold text-gray-900 mb-2 text-lg font-vazir">آدرس فروشگاه</h4>
-                      <p className="text-gray-700 leading-relaxed font-vazir">
+                      <h4 className="font-semibold mb-2 text-lg font-vazir">آدرس فروشگاه</h4>
+                      <p className="text-muted-foreground leading-relaxed font-vazir mb-3">
                         خراسان رضوی، مشهد، قاسم‌آباد، فلاحی ۱۹/۴، پلاک ۳۱، واحد ۱
                       </p>
+                      <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3223.8!2d59.5!3d36.3!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDE4JzAwLjAiTiA1OcKwMzAnMDAuMCJF!5e0!3m2!1sfa!2s!4v1234567890"
+                        width="100%"
+                        height="200"
+                        style={{ border: 0, borderRadius: '8px' }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title="موقعیت فروشگاه"
+                      />
                     </div>
                   </div>
                 </CardContent>
               </Card>
               
               {/* Social Media Card */}
-              <Card className="bg-white shadow-xl border-0 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-t-xl">
+              <Card className="shadow-xl border animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                <CardHeader className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-t-xl">
                   <CardTitle className="text-2xl text-center font-vazir">شبکه‌های اجتماعی ما</CardTitle>
-                  <p className="text-center text-white/90 text-sm mt-2 font-vazir">
+                  <p className="text-center text-primary-foreground/90 text-sm mt-2 font-vazir">
                     برای دریافت آخرین اخبار و تخفیف‌ها با ما در ارتباط باشید
                   </p>
                 </CardHeader>

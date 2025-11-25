@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { FileText, Calendar, Phone, Mail, Package, ArrowRight } from "lucide-react";
@@ -9,6 +9,7 @@ import { toFarsiNumber } from "../utils/numberUtils";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { SEOHead } from "../components/SEOHead";
+import { DownloadInvoiceButton } from "../components/DownloadInvoiceButton";
 
 const OrderHistory = () => {
   const { orders, loading } = useOrderHistory();
@@ -161,6 +162,10 @@ const OrderHistory = () => {
                     </div>
                   </div>
                 </CardContent>
+                
+                <CardFooter className="bg-muted/30 flex justify-end gap-2">
+                  <DownloadInvoiceButton order={order} />
+                </CardFooter>
               </Card>
             ))}
           </div>
