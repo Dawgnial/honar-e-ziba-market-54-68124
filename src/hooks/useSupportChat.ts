@@ -25,10 +25,11 @@ export interface Conversation {
   unread_count: number;
 }
 
-export const useSupportChat = (conversationId?: string) => {
+export const useSupportChat = (conversationId?: string, onNewMessage?: (message: SupportMessage) => void) => {
   const { user } = useSupabaseAuth();
   const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const loadMessages = async () => {
     if (!conversationId) return;
@@ -42,7 +43,24 @@ export const useSupportChat = (conversationId?: string) => {
         .order('created_at', { ascending: true });
 
       if (error) throw error;
+      
+      const previousMessageIds = messages.map(m => m.id);
+      const newMessages = (data || []).filter(
+        m => !previousMessageIds.includes(m.id) && m.is_from_admin
+      );
+      
+      // Notify about new admin messages
+      newMessages.forEach(msg => {
+        if (onNewMessage) {
+          onNewMessage(msg);
+        }
+      });
+      
       setMessages(data || []);
+      
+      // Count unread admin messages
+      const unread = (data || []).filter(m => m.is_from_admin && !m.is_read).length;
+      setUnreadCount(unread);
     } catch (error) {
       console.error('Error loading messages:', error);
       toast.error('خطا در بارگذاری پیام‌ها');
@@ -147,7 +165,8 @@ export const useSupportChat = (conversationId?: string) => {
     sendMessage,
     sendAdminReply,
     markAsRead,
-    refreshMessages: loadMessages
+    refreshMessages: loadMessages,
+    unreadCount
   };
 };
 
