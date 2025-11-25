@@ -7,10 +7,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useConversations, useSupportChat } from '@/hooks/useSupportChat';
+import { useTypingIndicator } from '@/hooks/useTypingIndicator';
+import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { format } from 'date-fns';
 import { faIR } from 'date-fns/locale';
 
 const AdminSupport = () => {
+  const { user } = useSupabaseAuth();
   const { conversations, loading: conversationsLoading } = useConversations();
   const [selectedConversationId, setSelectedConversationId] = useState<string>('');
   const [replyMessage, setReplyMessage] = useState('');
@@ -18,6 +21,12 @@ const AdminSupport = () => {
 
   const { messages, loading: messagesLoading, sendAdminReply } = useSupportChat(
     selectedConversationId || undefined
+  );
+
+  const { isAnyoneTyping, typingUserNames, startTyping, stopTyping } = useTypingIndicator(
+    selectedConversationId || '',
+    user?.id || 'admin',
+    'مدیریت'
   );
 
   const selectedConversation = conversations.find(
@@ -29,12 +38,22 @@ const AdminSupport = () => {
 
     try {
       setSending(true);
+      stopTyping();
       await sendAdminReply(replyMessage);
       setReplyMessage('');
     } catch (error) {
       console.error('Error sending reply:', error);
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleReplyChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setReplyMessage(e.target.value);
+    if (e.target.value.trim()) {
+      startTyping();
+    } else {
+      stopTyping();
     }
   };
 
@@ -183,6 +202,24 @@ const AdminSupport = () => {
                           </div>
                         </div>
                       ))}
+                      
+                      {/* Typing Indicator */}
+                      {isAnyoneTyping && (
+                        <div className="flex justify-end">
+                          <div className="bg-primary text-primary-foreground rounded-lg p-3 max-w-[80%]">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs opacity-90">
+                                {typingUserNames.join(', ')} در حال نوشتن...
+                              </span>
+                              <div className="flex gap-1">
+                                <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </ScrollArea>
@@ -192,8 +229,9 @@ const AdminSupport = () => {
                   <div className="flex gap-2">
                     <Textarea
                       value={replyMessage}
-                      onChange={(e) => setReplyMessage(e.target.value)}
+                      onChange={handleReplyChange}
                       onKeyPress={handleKeyPress}
+                      onBlur={stopTyping}
                       placeholder="پاسخ خود را بنویسید..."
                       className="min-h-[80px] max-h-[150px] resize-none text-right"
                       disabled={sending}
