@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { SEOHead } from "../components/SEOHead";
 import { DownloadInvoiceButton } from "../components/DownloadInvoiceButton";
+import { PrintInvoiceButton } from "../components/PrintInvoiceButton";
 
 const OrderHistory = () => {
   const { orders, loading } = useOrderHistory();
@@ -164,6 +165,7 @@ const OrderHistory = () => {
                 </CardContent>
                 
                 <CardFooter className="bg-muted/30 flex justify-end gap-2">
+                  <PrintInvoiceButton order={order} />
                   <DownloadInvoiceButton order={order} />
                 </CardFooter>
               </Card>
