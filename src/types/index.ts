@@ -12,4 +12,5 @@ export interface Product {
   discount_percentage?: number;
   availability_status?: string;
   tags?: string[];
+  stock?: number;
 }

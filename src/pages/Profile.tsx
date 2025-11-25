@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,12 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Phone, Calendar, Shield, Eye, EyeOff, Heart, FileText } from "lucide-react";
+import { User, Mail, Phone, Calendar, Shield, Eye, EyeOff, Heart, FileText, Upload, Camera } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Profile = () => {
   const { user, userProfile, loading } = useSupabaseAuth();
@@ -34,6 +35,9 @@ const Profile = () => {
   });
   const [isUpdating, setIsUpdating] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (userProfile) {
@@ -41,8 +45,80 @@ const Profile = () => {
         name: userProfile.name || "",
         phone: userProfile.phone || "",
       });
+      // Load avatar from storage if exists
+      if (user?.id) {
+        loadAvatar();
+      }
     }
-  }, [userProfile]);
+  }, [userProfile, user]);
+
+  const loadAvatar = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const { data } = await supabase.storage
+        .from('avatars')
+        .list(user.id, {
+          limit: 1,
+          sortBy: { column: 'created_at', order: 'desc' }
+        });
+
+      if (data && data.length > 0) {
+        const { data: urlData } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(`${user.id}/${data[0].name}`);
+        
+        setAvatarUrl(urlData.publicUrl);
+      }
+    } catch (error) {
+      console.error('Error loading avatar:', error);
+    }
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!user?.id || !event.target.files || event.target.files.length === 0) return;
+
+    const file = event.target.files[0];
+    
+    // Check file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      handleError('حجم فایل نباید بیشتر از ۲ مگابایت باشد');
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      handleError('فقط فایل‌های تصویری مجاز هستند');
+      return;
+    }
+
+    try {
+      setIsUploadingAvatar(true);
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `avatar_${Date.now()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, {
+          upsert: true
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setAvatarUrl(urlData.publicUrl);
+      handleSuccess('تصویر پروفایل با موفقیت آپلود شد');
+    } catch (error: any) {
+      handleError(error, { customMessage: 'خطا در آپلود تصویر' });
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
 
   const handleUpdateProfile = async () => {
     if (!user || !userProfile) return;
@@ -146,15 +222,40 @@ const Profile = () => {
     <Layout>
       <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-            <User className="w-8 h-8 text-primary" />
+        <div className="flex items-center gap-6 mb-8">
+          <div className="relative group">
+            <Avatar className="w-24 h-24 border-4 border-primary/20">
+              <AvatarImage src={avatarUrl || undefined} alt={userProfile.name} />
+              <AvatarFallback className="text-2xl bg-primary/10 text-primary">
+                {userProfile.name?.charAt(0) || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <Button
+              size="icon"
+              variant="secondary"
+              className="absolute bottom-0 right-0 rounded-full w-8 h-8 shadow-lg"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploadingAvatar}
+            >
+              {isUploadingAvatar ? (
+                <div className="w-4 h-4 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Camera className="w-4 h-4" />
+              )}
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarUpload}
+            />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-3xl font-bold">
               پروفایل کاربری
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-muted-foreground">
               مدیریت اطلاعات حساب کاربری شما
             </p>
           </div>
