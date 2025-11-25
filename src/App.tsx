@@ -1,4 +1,4 @@
-
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,28 +7,31 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import AboutUs from "./pages/AboutUs";
-import ContactUs from "./pages/ContactUs";
-import Products from "./pages/Products";
-import ProductDetail from "./pages/ProductDetail";
-import Cart from "./pages/Cart";
-import Auth from "./pages/Auth";
-import Favorites from "./pages/Favorites";
 
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
-import Admin from "./pages/Admin";
-import AdminProducts from "./pages/AdminProducts";
-import AdminCategories from "./pages/AdminCategories";
-import AdminOrders from "./pages/AdminOrders";
-import AdminUsers from "./pages/AdminUsers";
-import AdminComments from "./pages/AdminComments";
-import AdminReports from "./pages/AdminReports";
-import AdminSettings from "./pages/AdminSettings";
-import AdminSupport from "./pages/AdminSupport";
-import FAQ from "./pages/FAQ";
-import Profile from "./pages/Profile";
-import OrderHistory from "./pages/OrderHistory";
+// Lazy load all pages except critical ones
+const AboutUs = lazy(() => import("./pages/AboutUs"));
+const ContactUs = lazy(() => import("./pages/ContactUs"));
+const Products = lazy(() => import("./pages/Products"));
+const ProductDetail = lazy(() => import("./pages/ProductDetail"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Auth = lazy(() => import("./pages/Auth"));
+const Favorites = lazy(() => import("./pages/Favorites"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const FAQ = lazy(() => import("./pages/FAQ"));
+const Profile = lazy(() => import("./pages/Profile"));
+const OrderHistory = lazy(() => import("./pages/OrderHistory"));
+
+// Admin pages - lazy loaded
+const Admin = lazy(() => import("./pages/Admin"));
+const AdminProducts = lazy(() => import("./pages/AdminProducts"));
+const AdminCategories = lazy(() => import("./pages/AdminCategories"));
+const AdminOrders = lazy(() => import("./pages/AdminOrders"));
+const AdminUsers = lazy(() => import("./pages/AdminUsers"));
+const AdminComments = lazy(() => import("./pages/AdminComments"));
+const AdminReports = lazy(() => import("./pages/AdminReports"));
+const AdminSettings = lazy(() => import("./pages/AdminSettings"));
+const AdminSupport = lazy(() => import("./pages/AdminSupport"));
 import { CartProvider } from "./context/CartContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import { ThemeProvider } from "./components/ThemeProvider";
@@ -55,110 +58,116 @@ const App = () => {
                   <Sonner />
                   <BrowserRouter>
                   <ScrollToTopOnRouteChange />
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/about" element={<AboutUs />} />
-                    <Route path="/products" element={<Products />} />
-                    <Route path="/product/:id" element={<ProductDetail />} />
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/auth" element={<Auth />} />
-                    <Route path="/favorites" element={<Favorites />} />
-                    <Route path="/contact" element={<ContactUs />} />
-                    <Route path="/terms" element={<Terms />} />
-                    <Route path="/privacy" element={<Privacy />} />
-                    <Route path="/faq" element={<FAQ />} />
-                    <Route 
-                      path="/order-history" 
-                      element={
-                        <ProtectedRoute>
-                          <OrderHistory />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/profile" 
-                      element={
-                        <ProtectedRoute>
-                          <Profile />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    
-                    <Route 
-                      path="/admin" 
-                      element={
-                        <ProtectedRoute adminOnly>
-                          <Admin />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/admin/products" 
-                      element={
-                        <ProtectedRoute adminOnly>
-                          <AdminProducts />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/admin/categories" 
-                      element={
-                        <ProtectedRoute adminOnly>
-                          <AdminCategories />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/admin/orders" 
-                      element={
-                        <ProtectedRoute adminOnly>
-                          <AdminOrders />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/admin/users" 
-                      element={
-                        <ProtectedRoute adminOnly>
-                          <AdminUsers />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/admin/comments" 
-                      element={
-                        <ProtectedRoute adminOnly>
-                          <AdminComments />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/admin/reports" 
-                      element={
-                        <ProtectedRoute adminOnly>
-                          <AdminReports />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/admin/settings" 
-                      element={
-                        <ProtectedRoute adminOnly>
-                          <AdminSettings />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/admin/support" 
-                      element={
-                        <ProtectedRoute adminOnly>
-                          <AdminSupport />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
+                  <Suspense fallback={
+                    <div className="min-h-screen flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    </div>
+                  }>
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/about" element={<AboutUs />} />
+                      <Route path="/products" element={<Products />} />
+                      <Route path="/product/:id" element={<ProductDetail />} />
+                      <Route path="/cart" element={<Cart />} />
+                      <Route path="/auth" element={<Auth />} />
+                      <Route path="/favorites" element={<Favorites />} />
+                      <Route path="/contact" element={<ContactUs />} />
+                      <Route path="/terms" element={<Terms />} />
+                      <Route path="/privacy" element={<Privacy />} />
+                      <Route path="/faq" element={<FAQ />} />
+                      <Route 
+                        path="/order-history" 
+                        element={
+                          <ProtectedRoute>
+                            <OrderHistory />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      <Route 
+                        path="/profile" 
+                        element={
+                          <ProtectedRoute>
+                            <Profile />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      
+                      <Route 
+                        path="/admin" 
+                        element={
+                          <ProtectedRoute adminOnly>
+                            <Admin />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      <Route 
+                        path="/admin/products" 
+                        element={
+                          <ProtectedRoute adminOnly>
+                            <AdminProducts />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      <Route 
+                        path="/admin/categories" 
+                        element={
+                          <ProtectedRoute adminOnly>
+                            <AdminCategories />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      <Route 
+                        path="/admin/orders" 
+                        element={
+                          <ProtectedRoute adminOnly>
+                            <AdminOrders />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      <Route 
+                        path="/admin/users" 
+                        element={
+                          <ProtectedRoute adminOnly>
+                            <AdminUsers />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      <Route 
+                        path="/admin/comments" 
+                        element={
+                          <ProtectedRoute adminOnly>
+                            <AdminComments />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      <Route 
+                        path="/admin/reports" 
+                        element={
+                          <ProtectedRoute adminOnly>
+                            <AdminReports />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      <Route 
+                        path="/admin/settings" 
+                        element={
+                          <ProtectedRoute adminOnly>
+                            <AdminSettings />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      <Route 
+                        path="/admin/support" 
+                        element={
+                          <ProtectedRoute adminOnly>
+                            <AdminSupport />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Suspense>
                   <SupportChatButton />
                   <ScrollToTop />
                   </BrowserRouter>
