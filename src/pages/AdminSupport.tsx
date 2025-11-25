@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useConversations, useSupportChat } from '@/hooks/useSupportChat';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { format } from 'date-fns';
 import { faIR } from 'date-fns/locale';
@@ -27,6 +28,13 @@ const AdminSupport = () => {
     selectedConversationId || '',
     user?.id || 'admin',
     'مدیریت'
+  );
+
+  const { isCustomerOnline } = useOnlineStatus(
+    selectedConversationId || '',
+    user?.id || 'admin',
+    'مدیریت',
+    'admin'
   );
 
   const selectedConversation = conversations.find(
@@ -145,9 +153,18 @@ const AdminSupport = () => {
             <CardTitle>
               {selectedConversation ? (
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <User className="h-5 w-5" />
-                    {selectedConversation.user_name}
+                  <div className="flex items-center gap-3 mb-1">
+                    <div className="flex items-center gap-2">
+                      <User className="h-5 w-5" />
+                      {selectedConversation.user_name}
+                    </div>
+                    <Badge 
+                      variant={isCustomerOnline() ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      <div className={`w-2 h-2 rounded-full mr-1 ${isCustomerOnline() ? 'bg-green-500' : 'bg-gray-400'}`} />
+                      {isCustomerOnline() ? 'آنلاین' : 'آفلاین'}
+                    </Badge>
                   </div>
                   {selectedConversation.user_email && (
                     <div className="flex items-center gap-2 text-sm font-normal text-muted-foreground">
