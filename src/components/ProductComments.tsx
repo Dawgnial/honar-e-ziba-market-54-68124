@@ -15,10 +15,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Star, MessageCircle } from "lucide-react";
-import { useProductComments } from "../hooks/useProductComments";
+import { Star, MessageCircle, ThumbsUp, Reply } from "lucide-react";
+import { useProductComments, ProductComment } from "../hooks/useProductComments";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toFarsiNumber } from "../utils/numberUtils";
+import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ProductCommentsProps {
   productId: string;
@@ -36,14 +44,44 @@ const formSchema = z.object({
   }),
 });
 
+const replySchema = z.object({
+  name: z.string().min(2, {
+    message: "نام باید حداقل ۲ حرف باشد.",
+  }),
+  comment: z.string().min(5, {
+    message: "پاسخ باید حداقل ۵ حرف باشد.",
+  }),
+});
+
 export function ProductComments({ productId }: ProductCommentsProps) {
-  const { comments, loading, submitting, addComment, getAverageRating, getRatingDistribution } = useProductComments(productId);
+  const { 
+    comments, 
+    allComments,
+    loading, 
+    submitting, 
+    filter,
+    setFilter,
+    addComment, 
+    toggleLike,
+    getAverageRating, 
+    getRatingDistribution 
+  } = useProductComments(productId);
+  
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       rating: 0,
+      comment: "",
+    },
+  });
+
+  const replyForm = useForm<z.infer<typeof replySchema>>({
+    resolver: zodResolver(replySchema),
+    defaultValues: {
+      name: "",
       comment: "",
     },
   });
@@ -61,6 +99,24 @@ export function ProductComments({ productId }: ProductCommentsProps) {
         rating: 0,
         comment: "",
       });
+    } catch (error) {
+      // Error handling is done in the hook
+    }
+  }
+
+  async function onReplySubmit(data: z.infer<typeof replySchema>) {
+    if (!replyingTo) return;
+    
+    try {
+      await addComment({
+        user_name: data.name,
+        rating: 0,
+        comment: data.comment,
+        parent_id: replyingTo,
+      });
+      
+      replyForm.reset();
+      setReplyingTo(null);
     } catch (error) {
       // Error handling is done in the hook
     }
@@ -100,6 +156,133 @@ export function ProductComments({ productId }: ProductCommentsProps) {
     return `${toFarsiNumber(Math.floor(diffInHours / (24 * 30)))} ماه پیش`;
   };
 
+  const CommentItem = ({ comment, isReply = false }: { comment: ProductComment; isReply?: boolean }) => (
+    <div className={cn(
+      "bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-border hover:shadow-md transition-shadow",
+      isReply && "mr-12 mt-3 border-r-4 border-r-primary/30"
+    )}>
+      <div className="flex items-start">
+        <Avatar className="h-10 w-10 ml-3">
+          <AvatarFallback className="bg-primary/10 text-primary text-sm">
+            {comment.user_name.substring(0, 2)}
+          </AvatarFallback>
+        </Avatar>
+        
+        <div className="flex-1">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h5 className="font-medium text-foreground">{comment.user_name}</h5>
+              <div className="flex items-center mt-1">
+                {comment.rating > 0 && <RatingStars rating={comment.rating} />}
+                <span className={cn("text-sm text-gray-500", comment.rating > 0 && "mr-2")}>
+                  {formatDate(comment.created_at)}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <p className="text-foreground/80 leading-relaxed mb-3">{comment.comment}</p>
+          
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 gap-2"
+              onClick={() => toggleLike(comment.id)}
+            >
+              <ThumbsUp className={cn(
+                "h-4 w-4",
+                comment.isLikedByUser && "fill-primary text-primary"
+              )} />
+              <span className="text-sm">
+                {comment.helpful_count > 0 && toFarsiNumber(comment.helpful_count)}
+                {comment.helpful_count > 0 ? " مفید" : "مفید بود؟"}
+              </span>
+            </Button>
+            
+            {!isReply && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 gap-2"
+                onClick={() => setReplyingTo(comment.id)}
+              >
+                <Reply className="h-4 w-4" />
+                <span className="text-sm">پاسخ</span>
+              </Button>
+            )}
+          </div>
+          
+          {/* Reply Form */}
+          {replyingTo === comment.id && (
+            <div className="mt-4 bg-muted/30 p-4 rounded-lg">
+              <Form {...replyForm}>
+                <form onSubmit={replyForm.handleSubmit(onReplySubmit)} className="space-y-3">
+                  <FormField
+                    control={replyForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="نام شما" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={replyForm.control}
+                    name="comment"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="پاسخ خود را بنویسید..." 
+                            className="min-h-[80px]" 
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="flex gap-2">
+                    <Button 
+                      type="submit" 
+                      size="sm"
+                      disabled={submitting}
+                    >
+                      {submitting ? "در حال ارسال..." : "ارسال پاسخ"}
+                    </Button>
+                    <Button 
+                      type="button" 
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setReplyingTo(null)}
+                    >
+                      انصراف
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Replies */}
+      {comment.replies && comment.replies.length > 0 && (
+        <div className="space-y-3">
+          {comment.replies.map((reply) => (
+            <CommentItem key={reply.id} comment={reply} isReply={true} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   const averageRating = getAverageRating();
   const ratingDistribution = getRatingDistribution();
 
@@ -131,7 +314,7 @@ export function ProductComments({ productId }: ProductCommentsProps) {
         <h3 className="text-xl font-bold text-primary mb-4">نظرات کاربران</h3>
         
         {/* Rating Summary */}
-        {comments.length > 0 && (
+        {allComments.length > 0 && (
           <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 rounded-lg p-4 mb-6">
             <div className="flex items-center justify-between">
               <div className="text-center">
@@ -140,7 +323,7 @@ export function ProductComments({ productId }: ProductCommentsProps) {
                 </div>
                 <RatingStars rating={Math.round(averageRating)} />
                 <div className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                  از {toFarsiNumber(comments.length)} نظر
+                  از {toFarsiNumber(allComments.length)} نظر
                 </div>
               </div>
               
@@ -153,8 +336,8 @@ export function ProductComments({ productId }: ProductCommentsProps) {
                       <div 
                         className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
                         style={{ 
-                          width: comments.length > 0 
-                            ? `${(ratingDistribution[star as keyof typeof ratingDistribution] / comments.length) * 100}%` 
+                          width: allComments.length > 0 
+                            ? `${(ratingDistribution[star as keyof typeof ratingDistribution] / allComments.length) * 100}%` 
                             : '0%' 
                         }}
                       ></div>
@@ -246,45 +429,40 @@ export function ProductComments({ productId }: ProductCommentsProps) {
       
       {/* Comments list */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-3">
           <h4 className="text-lg font-medium flex items-center gap-2">
             <MessageCircle className="h-5 w-5" />
-            نظرات ({toFarsiNumber(comments.length)})
+            نظرات ({toFarsiNumber(allComments.length)})
           </h4>
+          
+          {allComments.length > 0 && (
+            <Select value={filter} onValueChange={(v: any) => setFilter(v)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="فیلتر امتیاز" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">همه نظرات</SelectItem>
+                <SelectItem value="5">۵ ستاره</SelectItem>
+                <SelectItem value="4">۴ ستاره</SelectItem>
+                <SelectItem value="3">۳ ستاره</SelectItem>
+                <SelectItem value="2">۲ ستاره</SelectItem>
+                <SelectItem value="1">۱ ستاره</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
         </div>
         
         {comments.length > 0 ? (
           <div className="space-y-4">
             {comments.map((comment) => (
-              <div 
-                key={comment.id} 
-                className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-border hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start">
-                  <Avatar className="h-10 w-10 ml-3">
-                    <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                      {comment.user_name.substring(0, 2)}
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h5 className="font-medium text-foreground">{comment.user_name}</h5>
-                        <div className="flex items-center mt-1">
-                          <RatingStars rating={comment.rating} />
-                          <span className="text-sm text-gray-500 mr-2">
-                            {formatDate(comment.created_at)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <p className="text-foreground/80 leading-relaxed">{comment.comment}</p>
-                  </div>
-                </div>
-              </div>
+              <CommentItem key={comment.id} comment={comment} />
             ))}
+          </div>
+        ) : allComments.length > 0 ? (
+          <div className="text-center py-8 bg-muted/30 rounded-lg">
+            <p className="text-foreground/60">
+              هیچ نظری با این امتیاز وجود ندارد
+            </p>
           </div>
         ) : (
           <div className="text-center py-8 bg-muted/30 rounded-lg">
