@@ -6,6 +6,7 @@ export interface Category {
   id: string;
   title: string;
   image_url: string | null;
+  display_order: number;
   created_at: string;
   updated_at: string;
 }
@@ -23,7 +24,7 @@ export const useSupabaseCategories = () => {
       const { data, error } = await supabase
         .from('categories')
         .select('*')
-        .order('title', { ascending: true });
+        .order('display_order', { ascending: true });
 
       if (error) {
         console.error('Error fetching categories:', error);
@@ -145,6 +146,21 @@ export const useSupabaseCategories = () => {
     }
   };
 
+  const updateCategoryOrder = async (categoryId: string, newOrder: number) => {
+    try {
+      const { error } = await supabase
+        .from('categories')
+        .update({ display_order: newOrder })
+        .eq('id', categoryId);
+
+      if (error) throw error;
+    } catch (error: any) {
+      console.error('Error updating category order:', error);
+      toast.error('خطا در به‌روزرسانی ترتیب');
+      throw error;
+    }
+  };
+
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -156,6 +172,7 @@ export const useSupabaseCategories = () => {
     createCategory,
     updateCategory,
     deleteCategory,
+    updateCategoryOrder,
     refetch: fetchCategories,
   };
 };

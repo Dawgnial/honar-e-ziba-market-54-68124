@@ -41,6 +41,7 @@ export type Database = {
       categories: {
         Row: {
           created_at: string
+          display_order: number | null
           id: string
           image_url: string | null
           title: string
@@ -48,6 +49,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          display_order?: number | null
           id?: string
           image_url?: string | null
           title: string
@@ -55,6 +57,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          display_order?: number | null
           id?: string
           image_url?: string | null
           title?: string
@@ -482,6 +485,7 @@ export type Database = {
           is_featured: boolean | null
           price: number | null
           stock: number | null
+          tags: string[] | null
           title: string
           updated_at: string
         }
@@ -497,6 +501,7 @@ export type Database = {
           is_featured?: boolean | null
           price?: number | null
           stock?: number | null
+          tags?: string[] | null
           title: string
           updated_at?: string
         }
@@ -512,6 +517,7 @@ export type Database = {
           is_featured?: boolean | null
           price?: number | null
           stock?: number | null
+          tags?: string[] | null
           title?: string
           updated_at?: string
         }
