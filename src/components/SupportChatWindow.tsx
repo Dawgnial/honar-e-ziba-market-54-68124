@@ -6,6 +6,7 @@ import { Textarea } from './ui/textarea';
 import { ScrollArea } from './ui/scroll-area';
 import { useSupportChat } from '@/hooks/useSupportChat';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
+import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { format } from 'date-fns';
 import { faIR } from 'date-fns/locale';
 
@@ -24,6 +25,12 @@ const SupportChatWindow = ({ onClose }: SupportChatWindowProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { messages, loading, sendMessage } = useSupportChat(conversationId || undefined);
+  
+  const { isAnyoneTyping, typingUserNames, startTyping, stopTyping } = useTypingIndicator(
+    conversationId || '',
+    user?.id || 'anonymous',
+    userName || 'کاربر'
+  );
 
   useEffect(() => {
     // Load conversation ID from localStorage or create new one
@@ -59,12 +66,22 @@ const SupportChatWindow = ({ onClose }: SupportChatWindowProps) => {
 
     try {
       setSending(true);
+      stopTyping();
       await sendMessage(message, userName, userEmail);
       setMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value);
+    if (e.target.value.trim()) {
+      startTyping();
+    } else {
+      stopTyping();
     }
   };
 
@@ -170,6 +187,25 @@ const SupportChatWindow = ({ onClose }: SupportChatWindowProps) => {
                 </div>
               </div>
             ))}
+            
+            {/* Typing Indicator */}
+            {isAnyoneTyping && (
+              <div className="flex justify-start">
+                <div className="bg-secondary text-secondary-foreground rounded-lg p-3 max-w-[80%]">
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1">
+                      <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </div>
+                    <span className="text-xs opacity-70">
+                      {typingUserNames.join(', ')} در حال نوشتن...
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div ref={messagesEndRef} />
           </div>
         )}
@@ -180,8 +216,9 @@ const SupportChatWindow = ({ onClose }: SupportChatWindowProps) => {
         <div className="flex gap-2">
           <Textarea
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={handleMessageChange}
             onKeyPress={handleKeyPress}
+            onBlur={stopTyping}
             placeholder="پیام خود را بنویسید..."
             className="min-h-[60px] max-h-[120px] resize-none text-right"
             disabled={sending}
