@@ -65,6 +65,35 @@ export type Database = {
         }
         Relationships: []
       }
+      comment_likes: {
+        Row: {
+          comment_id: string
+          created_at: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_likes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "product_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_history: {
         Row: {
           created_at: string
@@ -274,8 +303,10 @@ export type Database = {
         Row: {
           comment: string
           created_at: string
+          helpful_count: number
           id: string
           is_approved: boolean
+          parent_id: string | null
           product_id: string
           rating: number
           updated_at: string
@@ -285,8 +316,10 @@ export type Database = {
         Insert: {
           comment: string
           created_at?: string
+          helpful_count?: number
           id?: string
           is_approved?: boolean
+          parent_id?: string | null
           product_id: string
           rating: number
           updated_at?: string
@@ -296,8 +329,10 @@ export type Database = {
         Update: {
           comment?: string
           created_at?: string
+          helpful_count?: number
           id?: string
           is_approved?: boolean
+          parent_id?: string | null
           product_id?: string
           rating?: number
           updated_at?: string
@@ -310,6 +345,13 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "product_comments"
             referencedColumns: ["id"]
           },
           {
