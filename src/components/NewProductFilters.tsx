@@ -8,9 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Filter, X, RotateCcw, ArrowUpDown } from "lucide-react";
+import { Filter, X, RotateCcw, ArrowUpDown, Hash } from "lucide-react";
 import { Product } from "@/types";
 import { Category } from "../hooks/useSupabaseCategories";
+import { useTags } from "../hooks/useTags";
 import { formatPriceToFarsi } from "../utils/numberUtils";
 
 export interface FilterState {
@@ -39,6 +40,7 @@ const NewProductFilters = ({
   onFiltersChange, 
   isMobile = false 
 }: NewProductFiltersProps) => {
+  const { tags } = useTags();
   const [isOpen, setIsOpen] = useState(false);
   const [maxPrice, setMaxPrice] = useState(1000000);
   const [minPrice, setMinPrice] = useState(0);
@@ -90,6 +92,13 @@ const NewProductFilters = ({
     updateFilters({ categories: newCategories });
   };
 
+  const handleTagChange = (tagId: string, checked: boolean) => {
+    const newTags = checked
+      ? [...filters.tags, tagId]
+      : filters.tags.filter(id => id !== tagId);
+    updateFilters({ tags: newTags });
+  };
+
   const handlePriceRangeChange = (values: number[]) => {
     const newRange: [number, number] = [values[0], values[1]];
     setLocalPriceRange(newRange);
@@ -122,6 +131,7 @@ const NewProductFilters = ({
 
   const hasActiveFilters = 
     filters.categories.length > 0 ||
+    filters.tags.length > 0 ||
     filters.featuredOnly ||
     filters.availableOnly ||
     filters.unavailableOnly ||
@@ -130,6 +140,7 @@ const NewProductFilters = ({
 
   const activeFiltersCount = 
     filters.categories.length + 
+    filters.tags.length +
     (filters.featuredOnly ? 1 : 0) + 
     (filters.availableOnly ? 1 : 0) +
     (filters.unavailableOnly ? 1 : 0) +
@@ -170,6 +181,23 @@ const NewProductFilters = ({
                   <X 
                     className="h-3 w-3 cursor-pointer" 
                     onClick={() => handleCategoryChange(categoryId, false)}
+                  />
+                </Badge>
+              ) : null;
+            })}
+            {filters.tags.map(tagId => {
+              const tag = tags.find(t => t.id === tagId);
+              return tag ? (
+                <Badge 
+                  key={tagId} 
+                  variant="default" 
+                  className="h-7 px-3 text-xs gap-1.5 bg-purple-500/10 text-purple-700 dark:text-purple-400 hover:bg-purple-500/20"
+                >
+                  <Hash className="h-3 w-3" />
+                  {tag.name}
+                  <X 
+                    className="h-3 w-3 cursor-pointer" 
+                    onClick={() => handleTagChange(tagId, false)}
                   />
                 </Badge>
               ) : null;
@@ -275,43 +303,44 @@ const NewProductFilters = ({
         </AccordionItem>
 
         {/* فیلتر هشتگ‌ها */}
-        <AccordionItem value="tags" className="border rounded-lg px-4">
-          <AccordionTrigger className="py-3 hover:no-underline">
-            <div className="flex items-center justify-between w-full pr-2">
-              <span className="text-sm font-semibold">هشتگ‌ها</span>
-              {filters.tags.length > 0 && (
-                <Badge variant="secondary" className="h-5 px-2 text-xs mr-2">
-                  {filters.tags.length}
-                </Badge>
-              )}
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="pb-4 pt-2">
-            <div className="space-y-3">
-              {Array.from(new Set(products.flatMap(p => p.tags || []))).map((tag) => (
-                <div key={tag} className="flex items-center space-x-2 space-x-reverse group">
-                  <Checkbox
-                    id={`tag-${tag}`}
-                    checked={filters.tags.includes(tag)}
-                    onCheckedChange={(checked) => {
-                      const newTags = checked
-                        ? [...filters.tags, tag]
-                        : filters.tags.filter(t => t !== tag);
-                      updateFilters({ tags: newTags });
-                    }}
-                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
-                  <label
-                    htmlFor={`tag-${tag}`}
-                    className="text-sm cursor-pointer flex-1 group-hover:text-primary transition-colors"
-                  >
-                    #{tag}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
+        {tags.filter(t => t.is_active).length > 0 && (
+          <AccordionItem value="tags" className="border rounded-lg px-4">
+            <AccordionTrigger className="py-3 hover:no-underline">
+              <div className="flex items-center justify-between w-full pr-2">
+                <span className="text-sm font-semibold flex items-center gap-2">
+                  <Hash className="h-4 w-4" />
+                  هشتگ‌ها
+                </span>
+                {filters.tags.length > 0 && (
+                  <Badge variant="secondary" className="h-5 px-2 text-xs mr-2">
+                    {filters.tags.length}
+                  </Badge>
+                )}
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="pb-4 pt-2">
+              <div className="space-y-3">
+                {tags.filter(t => t.is_active).map((tag) => (
+                  <div key={tag.id} className="flex items-center space-x-2 space-x-reverse group">
+                    <Checkbox
+                      id={`tag-${tag.id}`}
+                      checked={filters.tags.includes(tag.id)}
+                      onCheckedChange={(checked) => handleTagChange(tag.id, checked as boolean)}
+                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <label
+                      htmlFor={`tag-${tag.id}`}
+                      className="text-sm cursor-pointer flex-1 group-hover:text-primary transition-colors flex items-center gap-1"
+                    >
+                      <Hash className="h-3 w-3 text-muted-foreground" />
+                      {tag.name}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        )}
 
         {/* فیلتر موجودی و وضعیت */}
         <AccordionItem value="availability" className="border rounded-lg px-4">
