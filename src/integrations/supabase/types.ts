@@ -684,6 +684,7 @@ export type Database = {
           user_email: string | null
           user_id: string | null
           user_name: string
+          user_phone: string | null
         }
         Insert: {
           conversation_id: string
@@ -696,6 +697,7 @@ export type Database = {
           user_email?: string | null
           user_id?: string | null
           user_name: string
+          user_phone?: string | null
         }
         Update: {
           conversation_id?: string
@@ -708,6 +710,7 @@ export type Database = {
           user_email?: string | null
           user_id?: string | null
           user_name?: string
+          user_phone?: string | null
         }
         Relationships: []
       }

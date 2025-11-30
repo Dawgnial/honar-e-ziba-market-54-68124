@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MessageCircle, Send, Loader2, User, Mail, Clock } from 'lucide-react';
+import { MessageCircle, Send, Loader2, User, Mail, Clock, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -122,6 +122,12 @@ const AdminSupport = () => {
                           </Badge>
                         )}
                       </div>
+                      {conversation.user_phone && (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1" dir="ltr">
+                          <Phone className="h-3 w-3" />
+                          <span>{conversation.user_phone}</span>
+                        </div>
+                      )}
                       {conversation.user_email && (
                         <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
                           <Mail className="h-3 w-3" />
@@ -166,12 +172,20 @@ const AdminSupport = () => {
                       {isCustomerOnline() ? 'آنلاین' : 'آفلاین'}
                     </Badge>
                   </div>
-                  {selectedConversation.user_email && (
-                    <div className="flex items-center gap-2 text-sm font-normal text-muted-foreground">
-                      <Mail className="h-4 w-4" />
-                      {selectedConversation.user_email}
-                    </div>
-                  )}
+                  <div className="space-y-1">
+                    {selectedConversation.user_phone && (
+                      <div className="flex items-center gap-2 text-sm font-normal text-muted-foreground" dir="ltr">
+                        <Phone className="h-4 w-4" />
+                        {selectedConversation.user_phone}
+                      </div>
+                    )}
+                    {selectedConversation.user_email && (
+                      <div className="flex items-center gap-2 text-sm font-normal text-muted-foreground">
+                        <Mail className="h-4 w-4" />
+                        {selectedConversation.user_email}
+                      </div>
+                    )}
+                  </div>
                 </div>
               ) : (
                 'انتخاب مکالمه'
