@@ -96,8 +96,8 @@ export default {
 				}
 			},
 			fontFamily: {
-				vazir: ['Vazirmatn', 'sans-serif'],
-				estedad: ['Vazirmatn', 'sans-serif'], // Using Vazirmatn as fallback since we have it installed
+				vazir: ['system-ui', 'Tahoma', 'Arial', 'sans-serif'],
+				estedad: ['system-ui', 'Tahoma', 'Arial', 'sans-serif'], // Temporarily using system fonts for debugging
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
