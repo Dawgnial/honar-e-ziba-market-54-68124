@@ -85,7 +85,7 @@ const ModernProductCard = ({ product, categories, onAddToCart, onToggleFavorite,
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           {discountPercentage > 0 && (
             <Badge className="bg-red-500 hover:bg-red-600 text-white text-xs font-bold">
-              -{discountPercentage}%
+              {discountPercentage}%
             </Badge>
           )}
           {product.is_featured && (
