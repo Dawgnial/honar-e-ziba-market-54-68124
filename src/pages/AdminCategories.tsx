@@ -1,8 +1,9 @@
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Edit, Trash2, Image, Package, Search, GripVertical } from "lucide-react";
+import { useDebounce } from "@/hooks/use-debounce";
 import { useSupabaseCategories } from "../hooks/useSupabaseCategories";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -144,6 +145,9 @@ const AdminCategories = () => {
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Debounce search for better performance
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -166,19 +170,40 @@ const AdminCategories = () => {
       .trim();
   };
 
-  const filteredCategories = categories.filter(category => {
-    if (!searchTerm.trim()) return true;
+  // Memoized filtered categories with debounced search
+  const filteredCategories = useMemo(() => {
+    console.log('🔍 Admin Categories Search:', {
+      totalCategories: categories.length,
+      searchTerm: debouncedSearchTerm,
+      hasSearch: !!debouncedSearchTerm.trim()
+    });
     
-    try {
-      const normalizedSearchTerm = normalizeText(searchTerm);
-      const normalizedTitle = normalizeText(category.title);
-      
-      return normalizedTitle.includes(normalizedSearchTerm);
-    } catch (error) {
-      console.error('Error filtering category:', error);
-      return false;
+    if (!debouncedSearchTerm.trim()) {
+      console.log('✅ No search term - showing all categories');
+      return categories;
     }
-  });
+    
+    const filtered = categories.filter(category => {
+      try {
+        const normalizedSearchTerm = normalizeText(debouncedSearchTerm);
+        const normalizedTitle = normalizeText(category.title);
+        
+        const matches = normalizedTitle.includes(normalizedSearchTerm);
+        
+        if (matches) {
+          console.log('✓ Match found:', category.title);
+        }
+        
+        return matches;
+      } catch (error) {
+        console.error('❌ Error filtering category:', error);
+        return false;
+      }
+    });
+    
+    console.log('📊 Filtered results:', filtered.length);
+    return filtered;
+  }, [categories, debouncedSearchTerm]);
   
   const totalPages = Math.ceil(filteredCategories.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -283,11 +308,18 @@ const AdminCategories = () => {
               placeholder="جستجو در دسته‌بندی‌ها..."
               value={searchTerm}
               onChange={(e) => {
-                setSearchTerm(e.target.value);
+                const value = e.target.value;
+                console.log('🔤 Search input changed:', value);
+                setSearchTerm(value);
                 setCurrentPage(1); // Reset to first page when searching
               }}
               className="pr-10 text-right"
             />
+            {searchTerm && (
+              <div className="mt-2 text-xs text-muted-foreground">
+                در حال جستجو برای: "{searchTerm}" | نتایج: {filteredCategories.length}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

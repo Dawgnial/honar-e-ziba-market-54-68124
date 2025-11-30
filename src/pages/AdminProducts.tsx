@@ -1,8 +1,9 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Edit, Trash2, Star, Archive, ShoppingCart, Search } from "lucide-react";
+import { useDebounce } from "@/hooks/use-debounce";
 import { useSupabaseAdminProducts } from "../hooks/useSupabaseAdminProducts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -35,6 +36,9 @@ const AdminProducts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const addButtonRef = useRef<HTMLButtonElement>(null);
+  
+  // Debounce search for better performance
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   const ITEMS_PER_PAGE = 20;
   
@@ -50,23 +54,44 @@ const AdminProducts = () => {
       .trim();
   };
 
-  const filteredProducts = products.filter(product => {
-    if (!searchTerm.trim()) return true;
+  // Memoized filtered products with debounced search
+  const filteredProducts = useMemo(() => {
+    console.log('🔍 Admin Products Search:', {
+      totalProducts: products.length,
+      searchTerm: debouncedSearchTerm,
+      hasSearch: !!debouncedSearchTerm.trim()
+    });
     
-    try {
-      const normalizedSearchTerm = normalizeText(searchTerm);
-      const normalizedTitle = normalizeText(product.title);
-      const normalizedCategory = normalizeText(getCategoryName(product.category_id));
-      const normalizedDescription = normalizeText(product.description);
-      
-      return normalizedTitle.includes(normalizedSearchTerm) ||
-             normalizedCategory.includes(normalizedSearchTerm) ||
-             normalizedDescription.includes(normalizedSearchTerm);
-    } catch (error) {
-      console.error('Error filtering product:', error);
-      return false;
+    if (!debouncedSearchTerm.trim()) {
+      console.log('✅ No search term - showing all products');
+      return products;
     }
-  });
+    
+    const filtered = products.filter(product => {
+      try {
+        const normalizedSearchTerm = normalizeText(debouncedSearchTerm);
+        const normalizedTitle = normalizeText(product.title);
+        const normalizedCategory = normalizeText(getCategoryName(product.category_id));
+        const normalizedDescription = normalizeText(product.description);
+        
+        const matches = normalizedTitle.includes(normalizedSearchTerm) ||
+               normalizedCategory.includes(normalizedSearchTerm) ||
+               normalizedDescription.includes(normalizedSearchTerm);
+        
+        if (matches) {
+          console.log('✓ Match found:', product.title);
+        }
+        
+        return matches;
+      } catch (error) {
+        console.error('❌ Error filtering product:', error);
+        return false;
+      }
+    });
+    
+    console.log('📊 Filtered results:', filtered.length);
+    return filtered;
+  }, [products, debouncedSearchTerm, categories]);
   
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -192,11 +217,18 @@ const AdminProducts = () => {
               placeholder="جستجو در محصولات، نام محصول یا دسته‌بندی..."
               value={searchTerm}
               onChange={(e) => {
-                setSearchTerm(e.target.value);
+                const value = e.target.value;
+                console.log('🔤 Search input changed:', value);
+                setSearchTerm(value);
                 setCurrentPage(1); // Reset to first page when searching
               }}
               className="pr-10 text-right"
             />
+            {searchTerm && (
+              <div className="mt-2 text-xs text-muted-foreground">
+                در حال جستجو برای: "{searchTerm}" | نتایج: {filteredProducts.length}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
