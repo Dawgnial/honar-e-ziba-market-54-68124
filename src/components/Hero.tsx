@@ -22,9 +22,9 @@ const Hero = () => {
 
   // Images for the background slideshow - using new uploaded pottery images
   const backgroundImages = [
-    '/lovable-uploads/65845eaa-4790-4db4-9552-62e1d93113d4.png',
-    '/lovable-uploads/ffcf916e-f264-4fb5-9d88-576b0a935b75.png',
-    '/lovable-uploads/f49c67db-ba5d-46b9-beac-42c1759eb778.png'
+    '/images/hero-bg-1.jpg',
+    '/images/hero-bg-2.jpg',
+    '/images/hero-bg-3.jpg'
   ];
 
   // Animation effect on load
