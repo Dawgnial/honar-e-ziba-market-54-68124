@@ -57,6 +57,14 @@ const RealAdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
+      // Fetch total count of users
+      const { count, error: countError } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
+
+      if (countError) throw countError;
+
+      // Fetch recent users for display
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -65,6 +73,12 @@ const RealAdminDashboard = () => {
 
       if (error) throw error;
       setUsers(data || []);
+      
+      // Update dashboard stats with actual count
+      setDashboardStats(prev => ({
+        ...prev,
+        totalUsers: count || 0
+      }));
     } catch (error) {
       console.error('Error fetching users:', error);
     }
@@ -73,15 +87,14 @@ const RealAdminDashboard = () => {
   const calculateStats = () => {
     const totalRevenue = orders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
     const totalOrders = orders.length;
-    const totalUsers = users.length;
     const totalProducts = products.length;
 
-    setDashboardStats({
+    setDashboardStats(prev => ({
+      ...prev,
       totalRevenue,
       totalOrders,
-      totalUsers,
       totalProducts
-    });
+    }));
   };
 
   const getStatusBadge = (status: string) => {
