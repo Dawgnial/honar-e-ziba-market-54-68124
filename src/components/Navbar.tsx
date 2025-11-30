@@ -100,11 +100,11 @@ const Navbar = () => {
           {/* Logo Section */}
           <div className="flex items-center min-w-0 flex-shrink">
             <Link to="/" className="flex items-center space-x-2 space-x-reverse group">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 relative overflow-hidden rounded-lg bg-gradient-to-br from-green-primary to-green-secondary flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 flex-shrink-0">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 relative overflow-hidden rounded-lg flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-200 flex-shrink-0">
                 <img 
-                  src="/lovable-uploads/8e827ed6-fd27-421f-b9c0-561156bc7445.png" 
+                  src="/images/logo.png" 
                   alt="ایرولیا شاپ" 
-                  className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 object-contain"
+                  className="w-full h-full object-contain"
                 />
               </div>
               <div className="hidden sm:flex flex-col min-w-0">
