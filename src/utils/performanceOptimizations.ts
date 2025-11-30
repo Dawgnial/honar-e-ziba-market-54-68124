@@ -97,18 +97,21 @@ export const enableResourceHints = () => {
  * Initialize all performance optimizations
  */
 export const initializePerformanceOptimizations = () => {
-  // Run after page load
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      enableResourceHints();
+  try {
+    // Only run critical optimizations immediately
+    enableResourceHints();
+    
+    // Defer non-critical optimizations
+    requestIdleCallback ? requestIdleCallback(() => {
       prefetchCriticalResources();
       setupLazyLoading();
       optimizeThirdPartyScripts();
-    });
-  } else {
-    enableResourceHints();
-    prefetchCriticalResources();
-    setupLazyLoading();
-    optimizeThirdPartyScripts();
+    }) : setTimeout(() => {
+      prefetchCriticalResources();
+      setupLazyLoading();
+      optimizeThirdPartyScripts();
+    }, 1000);
+  } catch (error) {
+    console.error('Performance optimizations error:', error);
   }
 };
