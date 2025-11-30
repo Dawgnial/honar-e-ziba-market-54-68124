@@ -1,6 +1,4 @@
-@import '@fontsource/vazirmatn/400.css';
-@import '@fontsource/vazirmatn/500.css';
-@import '@fontsource/vazirmatn/700.css';
+/* Fonts loaded via Google Fonts CDN in index.html for better performance */
 
 @tailwind base;
 @tailwind components;
