@@ -7,16 +7,21 @@ import { registerServiceWorker } from "./utils/serviceWorker";
 import { cacheManager } from "./utils/cacheManager";
 import { initializePerformanceOptimizations } from "./utils/performanceOptimizations";
 
-// Register Service Worker for caching
-if (import.meta.env.PROD) {
-  registerServiceWorker();
-}
+// Temporarily disable Service Worker to fix loading issues
+// if (import.meta.env.PROD) {
+//   registerServiceWorker();
+// }
 
 // Cleanup expired cache on startup
 cacheManager.cleanup();
 
-// Initialize performance optimizations
-initializePerformanceOptimizations();
+// Initialize performance optimizations - but only after DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializePerformanceOptimizations);
+} else {
+  // DOM already loaded
+  setTimeout(initializePerformanceOptimizations, 0);
+}
 
 // Create a client with optimized caching settings
 export const queryClient = new QueryClient({

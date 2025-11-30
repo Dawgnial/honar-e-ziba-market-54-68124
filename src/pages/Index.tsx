@@ -16,12 +16,7 @@ import { SEOHead } from "../components/SEOHead";
 import { OrganizationStructuredData, WebSiteStructuredData } from "../components/StructuredData";
 
 const Index = () => {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // بلافاصله loading را false کنیم تا حاشیه اضافی نداشته باشیم
-    setLoading(false);
-  }, []);
+  const [loading, setLoading] = useState(false);
 
   return (
     <ErrorBoundary>
