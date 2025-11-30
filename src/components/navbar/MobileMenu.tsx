@@ -120,56 +120,56 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               
               <Link
                 to="/"
-                className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
+                className="flex flex-row-reverse items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
                 onClick={onClose}
               >
                 <div className="w-12 h-12 bg-green-primary/10 rounded-xl flex items-center justify-center group-hover:bg-green-primary/20 transition-colors">
                   <Home className="h-6 w-6 text-green-primary" />
                 </div>
-                <span className="font-medium text-lg">صفحه اصلی</span>
+                <span className="font-medium text-lg text-right flex-1">صفحه اصلی</span>
               </Link>
               
               <Link
                 to="/products"
-                className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
+                className="flex flex-row-reverse items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
                 onClick={onClose}
               >
                 <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
                   <Package className="h-6 w-6 text-blue-500" />
                 </div>
-                <span className="font-medium text-lg">محصولات</span>
+                <span className="font-medium text-lg text-right flex-1">محصولات</span>
               </Link>
 
               <button
                 onClick={() => scrollToSection("categories")}
-                className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group text-right"
+                className="w-full flex flex-row-reverse items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
               >
                 <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center group-hover:bg-purple-500/20 transition-colors">
                   <Package className="h-6 w-6 text-purple-500" />
                 </div>
-                <span className="font-medium text-lg">دسته‌بندی‌ها</span>
+                <span className="font-medium text-lg text-right flex-1">دسته‌بندی‌ها</span>
               </button>
 
               <Link
                 to="/contact"
-                className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
+                className="flex flex-row-reverse items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
                 onClick={onClose}
               >
                 <div className="w-12 h-12 bg-pink-500/10 rounded-xl flex items-center justify-center group-hover:bg-pink-500/20 transition-colors">
                   <Phone className="h-6 w-6 text-pink-500" />
                 </div>
-                <span className="font-medium text-lg">تماس با ما</span>
+                <span className="font-medium text-lg text-right flex-1">تماس با ما</span>
               </Link>
 
               <Link
                 to="/about"
-                className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
+                className="flex flex-row-reverse items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
                 onClick={onClose}
               >
                 <div className="w-12 h-12 bg-teal-500/10 rounded-xl flex items-center justify-center group-hover:bg-teal-500/20 transition-colors">
                   <Info className="h-6 w-6 text-teal-500" />
                 </div>
-                <span className="font-medium text-lg">درباره ما</span>
+                <span className="font-medium text-lg text-right flex-1">درباره ما</span>
               </Link>
             </div>
             
@@ -184,80 +184,84 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               
               <Link
                 to="/favorites"
-                className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
+                className="flex flex-row-reverse items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
                 onClick={onClose}
               >
                 <div className="relative w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
                   <Heart className="h-6 w-6 text-red-500" />
                   {favorites.length > 0 && (
-                    <Badge className="absolute -top-2 -left-2 h-6 w-6 p-0 flex items-center justify-center text-xs bg-red-500 text-white font-bold">
+                    <Badge className="absolute -top-2 -right-2 h-6 w-6 p-0 flex items-center justify-center text-xs bg-red-500 text-white font-bold">
                       {favorites.length > 99 ? '+۹۹' : toFarsiNumber(favorites.length)}
                     </Badge>
                   )}
                 </div>
-                <span className="font-medium text-lg">علاقه‌مندی‌ها</span>
-                {favorites.length > 0 && (
-                  <span className="text-sm text-gray-500 mr-auto">
-                    {toFarsiNumber(favorites.length)} مورد
-                  </span>
-                )}
+                <div className="flex items-center justify-between flex-1">
+                  <span className="font-medium text-lg text-right">علاقه‌مندی‌ها</span>
+                  {favorites.length > 0 && (
+                    <span className="text-sm text-gray-500">
+                      {toFarsiNumber(favorites.length)} مورد
+                    </span>
+                  )}
+                </div>
               </Link>
               
               <Link
                 to="/cart"
-                className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
+                className="flex flex-row-reverse items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
                 onClick={onClose}
               >
                 <div className="relative w-12 h-12 bg-green-primary/10 rounded-xl flex items-center justify-center group-hover:bg-green-primary/20 transition-colors">
                   <ShoppingCart className="h-6 w-6 text-green-primary" />
                   {totalItems > 0 && (
-                    <Badge className="absolute -top-2 -left-2 h-6 w-6 p-0 flex items-center justify-center text-xs bg-green-primary text-white font-bold">
+                    <Badge className="absolute -top-2 -right-2 h-6 w-6 p-0 flex items-center justify-center text-xs bg-green-primary text-white font-bold">
                       {totalItems > 99 ? '+۹۹' : toFarsiNumber(totalItems)}
                     </Badge>
                   )}
                 </div>
-                <span className="font-medium text-lg">سبد خرید</span>
-                {totalItems > 0 && (
-                  <span className="text-sm text-gray-500 mr-auto">
-                    {toFarsiNumber(totalItems)} کالا
-                  </span>
-                )}
+                <div className="flex items-center justify-between flex-1">
+                  <span className="font-medium text-lg text-right">سبد خرید</span>
+                  {totalItems > 0 && (
+                    <span className="text-sm text-gray-500">
+                      {toFarsiNumber(totalItems)} کالا
+                    </span>
+                  )}
+                </div>
               </Link>
               
               {user ? (
                 <Link
                   to="/profile"
-                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
+                  className="flex flex-row-reverse items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
                   onClick={onClose}
                 >
                   <div className="w-12 h-12 bg-indigo-500/10 rounded-xl flex items-center justify-center group-hover:bg-indigo-500/20 transition-colors">
                     <User className="h-6 w-6 text-indigo-500" />
                   </div>
-                  <span className="font-medium text-lg">پروفایل کاربری</span>
+                  <span className="font-medium text-lg text-right flex-1">پروفایل کاربری</span>
                 </Link>
               ) : (
                 <Link
                   to="/auth"
-                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
+                  className="flex flex-row-reverse items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
                   onClick={onClose}
                 >
                   <div className="w-12 h-12 bg-indigo-500/10 rounded-xl flex items-center justify-center group-hover:bg-indigo-500/20 transition-colors">
                     <User className="h-6 w-6 text-indigo-500" />
                   </div>
-                  <span className="font-medium text-lg">ورود/ثبت نام</span>
+                  <span className="font-medium text-lg text-right flex-1">ورود/ثبت نام</span>
                 </Link>
               )}
 
               {user && isAdmin() && (
                 <Link
                   to="/admin"
-                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
+                  className="flex flex-row-reverse items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
                   onClick={onClose}
                 >
                   <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
                     <Settings className="h-6 w-6 text-amber-500" />
                   </div>
-                  <span className="font-medium text-lg">پنل مدیریت</span>
+                  <span className="font-medium text-lg text-right flex-1">پنل مدیریت</span>
                 </Link>
               )}
             </div>
@@ -273,7 +277,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               
               <button
                 onClick={toggleTheme}
-                className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
+                className="w-full flex flex-row-reverse items-center gap-4 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 text-foreground group"
               >
                 <div className="w-12 h-12 bg-yellow-500/10 rounded-xl flex items-center justify-center group-hover:bg-yellow-500/20 transition-colors">
                   {theme === "dark" ? 
@@ -281,7 +285,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                     <Moon className="h-6 w-6 text-yellow-500" />
                   }
                 </div>
-                <span className="font-medium text-lg">
+                <span className="font-medium text-lg text-right flex-1">
                   {theme === "dark" ? "حالت روشن" : "حالت تاریک"}
                 </span>
               </button>
