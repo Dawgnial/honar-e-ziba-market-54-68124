@@ -32,6 +32,7 @@ const AdminComments = lazy(() => import("./pages/AdminComments"));
 const AdminReports = lazy(() => import("./pages/AdminReports"));
 const AdminSettings = lazy(() => import("./pages/AdminSettings"));
 const AdminSupport = lazy(() => import("./pages/AdminSupport"));
+const AdminTags = lazy(() => import("./pages/AdminTags"));
 import { CartProvider } from "./context/CartContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import { ThemeProvider } from "./components/ThemeProvider";
@@ -161,6 +162,14 @@ const App = () => {
                         element={
                           <ProtectedRoute adminOnly>
                             <AdminSupport />
+                          </ProtectedRoute>
+                        } 
+                      />
+                      <Route 
+                        path="/admin/tags" 
+                        element={
+                          <ProtectedRoute adminOnly>
+                            <AdminTags />
                           </ProtectedRoute>
                         } 
                       />

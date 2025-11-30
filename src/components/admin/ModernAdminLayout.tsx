@@ -21,6 +21,7 @@ import AdminProducts from "../../pages/AdminProducts";
 import AdminCategories from "../../pages/AdminCategories";
 import RealAdminOrders from "./RealAdminOrders";
 import RealAdminUsers from "./RealAdminUsers";
+import AdminTags from "../../pages/AdminTags";
 import AdminComments from "../../pages/AdminComments";
 import RealAdminReports from "./RealAdminReports";
 import RealAdminSettings from "./RealAdminSettings";
@@ -180,6 +181,7 @@ const ModernAdminLayout = ({ children }: ModernAdminLayoutProps = {}) => {
               {activeTab === "dashboard" && <RealAdminDashboard />}
               {activeTab === "products" && <AdminProducts />}
               {activeTab === "categories" && <AdminCategories />}
+              {activeTab === "tags" && <AdminTags />}
               {activeTab === "orders" && <RealAdminOrders />}
               {activeTab === "users" && <RealAdminUsers />}
               {activeTab === "support" && <AdminSupport />}

@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { ShoppingCart, Heart, Share2, AlertCircle, MessageCircle, Instagram, Send, Shield, Headphones, TrendingDown } from "lucide-react";
+import { ShoppingCart, Heart, Share2, AlertCircle, MessageCircle, Instagram, Send, Shield, Headphones, TrendingDown, Hash } from "lucide-react";
 import { useSupabaseProducts } from "../hooks/useSupabaseProducts";
 import { useCart } from "../context/CartContext";
 import { useCategoryName } from "../utils/categoryUtils";
 import { useCategories } from "../hooks/useCategories";
+import { useTags } from "../hooks/useTags";
 import { ProductComments } from "../components/ProductComments";
 import ProductImageGallery from "../components/ProductImageGallery";
 import { useFavorites } from "../context/FavoritesContext";
@@ -32,10 +33,12 @@ const ProductDetail = () => {
   const [selectedCustomOptions, setSelectedCustomOptions] = useState<SelectedOption[]>([]);
   const [customPriceModifier, setCustomPriceModifier] = useState(0);
   const [currentPrice, setCurrentPrice] = useState(0);
+  const [productTags, setProductTags] = useState<any[]>([]);
   const { toast } = useToast();
   const { addToCart } = useCart();
   const { getProduct } = useSupabaseProducts();
   const { categories } = useCategories();
+  const { getProductTags } = useTags();
   const { favorites, addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   
   // Get category name using the hook
@@ -54,6 +57,10 @@ const ProductDetail = () => {
         const data = await getProduct(id);
         setProduct(data);
         setCurrentPrice(data?.price || 0);
+        
+        // Load product tags
+        const tags = await getProductTags(id);
+        setProductTags(tags);
       } catch (err) {
         console.error('Error fetching product:', err);
         setError('خطا در دریافت اطلاعات محصول');
@@ -327,6 +334,29 @@ const formatPrice = (price: number): string => {
                 {product.description}
               </p>
             </div>
+
+            {/* Product Tags */}
+            {productTags.length > 0 && (
+              <div className="border-t pt-4">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  <Hash className="h-4 w-4" />
+                  هشتگ‌ها
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {productTags.map((tag) => (
+                    <Badge
+                      key={tag.id}
+                      variant="secondary"
+                      className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                      onClick={() => navigate(`/products?tag=${tag.id}`)}
+                    >
+                      <Hash className="h-3 w-3 ml-1" />
+                      {tag.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Stock Status */}
             <div className="mb-4">

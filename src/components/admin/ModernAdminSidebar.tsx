@@ -15,7 +15,8 @@ import {
   Menu,
   X,
   Home,
-  MessageCircle
+  MessageCircle,
+  Hash
 } from "lucide-react";
 import { useSupabaseAuth } from "../../hooks/useSupabaseAuth";
 import { Badge } from "@/components/ui/badge";
@@ -68,6 +69,12 @@ const ModernAdminSidebar = ({ activeTab, onTabChange, collapsed, onToggleCollaps
       id: "categories",
       label: "دسته‌بندی‌ها",
       icon: Grid3X3,
+      badge: null,
+    },
+    {
+      id: "tags",
+      label: "هشتگ‌ها",
+      icon: Hash,
       badge: null,
     },
     {
