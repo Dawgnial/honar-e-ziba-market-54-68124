@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,22 +23,23 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Users, Search, Shield, ShieldCheck, Edit, Trash2, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { useDebounce } from "@/hooks/use-debounce";
 
 const RealAdminUsers = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  
+  // Debounce search for better performance
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch profiles
+  // Optimized: Fetch users with roles in ONE query using join
+  const { data: users = [], isLoading: loading } = useQuery({
+    queryKey: ['admin-users'],
+    queryFn: async () => {
+      // First fetch all profiles
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('*')
@@ -46,32 +47,29 @@ const RealAdminUsers = () => {
 
       if (profilesError) throw profilesError;
 
-      // Fetch roles from user_roles for each user
-      const usersWithRoles = await Promise.all(
-        (profilesData || []).map(async (profile) => {
-          const { data: roleData } = await supabase
-            .from('user_roles')
-            .select('role')
-            .eq('user_id', profile.id)
-            .single();
-          
-          return { 
-            ...profile, 
-            role: roleData?.role || 'user' 
-          };
-        })
-      );
+      // Then fetch ALL user roles in ONE query
+      const userIds = profilesData?.map(p => p.id) || [];
+      const { data: rolesData } = await supabase
+        .from('user_roles')
+        .select('user_id, role')
+        .in('user_id', userIds);
 
-      setUsers(usersWithRoles);
-    } catch (error: any) {
-      toast.error('خطا در بارگذاری کاربران');
-    } finally {
-      setLoading(false);
-    }
-  };
+      // Create a map for quick lookup
+      const rolesMap = new Map(rolesData?.map(r => [r.user_id, r.role]) || []);
 
-  const updateUserRole = async (userId: string, newRole: 'admin' | 'moderator' | 'user') => {
-    try {
+      // Combine profiles with roles
+      return profilesData?.map(profile => ({
+        ...profile,
+        role: rolesMap.get(profile.id) || 'user'
+      })) || [];
+    },
+    staleTime: 2 * 60 * 1000, // Cache for 2 minutes
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+  });
+
+  // Optimized: Use mutation for role updates
+  const updateRoleMutation = useMutation({
+    mutationFn: async ({ userId, newRole }: { userId: string; newRole: 'admin' | 'moderator' | 'user' }) => {
       // Get current role for audit log
       const { data: currentRoleData } = await supabase
         .from('user_roles')
@@ -108,19 +106,24 @@ const RealAdminUsers = () => {
           new_role: newRole
         });
       
-      // Update local state
-      setUsers(prev => prev.map(user => 
-        user.id === userId ? { ...user, role: newRole } : user
-      ));
-      
+      return { userId, newRole };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       toast.success('نقش کاربر با موفقیت به‌روزرسانی شد');
-    } catch (error: any) {
+    },
+    onError: () => {
       toast.error('خطا در به‌روزرسانی نقش کاربر');
     }
+  });
+
+  const updateUserRole = (userId: string, newRole: 'admin' | 'moderator' | 'user') => {
+    updateRoleMutation.mutate({ userId, newRole });
   };
 
-  const toggleUserStatus = async (userId: string, currentStatus: boolean) => {
-    try {
+  // Optimized: Use mutation for status updates
+  const toggleStatusMutation = useMutation({
+    mutationFn: async ({ userId, currentStatus }: { userId: string; currentStatus: boolean }) => {
       const newStatus = !currentStatus;
       const { error } = await supabase
         .from('profiles')
@@ -128,15 +131,19 @@ const RealAdminUsers = () => {
         .eq('id', userId);
 
       if (error) throw error;
-      
-      setUsers(prev => prev.map(user => 
-        user.id === userId ? { ...user, is_active: newStatus } : user
-      ));
-      
-      toast.success(`کاربر با موفقیت ${newStatus ? 'فعال' : 'غیرفعال'} شد`);
-    } catch (error: any) {
+      return { userId, newStatus };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      toast.success(`کاربر با موفقیت ${data.newStatus ? 'فعال' : 'غیرفعال'} شد`);
+    },
+    onError: () => {
       toast.error('خطا در به‌روزرسانی وضعیت کاربر');
     }
+  });
+
+  const toggleUserStatus = (userId: string, currentStatus: boolean) => {
+    toggleStatusMutation.mutate({ userId, currentStatus });
   };
 
   const getRoleBadge = (role: string) => {
@@ -178,14 +185,16 @@ const RealAdminUsers = () => {
     return name.split(' ').map(n => n[0]).join('').slice(0, 2);
   };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesRole = roleFilter === "all" || user.role === roleFilter;
-    
-    return matchesSearch && matchesRole;
-  });
+  const filteredUsers = useMemo(() => {
+    return users.filter(user => {
+      const matchesSearch = user.name?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+                           user.email?.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
+      
+      const matchesRole = roleFilter === "all" || user.role === roleFilter;
+      
+      return matchesSearch && matchesRole;
+    });
+  }, [users, debouncedSearchTerm, roleFilter]);
 
   if (loading) {
     return (

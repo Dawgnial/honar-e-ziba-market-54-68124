@@ -27,9 +27,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [userProfile, setUserProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Load user profile when user changes
+  // Load user profile when user changes with caching
   const loadUserProfile = async (userId: string) => {
     try {
+      // Check cache first
+      const cacheKey = `user_profile_${userId}`;
+      const cached = localStorage.getItem(cacheKey);
+      
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        // Use cache if less than 5 minutes old
+        if (Date.now() - timestamp < 5 * 60 * 1000) {
+          setUserProfile(data);
+          return;
+        }
+      }
+
       // Load profile data
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
@@ -51,10 +64,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         .limit(1)
         .single();
 
-      setUserProfile({
+      const profileWithRole = {
         ...profile,
         role: roleData?.role || 'user'
-      });
+      };
+
+      setUserProfile(profileWithRole);
+      
+      // Cache the result
+      localStorage.setItem(cacheKey, JSON.stringify({
+        data: profileWithRole,
+        timestamp: Date.now()
+      }));
     } catch (error) {
       setUserProfile(null);
     }
