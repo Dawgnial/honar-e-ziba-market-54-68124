@@ -16,12 +16,11 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import ProductForm from "../components/admin/ProductForm";
-import ProductVariantsManager from "../components/admin/ProductVariantsManager";
-import AttributeValueManager from "../components/admin/AttributeValueManager";
 import ProductDeleteConfirm from "../components/admin/ProductDeleteConfirm";
 import { useToast } from "@/hooks/use-toast";
 import { useSupabaseCategories } from "../hooks/useSupabaseCategories";
 import { ProductPagination } from "../components/ProductPagination";
+
 
 const AdminProducts = () => {
   const { products, loading, deleteProduct, refetch } = useSupabaseAdminProducts();
@@ -338,10 +337,6 @@ const AdminProducts = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <ProductVariantsManager 
-                              productId={product.id} 
-                              productTitle={product.title}
-                            />
                             <Button
                               variant="ghost"
                               size="sm"
