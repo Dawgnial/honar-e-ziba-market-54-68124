@@ -195,13 +195,13 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                     </Badge>
                   )}
                 </div>
-                <div className="flex items-center justify-between flex-1">
-                  <span className="font-medium text-lg text-right">علاقه‌مندی‌ها</span>
+                <div className="flex flex-row-reverse items-center justify-between flex-1">
                   {favorites.length > 0 && (
                     <span className="text-sm text-gray-500">
                       {toFarsiNumber(favorites.length)} مورد
                     </span>
                   )}
+                  <span className="font-medium text-lg">علاقه‌مندی‌ها</span>
                 </div>
               </Link>
               
@@ -218,13 +218,13 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                     </Badge>
                   )}
                 </div>
-                <div className="flex items-center justify-between flex-1">
-                  <span className="font-medium text-lg text-right">سبد خرید</span>
+                <div className="flex flex-row-reverse items-center justify-between flex-1">
                   {totalItems > 0 && (
                     <span className="text-sm text-gray-500">
                       {toFarsiNumber(totalItems)} کالا
                     </span>
                   )}
+                  <span className="font-medium text-lg">سبد خرید</span>
                 </div>
               </Link>
               
