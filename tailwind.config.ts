@@ -96,8 +96,10 @@ export default {
 				}
 			},
 			fontFamily: {
-				vazir: ['system-ui', 'Tahoma', 'Arial', 'sans-serif'],
-				estedad: ['system-ui', 'Tahoma', 'Arial', 'sans-serif'], // Temporarily using system fonts for debugging
+				sans: ['IRANSansX', 'Tahoma', 'Arial', 'sans-serif'],
+				irансansx: ['IRANSansX', 'Tahoma', 'Arial', 'sans-serif'],
+				vazir: ['IRANSansX', 'Tahoma', 'Arial', 'sans-serif'],
+				estedad: ['IRANSansX', 'Tahoma', 'Arial', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

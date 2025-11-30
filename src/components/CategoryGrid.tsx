@@ -45,10 +45,10 @@ const CategoryGrid = memo(() => {
     <section className="py-16 bg-gradient-to-b from-green-light/20 to-white dark:from-gray-800/20 dark:to-gray-900 transition-colors duration-300">
       <div className="container-custom">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-persian-blue dark:text-white mb-4 transition-colors duration-300">
+          <h2 className="text-3xl md:text-4xl text-persian-blue dark:text-white mb-4 transition-colors duration-300" style={{ fontWeight: 900 }}>
             دسته‌بندی محصولات
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto transition-colors duration-300">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto transition-colors duration-300" style={{ fontWeight: 400 }}>
             هر آنچه برای سفال و سرامیک نیاز دارید، مرتب و دسته‌بندی شده
           </p>
         </div>
@@ -81,7 +81,7 @@ const CategoryGrid = memo(() => {
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
                 <div className="absolute bottom-0 left-0 right-0 p-8">
-                  <h3 className="text-2xl lg:text-3xl font-bold text-white mb-3 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                  <h3 className="text-2xl lg:text-3xl text-white mb-3 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500" style={{ fontWeight: 900 }}>
                     {category.title}
                   </h3>
                   <Badge 

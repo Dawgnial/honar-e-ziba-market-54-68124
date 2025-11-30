@@ -41,13 +41,13 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About Us */}
           <div className="lg:col-span-2">
-            <h3 className="text-xl font-bold mb-4 font-vazir">درباره ایرولیا شاپ</h3>
-            <p className="text-white/80 mb-4 font-estedad leading-relaxed">
+            <h3 className="text-xl mb-4" style={{ fontWeight: 700 }}>درباره ایرولیا شاپ</h3>
+            <p className="text-white/80 mb-4 leading-relaxed" style={{ fontWeight: 400 }}>
               ایرولیا شاپ، همراه مطمئن هنرمندان سرامیک و سفال در مسیر خلق آثار ماندگار.
             </p>
             <div>
-              <h4 className="text-lg font-semibold mb-3 font-estedad">شبکه‌های اجتماعی</h4>
-              <p className="text-white/80 mb-3 font-vazir text-sm">ما را در شبکه های اجتماعی دنبال کنید:</p>
+              <h4 className="text-lg mb-3" style={{ fontWeight: 600 }}>شبکه‌های اجتماعی</h4>
+              <p className="text-white/80 mb-3 text-sm" style={{ fontWeight: 400 }}>ما را در شبکه های اجتماعی دنبال کنید:</p>
               <div className="flex space-x-4 space-x-reverse">
                 <a 
                   href="https://t.me/iroliashop" 
@@ -81,18 +81,19 @@ const Footer = () => {
           
           {/* Quick Links */}
           <div>
-            <h3 className="text-xl font-bold mb-4 font-estedad">دسترسی سریع</h3>
+            <h3 className="text-xl mb-4" style={{ fontWeight: 700 }}>دسترسی سریع</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-white/80 hover:text-white transition-colors font-vazir">صفحه اصلی</Link>
+                <Link to="/" className="text-white/80 hover:text-white transition-colors" style={{ fontWeight: 400 }}>صفحه اصلی</Link>
               </li>
               <li>
-                <Link to="/products" className="text-white/80 hover:text-white transition-colors font-estedad">محصولات</Link>
+                <Link to="/products" className="text-white/80 hover:text-white transition-colors" style={{ fontWeight: 400 }}>محصولات</Link>
               </li>
               <li>
                 <button 
                   onClick={() => scrollToSection("categories")}
-                  className="text-white/80 hover:text-white transition-colors font-vazir text-right"
+                  className="text-white/80 hover:text-white transition-colors text-right"
+                  style={{ fontWeight: 400 }}
                 >
                   دسته‌بندی‌ها
                 </button>
@@ -100,23 +101,24 @@ const Footer = () => {
               <li>
                 <button 
                   onClick={() => scrollToSection("faq")}
-                  className="text-white/80 hover:text-white transition-colors font-vazir text-right"
+                  className="text-white/80 hover:text-white transition-colors text-right"
+                  style={{ fontWeight: 400 }}
                 >
                   سوالات متداول
                 </button>
               </li>
               <li>
-                <Link to="/contact" className="text-white/80 hover:text-white transition-colors font-vazir">تماس با ما</Link>
+                <Link to="/contact" className="text-white/80 hover:text-white transition-colors" style={{ fontWeight: 400 }}>تماس با ما</Link>
               </li>
               <li>
-                <Link to="/about" className="text-white/80 hover:text-white transition-colors font-estedad">درباره ما</Link>
+                <Link to="/about" className="text-white/80 hover:text-white transition-colors" style={{ fontWeight: 400 }}>درباره ما</Link>
               </li>
             </ul>
           </div>
           
           {/* Contact Us */}
           <div id="contact">
-            <h3 className="text-xl font-bold mb-4 font-estedad">تماس با ما</h3>
+            <h3 className="text-xl mb-4" style={{ fontWeight: 700 }}>تماس با ما</h3>
             <ul className="space-y-3">
               <li className="flex items-start space-x-3 space-x-reverse">
                 <MapPin size={20} className="flex-shrink-0 mt-1" />

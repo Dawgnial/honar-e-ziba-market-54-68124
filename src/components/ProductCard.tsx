@@ -103,12 +103,12 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
       {/* Product Info */}
       <div className="p-5 flex flex-col h-full">
         <Link to={`/product/${product.id}`} className="block">
-          <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2 hover:text-terracotta transition-colors">
+          <h3 className="text-lg text-gray-900 dark:text-white mb-2 line-clamp-2 hover:text-terracotta transition-colors" style={{ fontWeight: 700 }}>
             {product.title}
           </h3>
         </Link>
         
-        <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2 whitespace-pre-wrap">
+        <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2 whitespace-pre-wrap" style={{ fontWeight: 400 }}>
           {product.description}
         </p>
 
@@ -150,10 +150,10 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
                 {product.discount_percentage && product.discount_percentage > 0 ? (
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <p className="text-2xl font-bold text-terracotta">
+                      <p className="text-2xl text-terracotta" style={{ fontWeight: 800 }}>
                         {formatPriceToFarsi(Math.round(product.price * (1 - product.discount_percentage / 100)))} تومان
                       </p>
-                      <span className="text-sm text-gray-500 line-through">
+                      <span className="text-sm text-gray-500 line-through" style={{ fontWeight: 400 }}>
                         {formatPriceToFarsi(product.price)}
                       </span>
                     </div>
@@ -162,16 +162,16 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
                     </Badge>
                   </div>
                 ) : (
-                  <p className="text-2xl font-bold text-terracotta">
+                  <p className="text-2xl text-terracotta" style={{ fontWeight: 800 }}>
                     {formatPriceToFarsi(product.price)} تومان
                   </p>
                 )}
               </>
-            ) : (
-              <div className="text-2xl font-bold text-red-500">
-                ناموجود
-              </div>
-            )}
+              ) : (
+                <div className="text-2xl text-red-500" style={{ fontWeight: 700 }}>
+                  ناموجود
+                </div>
+              )}
           </div>
         </div>
 
