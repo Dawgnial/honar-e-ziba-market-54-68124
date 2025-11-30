@@ -31,6 +31,7 @@ export const useSupabaseProducts = () => {
       const { data, error } = await supabase
         .from('products')
         .select('*')
+        .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -50,6 +51,7 @@ export const useSupabaseProducts = () => {
         .from('products')
         .select('*')
         .eq('is_featured', true)
+        .eq('is_active', true)
         .order('created_at', { ascending: false })
         .limit(8);
 

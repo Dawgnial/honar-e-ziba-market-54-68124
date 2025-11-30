@@ -63,6 +63,7 @@ export const useOptimizedProducts = (page = 1, limit = 20) => {
           created_at,
           updated_at
         `, { count: 'exact' })
+        .eq('is_active', true)
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -102,6 +103,7 @@ export const useFeaturedProducts = () => {
           updated_at
         `)
         .eq('is_featured', true)
+        .eq('is_active', true)
         .order('created_at', { ascending: false })
         .limit(8);
 
@@ -159,6 +161,7 @@ export const useProductsByCategory = (categoryId: string, page = 1, limit = 20) 
           updated_at
         `, { count: 'exact' })
         .eq('category_id', categoryId)
+        .eq('is_active', true)
         .order('created_at', { ascending: false })
         .range(from, to);
 
