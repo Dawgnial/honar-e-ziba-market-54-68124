@@ -392,7 +392,7 @@ const Products = () => {
             </div>
 
             {/* Products by Category */}
-            {isLoading ? (
+            {isLoading || products.length === 0 ? (
               <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
                 {[...Array(12)].map((_, index) => (
                   <div key={index} className="space-y-4">
