@@ -15,15 +15,17 @@ import {
 } from "@/components/ui/collapsible";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Filter, X, ChevronDown, RotateCcw } from "lucide-react";
+import { Search, Filter, X, ChevronDown, RotateCcw, Hash } from "lucide-react";
 import { Product } from "@/types";
 import { Category } from "../hooks/useSupabaseCategories";
+import { useTags } from "../hooks/useTags";
 import { formatPriceToFarsi } from "../utils/numberUtils";
 
 export interface FilterState {
   searchQuery: string;
   priceRange: [number, number];
   categories: string[];
+  tags: string[];
   featuredOnly: boolean;
   availableOnly: boolean;
   sortBy: string;
@@ -44,6 +46,7 @@ const ModernProductFilters = ({
   onFiltersChange, 
   isMobile = false 
 }: ModernProductFiltersProps) => {
+  const { tags } = useTags();
   const [isOpen, setIsOpen] = useState(false);
   const [maxPrice, setMaxPrice] = useState(1000000);
   const [minPrice, setMinPrice] = useState(0);
@@ -107,6 +110,13 @@ const ModernProductFilters = ({
     updateFilters({ categories: newCategories });
   };
 
+  const handleTagChange = (tagId: string, checked: boolean) => {
+    const newTags = checked
+      ? [...filters.tags, tagId]
+      : filters.tags.filter(id => id !== tagId);
+    updateFilters({ tags: newTags });
+  };
+
   // اعمال تأخیر برای بهبود تجربه کاربری
   const [priceUpdateTimeout, setPriceUpdateTimeout] = useState<NodeJS.Timeout>();
   
@@ -152,6 +162,7 @@ const ModernProductFilters = ({
       searchQuery: '',
       priceRange: resetRange,
       categories: [],
+      tags: [],
       featuredOnly: false,
       availableOnly: false,
       sortBy: 'newest'
@@ -161,6 +172,7 @@ const ModernProductFilters = ({
   const hasActiveFilters = 
     filters.searchQuery !== '' ||
     filters.categories.length > 0 ||
+    filters.tags.length > 0 ||
     filters.featuredOnly ||
     filters.availableOnly ||
     filters.priceRange[0] !== minPrice ||
@@ -232,6 +244,37 @@ const ModernProductFilters = ({
           ))}
         </CollapsibleContent>
       </Collapsible>
+
+      {/* Tags */}
+      {tags.filter(t => t.is_active).length > 0 && (
+        <Collapsible>
+          <CollapsibleTrigger className="flex items-center justify-between w-full">
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <Hash className="h-4 w-4" />
+              هشتگ‌ها
+            </Label>
+            <ChevronDown className="h-4 w-4" />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-3 mt-3">
+            {tags.filter(t => t.is_active).map((tag) => (
+              <div key={tag.id} className="flex items-center space-x-2 space-x-reverse">
+                <Checkbox
+                  id={`tag-${tag.id}`}
+                  checked={filters.tags.includes(tag.id)}
+                  onCheckedChange={(checked) => handleTagChange(tag.id, checked as boolean)}
+                />
+                <Label
+                  htmlFor={`tag-${tag.id}`}
+                  className="text-sm font-normal cursor-pointer flex-1 flex items-center gap-1"
+                >
+                  <Hash className="h-3 w-3 text-muted-foreground" />
+                  {tag.name}
+                </Label>
+              </div>
+            ))}
+          </CollapsibleContent>
+        </Collapsible>
+      )}
 
       {/* Quick Filters */}
       <div className="space-y-3">
@@ -307,6 +350,23 @@ const ModernProductFilters = ({
                 </Badge>
               ) : null;
             })}
+            {filters.tags.map(tagId => {
+              const tag = tags.find(t => t.id === tagId);
+              return tag ? (
+                <Badge key={tagId} variant="secondary" className="text-xs">
+                  <Hash className="h-3 w-3 ml-1" />
+                  {tag.name}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-auto p-0 ml-1"
+                    onClick={() => handleTagChange(tagId, false)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </Badge>
+              ) : null;
+            })}
             {filters.availableOnly && (
               <Badge variant="secondary" className="text-xs">
                 فقط موجود
@@ -367,7 +427,7 @@ const ModernProductFilters = ({
             </div>
             {hasActiveFilters && (
               <Badge variant="secondary" className="text-xs">
-                {filters.categories.length + (filters.featuredOnly ? 1 : 0) + (filters.availableOnly ? 1 : 0)}
+                {filters.categories.length + filters.tags.length + (filters.featuredOnly ? 1 : 0) + (filters.availableOnly ? 1 : 0)}
               </Badge>
             )}
           </Button>
@@ -396,11 +456,11 @@ const ModernProductFilters = ({
             <Filter className="h-5 w-5" />
             فیلتر ها
           </div>
-          {hasActiveFilters && (
-            <Badge variant="secondary" className="text-xs">
-              {filters.categories.length + (filters.featuredOnly ? 1 : 0) + (filters.availableOnly ? 1 : 0)} فیلتر
-            </Badge>
-          )}
+            {hasActiveFilters && (
+              <Badge variant="secondary" className="text-xs">
+                {filters.categories.length + filters.tags.length + (filters.featuredOnly ? 1 : 0) + (filters.availableOnly ? 1 : 0)} فیلتر
+              </Badge>
+            )}
         </CardTitle>
       </CardHeader>
       <CardContent>

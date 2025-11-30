@@ -6,6 +6,8 @@ import ModernProductCard from "../components/ModernProductCard";
 import NewProductFilters, { FilterState } from "../components/NewProductFilters";
 import { useProducts } from "../hooks/useProducts";
 import { useCategories } from "../hooks/useCategories";
+import { useTags } from "../hooks/useTags";
+import { useProductsWithTags } from "../hooks/useProductsWithTags";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -25,6 +27,7 @@ import { filterProductsBySearch } from "../utils/searchUtils";
 const Products = () => {
   const { products, loading: productsLoading, error: productsError, refetch } = useProducts();
   const { categories, loading: categoriesLoading } = useCategories();
+  const { tags } = useTags();
   const { addToCart } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const location = useLocation();
@@ -63,20 +66,25 @@ const Products = () => {
     const searchParams = new URLSearchParams(location.search);
     const categoryId = searchParams.get('category');
     const searchQuery = searchParams.get('search');
+    const tagId = searchParams.get('tag');
     
     setFilters(prev => ({
       ...prev,
       categories: categoryId ? [categoryId] : [],
+      tags: tagId ? [tagId] : [],
       searchQuery: searchQuery || ''
     }));
   }, [location.search]);
 
 
+  // Apply tag filter first
+  const { filteredProducts: tagFilteredProducts } = useProductsWithTags(products, filters.tags);
+
   // Filter and sort products
   const filteredProducts = useMemo(() => {
-    let filtered = [...products];
+    let filtered = [...tagFilteredProducts];
 
-    // Search filter with improved Persian text matching
+    // Search filter
     if (filters.searchQuery.trim()) {
       filtered = filterProductsBySearch(filtered, filters.searchQuery);
     }
@@ -88,7 +96,7 @@ const Products = () => {
       );
     }
 
-    // Price filter - use discounted price if available
+    // Price filter
     filtered = filtered.filter(product => {
       const discountedPrice = product.discount_percentage 
         ? product.price * (1 - product.discount_percentage / 100)

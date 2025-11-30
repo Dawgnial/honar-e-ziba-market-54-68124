@@ -14,9 +14,10 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { X } from "lucide-react";
+import { X, Hash } from "lucide-react";
 import { useSupabaseAdminProducts } from "../../hooks/useSupabaseAdminProducts";
 import { useSupabaseCategories } from "../../hooks/useSupabaseCategories";
+import { useTags } from "../../hooks/useTags";
 import { useToast } from "@/hooks/use-toast";
 import ProductImageUpload from "./ProductImageUpload";
 import ProductAttributesManager from "./ProductAttributesManager";
@@ -32,8 +33,10 @@ interface ProductFormProps {
 const ProductForm = ({ product, onSuccess, onCancel, isOpen = true }: ProductFormProps) => {
   const { toast } = useToast();
   const { categories } = useSupabaseCategories();
+  const { tags, getProductTags, setProductTags } = useTags();
   const { createProduct, updateProduct } = useSupabaseAdminProducts();
   const [loading, setLoading] = useState(false);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -86,8 +89,18 @@ const ProductForm = ({ product, onSuccess, onCancel, isOpen = true }: ProductFor
     isFeatured: product?.is_featured || false,
     discountPercentage: product?.discount_percentage || 0,
     availabilityStatus: product?.availability_status || "available",
-    tags: product?.tags || [],
   });
+
+  // Load product tags when editing
+  useEffect(() => {
+    const loadProductTags = async () => {
+      if (product?.id) {
+        const productTags = await getProductTags(product.id);
+        setSelectedTagIds(productTags.map(t => t.id));
+      }
+    };
+    loadProductTags();
+  }, [product?.id]);
 
   const [tagInput, setTagInput] = useState("");
 
@@ -103,7 +116,6 @@ const ProductForm = ({ product, onSuccess, onCancel, isOpen = true }: ProductFor
         isFeatured: product.is_featured || false,
         discountPercentage: product.discount_percentage || 0,
         availabilityStatus: product.availability_status || "available",
-        tags: product.tags || [],
       });
     }
   }, [product]);
@@ -125,20 +137,27 @@ const ProductForm = ({ product, onSuccess, onCancel, isOpen = true }: ProductFor
         isFeatured: formData.isFeatured,
         discountPercentage: Number(formData.discountPercentage),
         availabilityStatus: formData.availabilityStatus,
-        tags: formData.tags,
       };
 
+      let productId: string;
+      
       if (product) {
         await updateProduct(product.id, submitData);
+        productId = product.id;
         toast({
           title: "محصول با موفقیت به‌روزرسانی شد",
         });
       } else {
-        await createProduct(submitData);
+        const newProduct = await createProduct(submitData);
+        productId = newProduct.id;
         toast({
           title: "محصول با موفقیت اضافه شد",
         });
       }
+      
+      // Save product tags
+      await setProductTags(productId, selectedTagIds);
+      
       onSuccess();
     } catch (error) {
       // Error already handled in the hook
@@ -359,73 +378,52 @@ const ProductForm = ({ product, onSuccess, onCancel, isOpen = true }: ProductFor
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-3 text-xl text-gray-800 dark:text-white">
                   <div className="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
-                    <Tag className="h-4 w-4 text-white" />
+                    <Hash className="h-4 w-4 text-white" />
                   </div>
                   هشتگ‌های محصول
+                  <Badge variant="secondary" className="mr-auto">
+                    {selectedTagIds.length} انتخاب شده
+                  </Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <Label htmlFor="tags" className="text-base font-medium flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
-                    افزودن هشتگ
-                  </Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="tags"
-                      value={tagInput}
-                      onChange={(e) => setTagInput(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-                            handleChange("tags", [...formData.tags, tagInput.trim()]);
-                            setTagInput("");
-                          }
-                        }
-                      }}
-                      placeholder="هشتگ را وارد کرده و Enter بزنید"
-                      className="h-12 text-base border-2 focus:border-teal-500 transition-colors"
-                    />
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-                          handleChange("tags", [...formData.tags, tagInput.trim()]);
-                          setTagInput("");
-                        }
-                      }}
-                      className="h-12 px-6"
-                      variant="outline"
-                    >
-                      افزودن
-                    </Button>
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    هشتگ‌ها به کاربران کمک می‌کنند محصولات مرتبط را بهتر پیدا کنند
-                  </p>
-                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  هشتگ‌های مناسب برای این محصول را انتخاب کنید
+                </p>
                 
-                {/* Display Tags */}
-                {formData.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 p-4 bg-white dark:bg-gray-800 rounded-lg border-2 border-teal-200 dark:border-gray-700">
-                    {formData.tags.map((tag, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="text-base py-2 px-4 flex items-center gap-2 bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-100"
+                {tags.filter(t => t.is_active).length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Hash className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                    <p>هیچ هشتگ فعالی وجود ندارد</p>
+                    <p className="text-sm mt-1">ابتدا از بخش مدیریت هشتگ‌ها، هشتگ‌های مورد نظر را ایجاد کنید</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {tags.filter(t => t.is_active).map((tag) => (
+                      <div
+                        key={tag.id}
+                        className="flex items-center space-x-2 space-x-reverse p-3 bg-white dark:bg-gray-800 rounded-lg border-2 border-teal-200 dark:border-gray-700 hover:border-teal-400 transition-colors"
                       >
-                        #{tag}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            handleChange("tags", formData.tags.filter((_, i) => i !== index));
+                        <Checkbox
+                          id={`tag-${tag.id}`}
+                          checked={selectedTagIds.includes(tag.id)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedTagIds([...selectedTagIds, tag.id]);
+                            } else {
+                              setSelectedTagIds(selectedTagIds.filter(id => id !== tag.id));
+                            }
                           }}
-                          className="hover:text-red-600 transition-colors"
+                          className="w-5 h-5"
+                        />
+                        <Label
+                          htmlFor={`tag-${tag.id}`}
+                          className="text-sm font-medium cursor-pointer flex-1 flex items-center gap-1"
                         >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </Badge>
+                          <Hash className="h-3 w-3 text-teal-600" />
+                          {tag.name}
+                        </Label>
+                      </div>
                     ))}
                   </div>
                 )}
