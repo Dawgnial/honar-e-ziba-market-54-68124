@@ -59,7 +59,8 @@ const AdminProducts = () => {
     console.log('🔍 Admin Products Search:', {
       totalProducts: products.length,
       searchTerm: debouncedSearchTerm,
-      hasSearch: !!debouncedSearchTerm.trim()
+      hasSearch: !!debouncedSearchTerm.trim(),
+      categoriesLoaded: categories.length
     });
     
     if (!debouncedSearchTerm.trim()) {
@@ -67,11 +68,18 @@ const AdminProducts = () => {
       return products;
     }
     
+    // Local getCategoryName inside useMemo to avoid scope issues
+    const getCategoryNameLocal = (categoryId: string): string => {
+      if (!categories || categories.length === 0) return '';
+      const category = categories.find(cat => cat.id === categoryId);
+      return category ? category.title : '';
+    };
+    
     const filtered = products.filter(product => {
       try {
         const normalizedSearchTerm = normalizeText(debouncedSearchTerm);
         const normalizedTitle = normalizeText(product.title);
-        const normalizedCategory = normalizeText(getCategoryName(product.category_id));
+        const normalizedCategory = normalizeText(getCategoryNameLocal(product.category_id));
         const normalizedDescription = normalizeText(product.description);
         
         const matches = normalizedTitle.includes(normalizedSearchTerm) ||
@@ -79,7 +87,10 @@ const AdminProducts = () => {
                normalizedDescription.includes(normalizedSearchTerm);
         
         if (matches) {
-          console.log('✓ Match found:', product.title);
+          console.log('✓ Match found:', {
+            title: product.title,
+            category: getCategoryNameLocal(product.category_id)
+          });
         }
         
         return matches;
