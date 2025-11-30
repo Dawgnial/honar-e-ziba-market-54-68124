@@ -125,10 +125,10 @@ const Hero = () => {
       
       {/* Content with animation */}
       <div className={`container-custom relative z-20 flex flex-col items-center text-center transition-all duration-1000 w-full max-w-7xl mx-auto px-4 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-3 md:mb-4 text-shadow-md leading-tight px-2">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-white mb-3 md:mb-4 text-shadow-md leading-tight px-2" style={{ fontWeight: 900 }}>
           ابزار و لوازم سفال و سرامیک، <span className="text-amber-200">از مبتدی تا حرفه‌ای</span>
         </h1>
-        <p className="text-base sm:text-lg md:text-xl text-amber-100/90 mb-6 md:mb-8 max-w-3xl font-vazir leading-relaxed px-4">
+        <p className="text-base sm:text-lg md:text-xl text-amber-100/90 mb-6 md:mb-8 max-w-3xl leading-relaxed px-4" style={{ fontWeight: 400 }}>
           همه چیز برای ساختن آثار سفال و سرامیک، از ابزارهای پایه تا تجهیزات پیشرفته
         </p>
         
@@ -137,12 +137,13 @@ const Hero = () => {
           <form onSubmit={handleSearch} className="relative">
               <Input 
               type="text" 
-              className="w-full py-4 md:py-5 px-4 md:px-6 pr-8 md:pr-10 rounded-full shadow-2xl text-base md:text-lg font-vazir border-amber-200/20 bg-white/15 text-white placeholder:text-amber-100/70 focus:border-amber-300 transition-all text-right placeholder:text-right" 
+              className="w-full py-4 md:py-5 px-4 md:px-6 pr-8 md:pr-10 rounded-full shadow-2xl text-base md:text-lg border-amber-200/20 bg-white/15 text-white placeholder:text-amber-100/70 focus:border-amber-300 transition-all text-right placeholder:text-right" 
               placeholder="جستجو میان ابزارها و تجهیزات سفال و سرامیک..." 
               value={searchQuery} 
               onChange={e => setSearchQuery(e.target.value)} 
               onFocus={() => searchQuery.length >= 2 && setShowResults(true)}
               dir="rtl"
+              style={{ fontWeight: 400 }}
             />
             <Button 
               type="submit" 
@@ -247,8 +248,8 @@ const Hero = () => {
                   </>}
                 </svg>
               </div>
-              <h3 className="text-base md:text-lg font-semibold text-center mb-1 md:mb-2 text-white group-hover:scale-105 transition-all">{feature.title}</h3>
-              <p className="text-amber-100/90 text-center font-vazir leading-relaxed text-xs md:text-sm px-1">
+              <h3 className="text-base md:text-lg text-center mb-1 md:mb-2 text-white group-hover:scale-105 transition-all" style={{ fontWeight: 700 }}>{feature.title}</h3>
+              <p className="text-amber-100/90 text-center leading-relaxed text-xs md:text-sm px-1" style={{ fontWeight: 400 }}>
                 {feature.desc}
               </p>
             </div>
