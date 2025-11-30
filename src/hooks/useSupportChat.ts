@@ -20,6 +20,7 @@ export interface Conversation {
   conversation_id: string;
   user_name: string;
   user_email: string | null;
+  user_phone: string | null;
   last_message: string;
   last_message_time: string;
   unread_count: number;
@@ -96,7 +97,7 @@ export const useSupportChat = (conversationId?: string, onNewMessage?: (message:
     };
   }, [conversationId]);
 
-  const sendMessage = async (message: string, userName: string, userEmail?: string) => {
+  const sendMessage = async (message: string, userName: string, userEmail?: string, userPhone?: string) => {
     if (!conversationId || !message.trim()) return;
 
     try {
@@ -107,6 +108,7 @@ export const useSupportChat = (conversationId?: string, onNewMessage?: (message:
           user_id: user?.id || null,
           user_name: userName,
           user_email: userEmail || null,
+          user_phone: userPhone || null,
           message: message.trim(),
           is_from_admin: false,
           is_read: false
@@ -191,6 +193,7 @@ export const useConversations = () => {
             conversation_id: msg.conversation_id,
             user_name: msg.user_name,
             user_email: msg.user_email,
+            user_phone: msg.user_phone,
             last_message: msg.message,
             last_message_time: msg.created_at,
             unread_count: 0,

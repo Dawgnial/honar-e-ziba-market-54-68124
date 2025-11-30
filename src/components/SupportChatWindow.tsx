@@ -22,6 +22,7 @@ const SupportChatWindow = ({ onClose }: SupportChatWindowProps) => {
   const [message, setMessage] = useState('');
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [userPhone, setUserPhone] = useState('');
   const [showNameForm, setShowNameForm] = useState(true);
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -73,7 +74,7 @@ const SupportChatWindow = ({ onClose }: SupportChatWindowProps) => {
   }, [messages, showNameForm, markAsRead]);
 
   const handleStartChat = () => {
-    if (!userName.trim()) return;
+    if (!userName.trim() || !userPhone.trim()) return;
     setShowNameForm(false);
   };
 
@@ -83,7 +84,7 @@ const SupportChatWindow = ({ onClose }: SupportChatWindowProps) => {
     try {
       setSending(true);
       stopTyping();
-      await sendMessage(message, userName, userEmail);
+      await sendMessage(message, userName, userEmail, userPhone);
       setMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
@@ -135,6 +136,19 @@ const SupportChatWindow = ({ onClose }: SupportChatWindowProps) => {
           </div>
           
           <div>
+            <label className="text-sm font-medium mb-1 block">شماره همراه *</label>
+            <Input
+              type="tel"
+              value={userPhone}
+              onChange={(e) => setUserPhone(e.target.value)}
+              placeholder="شماره همراه خود را وارد کنید"
+              onKeyPress={handleKeyPress}
+              className="text-right"
+              dir="ltr"
+            />
+          </div>
+          
+          <div>
             <label className="text-sm font-medium mb-1 block">ایمیل (اختیاری)</label>
             <Input
               type="email"
@@ -148,7 +162,7 @@ const SupportChatWindow = ({ onClose }: SupportChatWindowProps) => {
 
           <Button
             onClick={handleStartChat}
-            disabled={!userName.trim()}
+            disabled={!userName.trim() || !userPhone.trim()}
             className="w-full"
           >
             شروع گفتگو
