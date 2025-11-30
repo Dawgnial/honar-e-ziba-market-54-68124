@@ -19,95 +19,24 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // Aggressive code splitting for maximum performance
+    // Simplified build config - removed aggressive code splitting that caused circular dependencies
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // Core React libraries
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return 'react-core';
-          }
-          // Router
-          if (id.includes('react-router')) {
-            return 'router';
-          }
-          // UI libraries - split by usage
-          if (id.includes('lucide-react')) {
-            return 'icons';
-          }
-          if (id.includes('@radix-ui')) {
-            return 'radix-ui';
-          }
-          // Form handling
-          if (id.includes('react-hook-form') || id.includes('zod') || id.includes('@hookform')) {
-            return 'forms';
-          }
-          // Data fetching
-          if (id.includes('@tanstack/react-query')) {
-            return 'query';
-          }
-          // Supabase
-          if (id.includes('@supabase')) {
-            return 'supabase';
-          }
-          // Heavy libraries that can be lazy loaded
-          if (id.includes('framer-motion')) {
-            return 'animations';
-          }
-          if (id.includes('recharts')) {
-            return 'charts';
-          }
-          // PDF and canvas - rarely used
-          if (id.includes('jspdf') || id.includes('html2canvas')) {
-            return 'pdf-utils';
-          }
-        },
-        // Optimize chunk file names
-        chunkFileNames: 'assets/js/[name]-[hash].js',
-        entryFileNames: 'assets/js/[name]-[hash].js',
-        assetFileNames: (assetInfo) => {
-          if (!assetInfo.name) return 'assets/[name]-[hash][extname]';
-          const info = assetInfo.name.split('.');
-          const ext = info[info.length - 1];
-          if (/png|jpe?g|svg|gif|tiff|bmp|ico|webp/i.test(ext)) {
-            return `assets/images/[name]-[hash][extname]`;
-          } else if (/woff2?|ttf|otf|eot/i.test(ext)) {
-            return `assets/fonts/[name]-[hash][extname]`;
-          }
-          return `assets/[name]-[hash][extname]`;
+        manualChunks: {
+          // Only split vendor code from app code
+          'vendor': [
+            'react',
+            'react-dom',
+            'react-router-dom',
+          ],
         },
       },
     },
-    // Optimize chunk size
-    chunkSizeWarningLimit: 500,
-    // No source maps in production
     sourcemap: false,
-    // Aggressive minification
     minify: 'esbuild',
     target: 'es2015',
-    // CSS code splitting
-    cssCodeSplit: true,
-    // Optimize assets
-    assetsInlineLimit: 4096,
-    // Reduce CSS size
-    cssMinify: true,
   },
-  // Performance optimizations
   optimizeDeps: {
-    include: [
-      'react',
-      'react-dom',
-      'react-router-dom',
-      '@tanstack/react-query',
-    ],
-    exclude: ['framer-motion', 'recharts', 'jspdf', 'html2canvas'],
-  },
-  // Esbuild optimizations
-  esbuild: {
-    logOverride: { 'this-is-undefined-in-esm': 'silent' },
-    treeShaking: true,
-    minifyIdentifiers: true,
-    minifySyntax: true,
-    minifyWhitespace: true,
+    include: ['react', 'react-dom', 'react-router-dom'],
   },
 }));
