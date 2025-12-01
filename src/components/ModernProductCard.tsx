@@ -9,7 +9,6 @@ import { Product } from "@/types";
 import { formatPriceToFarsi, toFarsiNumber } from "../utils/numberUtils";
 import { useCategoryName } from "../utils/categoryUtils";
 import OptimizedImage from "./OptimizedImage";
-import { useProductComments } from "../hooks/useProductComments";
 
 interface ModernProductCardProps {
   product: Product;
@@ -21,12 +20,9 @@ interface ModernProductCardProps {
 
 const ModernProductCard = ({ product, categories, onAddToCart, onToggleFavorite, isFavorite }: ModernProductCardProps) => {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
-  const { getAverageRating, comments } = useProductComments(product.id);
 
   // Check if product is available based on manual availability status only
   const isAvailable = product.availability_status === 'available';
-  const averageRating = getAverageRating();
-  const hasComments = comments.length > 0;
   
   // Calculate real discount prices
   const discountPercentage = product.discount_percentage || 0;
@@ -36,32 +32,6 @@ const ModernProductCard = ({ product, categories, onAddToCart, onToggleFavorite,
     : originalPrice;
   
   const categoryName = useCategoryName(categories, product.category_id);
-
-  const renderStars = (rating: number, hasRatings: boolean) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(
-        <Star 
-          key={i} 
-          className={`w-4 h-4 ${hasRatings ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`} 
-        />
-      );
-    }
-
-    if (hasHalfStar && hasRatings) {
-      stars.push(<StarHalf key="half" className="w-4 h-4 fill-yellow-400 text-yellow-400" />);
-    }
-
-    const remainingStars = 5 - Math.ceil(hasRatings ? rating : 0);
-    for (let i = 0; i < remainingStars; i++) {
-      stars.push(<Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />);
-    }
-
-    return stars;
-  };
 
 
   return (
@@ -129,18 +99,6 @@ const ModernProductCard = ({ product, categories, onAddToCart, onToggleFavorite,
             {product.title}
           </h3>
         </Link>
-
-        {/* Rating */}
-        <div className="flex items-center gap-2 mb-3">
-          <div className="flex items-center">
-            {renderStars(averageRating, hasComments)}
-          </div>
-          {hasComments ? (
-            <span className="text-sm text-gray-500">({toFarsiNumber(averageRating.toFixed(1))})</span>
-          ) : (
-            <span className="text-sm text-gray-500">(بدون امتیاز)</span>
-          )}
-        </div>
 
         {/* Price */}
         <div className="mb-3">
