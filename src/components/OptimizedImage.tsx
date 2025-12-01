@@ -64,6 +64,7 @@ const OptimizedImage = ({
         alt={alt}
         onLoad={handleLoad}
         onError={handleError}
+        decoding="async"
         className={cn(
           'relative w-full h-full object-cover object-center transition-opacity duration-150',
           isLoaded ? 'opacity-100' : 'opacity-0',

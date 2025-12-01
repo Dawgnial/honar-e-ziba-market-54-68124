@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,6 @@ import { useCart } from "../context/CartContext";
 import { useCategoryName } from "../utils/categoryUtils";
 import { useCategories } from "../hooks/useCategories";
 import { useTags } from "../hooks/useTags";
-import { ProductComments } from "../components/ProductComments";
 import ProductImageGallery from "../components/ProductImageGallery";
 import { useFavorites } from "../context/FavoritesContext";
 import { formatPriceToFarsi, toFarsiNumber } from "../utils/numberUtils";
@@ -21,6 +20,9 @@ import { StructuredDataProduct } from "../components/StructuredDataProduct";
 import ProductVariantSelector from "../components/ProductVariantSelector";
 import ProductCustomAttributeSelector, { SelectedOption } from "../components/ProductCustomAttributeSelector";
 import { ProductVariant } from "../hooks/useProductVariants";
+
+// Lazy load heavy components
+const ProductComments = lazy(() => import("../components/ProductComments").then(module => ({ default: module.ProductComments })));
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -504,9 +506,17 @@ const formatPrice = (price: number): string => {
           </div>
         </div>
 
-        {/* Product Comments Section */}
+        {/* Product Comments Section - Lazy loaded */}
         <div className="max-w-4xl mx-auto">
-          <ProductComments productId={id || ''} />
+          <Suspense fallback={
+            <div className="space-y-4">
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-32 w-full" />
+              <Skeleton className="h-32 w-full" />
+            </div>
+          }>
+            <ProductComments productId={id || ''} />
+          </Suspense>
         </div>
       </div>
     </Layout>

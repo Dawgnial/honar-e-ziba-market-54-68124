@@ -19,15 +19,19 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // Simplified build config - removed aggressive code splitting that caused circular dependencies
     rollupOptions: {
       output: {
         manualChunks: {
-          // Only split vendor code from app code
-          'vendor': [
-            'react',
-            'react-dom',
-            'react-router-dom',
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-supabase': ['@supabase/supabase-js'],
+          'vendor-query': ['@tanstack/react-query'],
+          'vendor-ui': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-toast',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-select',
+            '@radix-ui/react-tabs',
           ],
         },
       },
@@ -35,6 +39,7 @@ export default defineConfig(({ mode }) => ({
     sourcemap: false,
     minify: 'esbuild',
     target: 'es2015',
+    chunkSizeWarningLimit: 1000,
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],

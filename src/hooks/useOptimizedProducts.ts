@@ -75,8 +75,8 @@ export const useOptimizedProducts = (page = 1, limit = 20) => {
         hasMore: (count || 0) > to + 1,
       };
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
   });
 };
 
@@ -111,7 +111,7 @@ export const useFeaturedProducts = () => {
       return (data || []).map(transformProduct);
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
-    gcTime: 15 * 60 * 1000, // 15 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
   });
 };
 
@@ -131,7 +131,7 @@ export const useOptimizedProduct = (id: string) => {
     },
     enabled: !!id,
     staleTime: 15 * 60 * 1000, // 15 minutes
-    gcTime: 20 * 60 * 1000, // 20 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
   });
 };
 
@@ -174,8 +174,8 @@ export const useProductsByCategory = (categoryId: string, page = 1, limit = 20) 
       };
     },
     enabled: !!categoryId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
   });
 };
 
