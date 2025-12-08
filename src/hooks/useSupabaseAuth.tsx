@@ -113,13 +113,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
           
-          if (session?.user && event === 'SIGNED_IN') {
-            // Load profile after sign in
+          if (session?.user) {
+            // Load profile for any auth event with valid session
             setTimeout(() => {
               loadUserProfile(session.user.id);
             }, 0);
