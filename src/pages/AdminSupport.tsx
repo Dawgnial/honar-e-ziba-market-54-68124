@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { MessageCircle, Send, Loader2, User, Mail, Clock, Phone } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { MessageCircle, Send, Loader2, User, Mail, Clock, Phone, X, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -12,17 +12,38 @@ import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
 import { format } from 'date-fns';
 import { faIR } from 'date-fns/locale';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const AdminSupport = () => {
   const { user } = useSupabaseAuth();
-  const { conversations, loading: conversationsLoading } = useConversations();
+  const { conversations, loading: conversationsLoading, refreshConversations, deleteConversation: deleteConversationFromList } = useConversations();
   const [selectedConversationId, setSelectedConversationId] = useState<string>('');
   const [replyMessage, setReplyMessage] = useState('');
   const [sending, setSending] = useState(false);
+  const [closing, setClosing] = useState(false);
 
-  const { messages, loading: messagesLoading, sendAdminReply } = useSupportChat(
+  const { messages, loading: messagesLoading, sendAdminReply, markConversationAsRead } = useSupportChat(
     selectedConversationId || undefined
   );
+
+  // Mark conversation as read when selected
+  useEffect(() => {
+    if (selectedConversationId) {
+      markConversationAsRead();
+      // Refresh conversations to update unread count in sidebar
+      setTimeout(() => refreshConversations(), 100);
+    }
+  }, [selectedConversationId]);
 
   const { isAnyoneTyping, typingUserNames, startTyping, stopTyping } = useTypingIndicator(
     selectedConversationId || '',
@@ -69,6 +90,20 @@ const AdminSupport = () => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendReply();
+    }
+  };
+
+  const handleCloseConversation = async () => {
+    if (!selectedConversationId || closing) return;
+    
+    try {
+      setClosing(true);
+      await deleteConversationFromList(selectedConversationId);
+      setSelectedConversationId('');
+    } catch (error) {
+      console.error('Error closing conversation:', error);
+    } finally {
+      setClosing(false);
     }
   };
 
@@ -156,41 +191,75 @@ const AdminSupport = () => {
         {/* Chat Area */}
         <Card className="lg:col-span-2 flex flex-col">
           <CardHeader>
-            <CardTitle>
-              {selectedConversation ? (
-                <div>
-                  <div className="flex items-center gap-3 mb-1">
-                    <div className="flex items-center gap-2">
-                      <User className="h-5 w-5" />
-                      {selectedConversation.user_name}
+            <div className="flex items-start justify-between">
+              <CardTitle>
+                {selectedConversation ? (
+                  <div>
+                    <div className="flex items-center gap-3 mb-1">
+                      <div className="flex items-center gap-2">
+                        <User className="h-5 w-5" />
+                        {selectedConversation.user_name}
+                      </div>
+                      <Badge 
+                        variant={isCustomerOnline() ? "default" : "secondary"}
+                        className="text-xs"
+                      >
+                        <div className={`w-2 h-2 rounded-full mr-1 ${isCustomerOnline() ? 'bg-green-500' : 'bg-gray-400'}`} />
+                        {isCustomerOnline() ? 'آنلاین' : 'آفلاین'}
+                      </Badge>
                     </div>
-                    <Badge 
-                      variant={isCustomerOnline() ? "default" : "secondary"}
-                      className="text-xs"
-                    >
-                      <div className={`w-2 h-2 rounded-full mr-1 ${isCustomerOnline() ? 'bg-green-500' : 'bg-gray-400'}`} />
-                      {isCustomerOnline() ? 'آنلاین' : 'آفلاین'}
-                    </Badge>
+                    <div className="space-y-1">
+                      {selectedConversation.user_phone && (
+                        <div className="flex items-center gap-2 text-sm font-normal text-muted-foreground" dir="ltr">
+                          <Phone className="h-4 w-4" />
+                          {selectedConversation.user_phone}
+                        </div>
+                      )}
+                      {selectedConversation.user_email && (
+                        <div className="flex items-center gap-2 text-sm font-normal text-muted-foreground">
+                          <Mail className="h-4 w-4" />
+                          {selectedConversation.user_email}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    {selectedConversation.user_phone && (
-                      <div className="flex items-center gap-2 text-sm font-normal text-muted-foreground" dir="ltr">
-                        <Phone className="h-4 w-4" />
-                        {selectedConversation.user_phone}
-                      </div>
-                    )}
-                    {selectedConversation.user_email && (
-                      <div className="flex items-center gap-2 text-sm font-normal text-muted-foreground">
-                        <Mail className="h-4 w-4" />
-                        {selectedConversation.user_email}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                'انتخاب مکالمه'
+                ) : (
+                  'انتخاب مکالمه'
+                )}
+              </CardTitle>
+              
+              {/* Close Conversation Button */}
+              {selectedConversation && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="sm" disabled={closing}>
+                      {closing ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Trash2 className="h-4 w-4 ml-2" />
+                          بستن مکالمه
+                        </>
+                      )}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>بستن مکالمه</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        آیا مطمئن هستید که می‌خواهید این مکالمه را ببندید؟ تمام پیام‌های این مکالمه حذف خواهند شد.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="gap-2">
+                      <AlertDialogCancel>انصراف</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleCloseConversation} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        بله، مکالمه بسته شود
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               )}
-            </CardTitle>
+            </div>
           </CardHeader>
           <Separator />
           <CardContent className="flex-1 flex flex-col p-0">

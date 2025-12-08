@@ -161,12 +161,53 @@ export const useSupportChat = (conversationId?: string, onNewMessage?: (message:
     }
   };
 
+  // Mark all unread messages in conversation as read (for admin)
+  const markConversationAsRead = async () => {
+    if (!conversationId) return;
+    
+    try {
+      const { error } = await supabase
+        .from('support_messages')
+        .update({ is_read: true })
+        .eq('conversation_id', conversationId)
+        .eq('is_from_admin', false)
+        .eq('is_read', false);
+
+      if (error) throw error;
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Error marking conversation as read:', error);
+    }
+  };
+
+  // Delete conversation (close chat)
+  const deleteConversation = async () => {
+    if (!conversationId) return;
+    
+    try {
+      const { error } = await supabase
+        .from('support_messages')
+        .delete()
+        .eq('conversation_id', conversationId);
+
+      if (error) throw error;
+      setMessages([]);
+      toast.success('مکالمه با موفقیت بسته شد');
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+      toast.error('خطا در بستن مکالمه');
+      throw error;
+    }
+  };
+
   return {
     messages,
     loading,
     sendMessage,
     sendAdminReply,
     markAsRead,
+    markConversationAsRead,
+    deleteConversation,
     refreshMessages: loadMessages,
     unreadCount
   };
@@ -246,9 +287,28 @@ export const useConversations = () => {
     };
   }, []);
 
+  // Delete a conversation
+  const deleteConversation = async (conversationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('support_messages')
+        .delete()
+        .eq('conversation_id', conversationId);
+
+      if (error) throw error;
+      await loadConversations();
+      toast.success('مکالمه با موفقیت بسته شد');
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+      toast.error('خطا در بستن مکالمه');
+      throw error;
+    }
+  };
+
   return {
     conversations,
     loading,
-    refreshConversations: loadConversations
+    refreshConversations: loadConversations,
+    deleteConversation
   };
 };
