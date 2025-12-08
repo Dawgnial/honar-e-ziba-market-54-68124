@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -43,9 +43,15 @@ const Auth = () => {
       confirmPassword: "",
     },
   });
-  // Redirect if already logged in
+  // Redirect if already logged in - use useEffect to avoid rendering issues
+  React.useEffect(() => {
+    if (user && !loading) {
+      navigate('/');
+    }
+  }, [user, loading, navigate]);
+
+  // Return null while redirecting
   if (user && !loading) {
-    navigate('/');
     return null;
   }
   
