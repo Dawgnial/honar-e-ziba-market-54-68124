@@ -1,42 +1,44 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export const useProductsWithTags = (products: any[], selectedTagIds: string[]) => {
-  const [filteredProducts, setFilteredProducts] = useState(products);
+  const [tagProductIds, setTagProductIds] = useState<string[] | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const filterByTags = async () => {
-      if (selectedTagIds.length === 0) {
-        setFilteredProducts(products);
-        return;
-      }
+    if (selectedTagIds.length === 0) {
+      setTagProductIds(null);
+      return;
+    }
 
-      setLoading(true);
+    let cancelled = false;
+    setLoading(true);
+
+    const filterByTags = async () => {
       try {
-        // Get all product IDs that have the selected tags
         const { data: productTags } = await supabase
           .from('product_tags')
           .select('product_id')
           .in('tag_id', selectedTagIds);
 
-        if (productTags) {
-          const productIds = productTags.map(pt => pt.product_id);
-          const filtered = products.filter(p => productIds.includes(p.id));
-          setFilteredProducts(filtered);
-        } else {
-          setFilteredProducts(products);
+        if (!cancelled) {
+          setTagProductIds(productTags?.map(pt => pt.product_id) || []);
         }
       } catch (error) {
-        console.error('Error filtering by tags:', error);
-        setFilteredProducts(products);
+        if (!cancelled) setTagProductIds(null);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     filterByTags();
-  }, [products, selectedTagIds]);
+    return () => { cancelled = true; };
+  }, [selectedTagIds]);
+
+  const filteredProducts = useMemo(() => {
+    if (tagProductIds === null) return products;
+    return products.filter(p => tagProductIds.includes(p.id));
+  }, [products, tagProductIds]);
 
   return { filteredProducts, loading };
 };

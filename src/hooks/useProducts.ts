@@ -1,4 +1,3 @@
-
 import { useSupabaseProducts } from './useSupabaseProducts';
 import { useMemo } from 'react';
 import type { Product } from '@/types';
@@ -8,30 +7,25 @@ export const useProducts = () => {
 
   const transformedProducts = useMemo(() => {
     try {
-      console.log('Transforming products:', products);
       return products.map(product => {
-        // Handle image URLs properly - check for multiple images first
         let imageUrl = '/placeholder.svg';
         
         if (product.image_url) {
-          // Check if it's already a JSON string starting with [
           if (product.image_url.startsWith('[')) {
             try {
               const imageUrls = JSON.parse(product.image_url);
               if (Array.isArray(imageUrls) && imageUrls.length > 0) {
-                imageUrl = imageUrls[0]; // Use first image
+                imageUrl = imageUrls[0];
               }
             } catch {
-              console.error('Failed to parse image URLs:', product.image_url);
               imageUrl = '/placeholder.svg';
             }
           } else {
-            // Single URL string
             imageUrl = product.image_url;
           }
         }
         
-        const transformedProduct = {
+        return {
           id: product.id,
           title: product.title || '',
           description: product.description || '',
@@ -45,8 +39,6 @@ export const useProducts = () => {
           discount_percentage: product.discount_percentage || 0,
           availability_status: product.availability_status || 'available',
         } as Product;
-        console.log('Transformed product:', transformedProduct);
-        return transformedProduct;
       });
     } catch (error) {
       console.error('Error transforming products:', error);
@@ -62,25 +54,20 @@ export const useProducts = () => {
     getProduct: async (id: string) => {
       try {
         const product = await getProduct(id);
-        console.log('Getting single product:', product);
         
-        // Handle image URLs properly
         let imageUrl = '/placeholder.svg';
         
         if (product.image_url) {
-          // Check if it's already a JSON string starting with [
           if (product.image_url.startsWith('[')) {
             try {
               const imageUrls = JSON.parse(product.image_url);
               if (Array.isArray(imageUrls) && imageUrls.length > 0) {
-                imageUrl = imageUrls[0]; // Use first image
+                imageUrl = imageUrls[0];
               }
             } catch {
-              console.error('Failed to parse image URLs:', product.image_url);
               imageUrl = '/placeholder.svg';
             }
           } else {
-            // Single URL string
             imageUrl = product.image_url;
           }
         }

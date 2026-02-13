@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from './use-toast';
 
@@ -19,36 +19,28 @@ export interface ProductTag {
 }
 
 export const useTags = () => {
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const fetchTags = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const { data, error: fetchError } = await supabase
+  const { data: tags = [], isLoading: loading, error: queryError } = useQuery({
+    queryKey: ['tags'],
+    queryFn: async () => {
+      const { data, error } = await supabase
         .from('tags')
         .select('*')
         .order('display_order', { ascending: true })
         .order('name', { ascending: true });
 
-      if (fetchError) throw fetchError;
-      setTags(data || []);
-    } catch (err: any) {
-      console.error('Error fetching tags:', err);
-      setError(err.message);
-      toast({
-        title: 'خطا',
-        description: 'خطا در دریافت هشتگ‌ها',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+
+  const error = queryError ? (queryError as Error).message : null;
+
+  const fetchTags = () => queryClient.invalidateQueries({ queryKey: ['tags'] });
 
   const createTag = async (name: string, displayOrder: number = 0) => {
     try {
@@ -60,20 +52,13 @@ export const useTags = () => {
 
       if (createError) throw createError;
       
-      toast({
-        title: 'موفق',
-        description: 'هشتگ با موفقیت اضافه شد',
-      });
-      
-      await fetchTags();
+      toast({ title: 'موفق', description: 'هشتگ با موفقیت اضافه شد' });
+      fetchTags();
       return data;
     } catch (err: any) {
-      console.error('Error creating tag:', err);
       toast({
         title: 'خطا',
-        description: err.message.includes('duplicate') 
-          ? 'این هشتگ قبلاً ثبت شده است' 
-          : 'خطا در ایجاد هشتگ',
+        description: err.message.includes('duplicate') ? 'این هشتگ قبلاً ثبت شده است' : 'خطا در ایجاد هشتگ',
         variant: 'destructive',
       });
       throw err;
@@ -89,19 +74,10 @@ export const useTags = () => {
 
       if (updateError) throw updateError;
       
-      toast({
-        title: 'موفق',
-        description: 'هشتگ با موفقیت به‌روزرسانی شد',
-      });
-      
-      await fetchTags();
+      toast({ title: 'موفق', description: 'هشتگ با موفقیت به‌روزرسانی شد' });
+      fetchTags();
     } catch (err: any) {
-      console.error('Error updating tag:', err);
-      toast({
-        title: 'خطا',
-        description: 'خطا در به‌روزرسانی هشتگ',
-        variant: 'destructive',
-      });
+      toast({ title: 'خطا', description: 'خطا در به‌روزرسانی هشتگ', variant: 'destructive' });
       throw err;
     }
   };
@@ -115,19 +91,10 @@ export const useTags = () => {
 
       if (deleteError) throw deleteError;
       
-      toast({
-        title: 'موفق',
-        description: 'هشتگ با موفقیت حذف شد',
-      });
-      
-      await fetchTags();
+      toast({ title: 'موفق', description: 'هشتگ با موفقیت حذف شد' });
+      fetchTags();
     } catch (err: any) {
-      console.error('Error deleting tag:', err);
-      toast({
-        title: 'خطا',
-        description: 'خطا در حذف هشتگ',
-        variant: 'destructive',
-      });
+      toast({ title: 'خطا', description: 'خطا در حذف هشتگ', variant: 'destructive' });
       throw err;
     }
   };
@@ -140,9 +107,8 @@ export const useTags = () => {
         .eq('id', tagId);
 
       if (updateError) throw updateError;
-      await fetchTags();
+      fetchTags();
     } catch (err: any) {
-      console.error('Error updating display order:', err);
       throw err;
     }
   };
@@ -151,29 +117,20 @@ export const useTags = () => {
     try {
       const { data, error } = await supabase
         .from('product_tags')
-        .select(`
-          tag_id,
-          tags:tag_id (*)
-        `)
+        .select(`tag_id, tags:tag_id (*)`)
         .eq('product_id', productId);
 
       if (error) throw error;
       return data?.map((pt: any) => pt.tags).filter(Boolean) || [];
     } catch (err: any) {
-      console.error('Error fetching product tags:', err);
       return [];
     }
   };
 
   const setProductTags = async (productId: string, tagIds: string[]) => {
     try {
-      // Delete existing tags
-      await supabase
-        .from('product_tags')
-        .delete()
-        .eq('product_id', productId);
+      await supabase.from('product_tags').delete().eq('product_id', productId);
 
-      // Insert new tags
       if (tagIds.length > 0) {
         const { error: insertError } = await supabase
           .from('product_tags')
@@ -182,14 +139,9 @@ export const useTags = () => {
         if (insertError) throw insertError;
       }
     } catch (err: any) {
-      console.error('Error setting product tags:', err);
       throw err;
     }
   };
-
-  useEffect(() => {
-    fetchTags();
-  }, []);
 
   return {
     tags,
