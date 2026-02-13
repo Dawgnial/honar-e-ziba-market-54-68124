@@ -36,7 +36,7 @@ const Products = () => {
   
   const [filters, setFilters] = useState<FilterState>({
     searchQuery: '',
-    priceRange: [0, 1000000],
+    priceRange: [0, 50000000],
     categories: [],
     tags: [],
     featuredOnly: false,
@@ -128,7 +128,7 @@ const Products = () => {
     }
 
     return filtered;
-  }, [products, filters]);
+  }, [tagFilteredProducts, filters]);
 
   // Group products by category and sort within each group
   const groupedProducts = useMemo(() => {
@@ -392,7 +392,7 @@ const Products = () => {
             </div>
 
             {/* Products by Category */}
-            {isLoading || products.length === 0 ? (
+            {isLoading ? (
               <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
                 {[...Array(12)].map((_, index) => (
                   <div key={index} className="space-y-4">

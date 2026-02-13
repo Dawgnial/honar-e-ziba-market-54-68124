@@ -1,7 +1,7 @@
-
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 export interface Product {
   id: string;
@@ -20,14 +20,11 @@ export interface Product {
 }
 
 export const useSupabaseProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  const { data: products = [], isLoading: loading, error: queryError, refetch } = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -35,15 +32,13 @@ export const useSupabaseProducts = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
-      setProducts(data || []);
-    } catch (error: any) {
-      console.error('Error fetching products:', error);
-      setError(error.message || 'خطا در دریافت محصولات');
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+  });
+
+  const error = queryError ? (queryError as Error).message : null;
 
   const fetchFeaturedProducts = async () => {
     try {
@@ -56,7 +51,6 @@ export const useSupabaseProducts = () => {
         .limit(8);
 
       if (error) throw error;
-      
       return data || [];
     } catch (error: any) {
       console.error('Error fetching featured products:', error);
@@ -64,28 +58,19 @@ export const useSupabaseProducts = () => {
     }
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
   return {
     products,
     loading,
     error,
     getProduct: async (id: string) => {
-      try {
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .eq('id', id)
-          .single();
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single();
 
-        if (error) throw error;
-        return data;
-      } catch (error: any) {
-        console.error('Error fetching product:', error);
-        throw error;
-      }
+      if (error) throw error;
+      return data;
     },
     fetchFeaturedProducts,
     createProduct: async (productData: {
@@ -101,7 +86,6 @@ export const useSupabaseProducts = () => {
       availabilityStatus?: string;
     }) => {
       try {
-        // Store imageUrls JSON if available, otherwise use imageUrl
         const imageUrlToStore = productData.imageUrls || JSON.stringify([productData.imageUrl]);
         
         const { data, error } = await supabase
@@ -122,11 +106,10 @@ export const useSupabaseProducts = () => {
 
         if (error) throw error;
         
-        setProducts(prev => [data, ...prev]);
+        queryClient.invalidateQueries({ queryKey: ['products'] });
         toast.success('محصول با موفقیت اضافه شد');
         return data;
       } catch (error: any) {
-        console.error('Error creating product:', error);
         if (error.message.includes('حداکثر 8 محصول ویژه')) {
           toast.error('حداکثر 4 محصول ویژه مجاز است');
         } else {
@@ -148,7 +131,6 @@ export const useSupabaseProducts = () => {
       availabilityStatus?: string;
     }) => {
       try {
-        // Store imageUrls JSON if available, otherwise use imageUrl
         const imageUrlToStore = productData.imageUrls || JSON.stringify([productData.imageUrl]);
         
         const { data, error } = await supabase
@@ -170,11 +152,10 @@ export const useSupabaseProducts = () => {
 
         if (error) throw error;
         
-        setProducts(prev => prev.map(p => p.id === id ? data : p));
+        queryClient.invalidateQueries({ queryKey: ['products'] });
         toast.success('محصول با موفقیت ویرایش شد');
         return data;
       } catch (error: any) {
-        console.error('Error updating product:', error);
         if (error.message.includes('حداکثر 8 محصول ویژه')) {
           toast.error('حداکثر 4 محصول ویژه مجاز است');
         } else {
@@ -192,31 +173,28 @@ export const useSupabaseProducts = () => {
 
         if (error) throw error;
         
-        setProducts(prev => prev.filter(p => p.id !== id));
+        queryClient.invalidateQueries({ queryKey: ['products'] });
         toast.success('محصول با موفقیت حذف شد');
       } catch (error: any) {
-        console.error('Error deleting product:', error);
         toast.error('خطا در حذف محصول');
         throw error;
       }
     },
     bulkUpdatePrices: async (categoryId: string, increaseAmount: number) => {
       try {
-        // First, get all products in the category
-        const { data: products, error: fetchError } = await supabase
+        const { data: prods, error: fetchError } = await supabase
           .from('products')
           .select('id, price')
           .eq('category_id', categoryId);
 
         if (fetchError) throw fetchError;
 
-        if (!products || products.length === 0) {
+        if (!prods || prods.length === 0) {
           toast.error('محصولی در این دسته‌بندی یافت نشد');
           return;
         }
 
-        // Update each product's price
-        const updatePromises = products.map(product => {
+        const updatePromises = prods.map(product => {
           const newPrice = (product.price || 0) + increaseAmount;
           return supabase
             .from('products')
@@ -225,23 +203,18 @@ export const useSupabaseProducts = () => {
         });
 
         const results = await Promise.all(updatePromises);
-        
-        // Check for any errors
         const errors = results.filter(result => result.error);
         if (errors.length > 0) {
           throw new Error(`خطا در به‌روزرسانی ${errors.length} محصول`);
         }
 
-        // Refresh products list
-        await fetchProducts();
-        
-        toast.success(`قیمت ${products.length} محصول با موفقیت به‌روزرسانی شد`);
+        queryClient.invalidateQueries({ queryKey: ['products'] });
+        toast.success(`قیمت ${prods.length} محصول با موفقیت به‌روزرسانی شد`);
       } catch (error: any) {
-        console.error('Error bulk updating prices:', error);
         toast.error('خطا در به‌روزرسانی گروهی قیمت‌ها');
         throw error;
       }
     },
-    refetch: fetchProducts,
+    refetch,
   };
 };
